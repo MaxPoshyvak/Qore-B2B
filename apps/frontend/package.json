@@ -1,0 +1,30 @@
+{
+    "name": "frontend",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint"
+    },
+    "dependencies": {
+        "@my-app/database": "*",
+        "@my-app/types": "*",
+        "@tailwindcss/postcss": "^4.3.3",
+        "@tanstack/react-query": "latest",
+        "next": "latest",
+        "react": "latest",
+        "react-dom": "latest"
+    },
+    "devDependencies": {
+        "@t3-oss/env-nextjs": "latest",
+        "@types/node": "latest",
+        "@types/react": "latest",
+        "@types/react-dom": "latest",
+        "postcss": "^8.5.26",
+        "tailwindcss": "^4.3.3",
+        "typescript": "^6.0.0",
+        "zod": "latest"
+    }
+}

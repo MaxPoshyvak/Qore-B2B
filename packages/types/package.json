@@ -1,0 +1,17 @@
+{
+    "name": "@my-app/types",
+    "version": "1.0.0",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "type": "commonjs",
+    "scripts": {
+        "build": "bunx tsc -p tsconfig.json",
+        "dev": "bun run build"
+    },
+    "dependencies": {
+        "@my-app/database": "workspace:*"
+    },
+    "devDependencies": {
+        "typescript": "^6.0.0"
+    }
+}

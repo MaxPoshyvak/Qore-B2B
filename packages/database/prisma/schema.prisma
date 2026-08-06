@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(CUSTOMER)
+  createdAt DateTime @default(now())
+  wishlist  WishlistItem[]
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  title       String
+  price       Float
+  description String?
+  createdAt   DateTime @default(now())
+  wishlist    WishlistItem[]
+}
+
+model WishlistItem {
+  id        String  @id @default(uuid())
+  userId    String
+  productId String
+  user      User    @relation(fields: [userId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
+}

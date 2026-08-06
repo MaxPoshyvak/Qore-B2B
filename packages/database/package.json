@@ -1,0 +1,25 @@
+{
+    "name": "@my-app/database",
+    "version": "1.0.0",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "type": "commonjs",
+    "scripts": {
+        "dev": "bun run build",
+        "generate": "bunx prisma generate",
+        "migrate": "bunx prisma migrate dev --name",
+        "build": "bunx prisma generate && bunx tsc -p tsconfig.json"
+    },
+    "dependencies": {
+        "@prisma/adapter-pg": "latest",
+        "@prisma/client": "latest",
+        "@prisma/client-runtime-utils": "latest",
+        "@types/node": "^26.1.2",
+        "dotenv": "^17.4.2",
+        "pg": "latest"
+    },
+    "devDependencies": {
+        "prisma": "latest",
+        "typescript": "^6.0.0"
+    }
+}
