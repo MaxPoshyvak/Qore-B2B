@@ -1,10 +1,3 @@
-export interface UserResponseDTO {
-    id: string;
-    email: string;
-    role: string;
-    createdAt: string;
-}
-
 export interface UpdateUserDTO {
     email?: string;
     name?: string;

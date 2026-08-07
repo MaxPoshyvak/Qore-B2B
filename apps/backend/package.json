@@ -15,12 +15,20 @@
         "@my-app/types": "*",
         "@nestjs/common": "latest",
         "@nestjs/core": "latest",
+        "@nestjs/jwt": "^11.0.2",
         "@nestjs/mapped-types": "*",
+        "@nestjs/passport": "^11.0.5",
         "@nestjs/platform-express": "latest",
         "@nestjs/swagger": "^11.4.6",
         "@prisma/adapter-pg": "^7.9.1",
         "@types/cookie-parser": "^1.4.10",
+        "@types/passport-jwt": "^4.0.1",
+        "bcrypt": "^6.0.0",
+        "class-transformer": "^0.5.1",
+        "class-validator": "^0.15.1",
         "cookie-parser": "^1.4.7",
+        "passport": "^0.7.0",
+        "passport-jwt": "^4.0.1",
         "reflect-metadata": "latest",
         "rxjs": "latest"
     },
@@ -28,10 +36,11 @@
         "@nestjs/cli": "latest",
         "@nestjs/schematics": "latest",
         "@nestjs/testing": "latest",
+        "@types/bcrypt": "^6.0.0",
         "@types/express": "latest",
         "@types/node": "latest",
+        "dotenv": "latest",
         "typescript": "^6.0.0",
-        "zod": "latest",
-        "dotenv": "latest"
+        "zod": "latest"
     }
 }

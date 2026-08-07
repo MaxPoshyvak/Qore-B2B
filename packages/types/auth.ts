@@ -1,22 +1,26 @@
-export interface LoginDTO {
+import { User } from '@my-app/database';
+
+// Робимо пароль обов'язковим за допомогою NonNullable
+export interface LoginDTO extends Pick<User, 'email'> {
+    password: NonNullable<User['password']>;
+}
+
+export interface RegisterDTO extends LoginDTO {
+    name: NonNullable<User['name']>;
+}
+
+export interface UserResponseDTO {
+    id: string;
+    name: string | null;
     email: string;
-    password: string;
+    image: string | null;
 }
 
-export interface RegisterDTO {
-    email: string;
-    password: string;
-    name: string;
-}
-
-export interface AuthResponse {
-    accessToken: string;
-    refreshToken: string;
-}
-
-export interface JwtPayload {
-    userId: string;
-    role: string;
-    iat?: number;
-    exp?: number;
+export interface AuthSuccessResponse {
+    success: boolean;
+    data: {
+        user: UserResponseDTO;
+        accessToken: string;
+        refreshToken: string;
+    };
 }

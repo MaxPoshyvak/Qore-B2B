@@ -6,33 +6,233 @@ datasource db {
   provider = "postgresql"
 }
 
+enum SubscriptionPlan {
+  free
+  pro
+  business
+}
+
+enum OrderStatus {
+  new
+  preparing
+  ready
+  delivered
+  cancelled
+}
+
+enum ReservationStatus {
+  pending
+  confirmed
+  cancelled
+}
+
+enum PaymentStatus {
+  pending
+  paid
+  failed
+}
+
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  role      Role     @default(CUSTOMER)
+  id       String  @id @default(uuid())
+  email    String  @unique
+  password String?
+  name     String?
+  image    String?
+
+  stripeCustomerId String? @unique
+
   createdAt DateTime @default(now())
-  wishlist  WishlistItem[]
+  updatedAt DateTime @updatedAt
+
+  tenants Tenant[]
 }
 
-model Product {
-  id          String   @id @default(uuid())
-  title       String
-  price       Float
+model Tenant {
+  id          String  @id @default(cuid())
+  name        String
+  slug        String  @unique
+  address     String?
+  phone       String?
+  logoUrl     String?
   description String?
-  createdAt   DateTime @default(now())
-  wishlist    WishlistItem[]
+
+  subscriptionPlan      SubscriptionPlan @default(free)
+  subscriptionExpiresAt DateTime?
+  stripeSubscriptionId  String?          @unique
+
+  activeThemeId String?  @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  activeTheme    TenantTheme?    @relation("ActiveTheme", fields: [activeThemeId], references: [id])
+  settings       TenantSettings?
+  tables         Table[]
+  menuCategories MenuCategory[]
+  menuItems      MenuItem[]
+  reservations   Reservation[]
+  menuViews      MenuView[]
+  themes         TenantTheme[]
+  orders         Order[]
+  happyHourRules HappyHourRule[]
+  feedbacks      Feedback[]
 }
 
-model WishlistItem {
-  id        String  @id @default(uuid())
-  userId    String
-  productId String
-  user      User    @relation(fields: [userId], references: [id])
-  product   Product @relation(fields: [productId], references: [id])
+model TenantSettings {
+  id                      String @id @default(cuid())
+  tenant                  Tenant @relation(fields: [tenantId], references: [id])
+  tenantId                String @unique
+  workingHours            Json
+  reservationStepMinutes  Int    @default(30)
+  minReservationTime      Int    @default(30)
+  maxGuestsPerReservation Int    @default(12)
 }
 
-enum Role {
-  ADMIN
-  CUSTOMER
+model Table {
+  id       String  @id @default(cuid())
+  tenant   Tenant  @relation(fields: [tenantId], references: [id])
+  tenantId String
+  name     String
+  capacity Int
+  qrToken  String  @unique @default(cuid())
+  isActive Boolean @default(true)
+
+  orders       Order[]
+  cartSessions CartSession[]
+}
+
+model MenuCategory {
+  id        String     @id @default(cuid())
+  tenant    Tenant     @relation(fields: [tenantId], references: [id])
+  tenantId  String
+  name      String
+  icon      String?
+  color     String?
+  sortOrder Int        @default(0)
+  isActive  Boolean    @default(true)
+  items     MenuItem[]
+}
+
+model MenuItem {
+  id             String       @id @default(cuid())
+  tenant         Tenant       @relation(fields: [tenantId], references: [id])
+  tenantId       String
+  category       MenuCategory @relation(fields: [categoryId], references: [id])
+  categoryId     String
+  name           String
+  description    String?
+  price          Decimal
+  happyHourPrice Decimal?
+  imageUrl       String?
+  allergens      Json?
+  tags           Json?
+  isActive       Boolean      @default(true) // ручний "86 list" тумблер
+  sortOrder      Int          @default(0)
+
+  orderItems OrderItem[]
+}
+
+model Reservation {
+  id          String            @id @default(cuid())
+  tenant      Tenant            @relation(fields: [tenantId], references: [id])
+  tenantId    String
+  tableId     String?
+  guestName   String
+  guestPhone  String
+  guestsCount Int
+  reservedAt  DateTime
+  status      ReservationStatus @default(pending)
+  notes       String?
+  createdAt   DateTime          @default(now())
+}
+
+model MenuView {
+  id        String   @id @default(cuid())
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  tenantId  String
+  tableId   String?
+  viewedAt  DateTime @default(now())
+  userAgent String?
+}
+
+// Тема оформлення (в т.ч. згенерована AI)
+model TenantTheme {
+  id            String   @id @default(cuid())
+  tenant        Tenant   @relation(fields: [tenantId], references: [id])
+  tenantId      String
+  themeConfig   Json
+  isAiGenerated Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  activeForTenant Tenant? @relation("ActiveTheme") // зворотний бік Tenant.activeThemeId
+}
+
+// Сесія "спільного кошика" для столика
+model CartSession {
+  id         String    @id @default(cuid())
+  table      Table     @relation(fields: [tableId], references: [id])
+  tableId    String
+  guestLabel String // напр. "Гість 1", генерується на клієнті
+  createdAt  DateTime  @default(now())
+  closedAt   DateTime?
+
+  orderItemsAdded OrderItem[] @relation("AddedBy")
+}
+
+model Order {
+  id            String        @id @default(cuid())
+  tenant        Tenant        @relation(fields: [tenantId], references: [id])
+  tenantId      String
+  table         Table?        @relation(fields: [tableId], references: [id])
+  tableId       String?
+  status        OrderStatus   @default(new)
+  paymentStatus PaymentStatus @default(pending) // кухня стартує лише коли paid
+  isOrderAhead  Boolean       @default(false)
+  pickupAt      DateTime?
+  totalAmount   Decimal
+  createdAt     DateTime      @default(now())
+
+  items OrderItem[]
+}
+
+model OrderItem {
+  id               String       @id @default(cuid())
+  order            Order        @relation(fields: [orderId], references: [id])
+  orderId          String
+  menuItem         MenuItem     @relation(fields: [menuItemId], references: [id])
+  menuItemId       String
+  quantity         Int          @default(1)
+  priceAtOrder     Decimal
+  addedBySession   CartSession? @relation("AddedBy", fields: [addedBySessionId], references: [id])
+  addedBySessionId String?
+  paidByGuestId    String? // для split bill
+
+  isLockedForPayment Boolean   @default(false) // захист від подвійного списання
+  lockedAt           DateTime? // для TTL — автозняття локу, якщо оплата не завершилась
+}
+
+model HappyHourRule {
+  id          String  @id @default(cuid())
+  tenant      Tenant  @relation(fields: [tenantId], references: [id])
+  tenantId    String
+  daysOfWeek  Json // ["mon","tue",...]
+  startTime   String // "16:00"
+  endTime     String // "18:00"
+  discountPct Int?
+  categoryIds Json?
+  itemIds     Json?
+  isActive    Boolean @default(true)
+}
+
+model Feedback {
+  id             String   @id @default(cuid())
+  tenant         Tenant   @relation(fields: [tenantId], references: [id])
+  tenantId       String
+  orderId        String?
+  rating         Int // 1-5
+  comment        String?
+  aiSummaryBatch String? // ID нічного AI-резюме (Pro)
+  createdAt      DateTime @default(now())
 }
