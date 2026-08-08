@@ -3,10 +3,10 @@
 import { motion } from 'framer-motion';
 import { Check, X } from 'lucide-react';
 
-import { display, mono } from '../../lib/fonts';
-import { EASE } from '../../config/animations';
+import { display, mono } from '@/shared/lib/fonts';
+import { EASE } from '@/shared/config/animations';
 import { COMPARISON_QORE, COMPARISON_TYPICAL } from '../../config/landing-data';
-import { Eyebrow } from '../ui/Eyebrow';
+import { Eyebrow } from '@/shared/ui/Eyebrow';
 import { Reveal } from '../ui/Reveal';
 
 export function ComparisonSection() {

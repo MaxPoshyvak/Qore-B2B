@@ -1,6 +1,6 @@
 'use client';
 
-import { display, mono } from '../../lib/fonts';
+import { display, mono } from '@/shared/lib/fonts';
 
 export function AmbientBackground() {
     return (

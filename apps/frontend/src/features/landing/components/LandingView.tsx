@@ -1,8 +1,8 @@
 'use client';
 
-import { body } from '../lib/fonts';
-import { useTheme } from '../hooks/useTheme';
-import { AmbientBackground } from './ui/AmbientBackground';
+import { body } from '@/shared/lib/fonts';
+import { useTheme } from '@/shared/hooks/useTheme';
+import { AmbientBackground } from '@/shared/ui/AmbientBackground';
 import { Navbar } from './sections/Navbar';
 import { HeroSection } from './sections/HeroSection';
 import { IntegrationsMarquee } from './demo/IntegrationsMarquee';

@@ -4,8 +4,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Wand2 } from 'lucide-react';
 
-import { display, mono } from '../../lib/fonts';
-import { EASE } from '../../config/animations';
+import { display, mono } from '@/shared/lib/fonts';
+import { EASE } from '@/shared/config/animations';
 import { TICKET_EVENTS } from '../../config/landing-data';
 import { TiltCard } from '../ui/TiltCard';
 

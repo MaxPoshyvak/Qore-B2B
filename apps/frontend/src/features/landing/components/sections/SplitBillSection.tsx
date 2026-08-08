@@ -3,10 +3,10 @@
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 
-import { display } from '../../lib/fonts';
-import { EASE } from '../../config/animations';
+import { display } from '@/shared/lib/fonts';
+import { EASE } from '@/shared/config/animations';
 import { SPLIT_BENEFITS } from '../../config/landing-data';
-import { Eyebrow } from '../ui/Eyebrow';
+import { Eyebrow } from '@/shared/ui/Eyebrow';
 import { Reveal } from '../ui/Reveal';
 import { LiveTablePanel } from '../demo/LiveTablePanel';
 

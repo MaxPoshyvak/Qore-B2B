@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 
-import { body, mono } from '../../lib/fonts';
-import { EASE } from '../../config/animations';
+import { body, mono } from '@/shared/lib/fonts';
+import { EASE } from '@/shared/config/animations';
 import { AI_DEMO } from '../../config/landing-data';
 import { TiltCard } from '../ui/TiltCard';
 

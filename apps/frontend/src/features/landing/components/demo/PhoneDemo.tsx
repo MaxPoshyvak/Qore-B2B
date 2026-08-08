@@ -3,8 +3,8 @@
 import { motion } from 'framer-motion';
 import { Sparkles, Zap } from 'lucide-react';
 
-import { display, mono, body } from '../../lib/fonts';
-import { EASE } from '../../config/animations';
+import { display, mono, body } from '@/shared/lib/fonts';
+import { EASE } from '@/shared/config/animations';
 import { PHONE_BUTTON, PHONE_PLAIN_ITEMS, PHONE_RICH_ITEMS } from '../../config/landing-data';
 import { usePhoneDemo, type MorphPhase } from '../../hooks/usePhoneDemo';
 import { TiltCard } from '../ui/TiltCard';

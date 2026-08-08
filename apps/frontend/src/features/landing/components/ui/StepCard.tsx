@@ -2,8 +2,8 @@
 
 import { motion } from 'framer-motion';
 
-import { display } from '../../lib/fonts';
-import { EASE } from '../../config/animations';
+import { display } from '@/shared/lib/fonts';
+import { EASE } from '@/shared/config/animations';
 import { TiltCard } from './TiltCard';
 
 export function StepCard({ n, icon: Icon, title, desc }: { n: string; icon: React.ElementType; title: string; desc: string }) {

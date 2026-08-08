@@ -1,26 +1,10 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { LoginSchema, RegisterSchema } from '@my-app/types';
 
-export class RegisterDto {
-    @IsEmail({}, { message: 'Некоректний формат email' })
-    email!: string;
-
-    @IsString()
-    @MinLength(6, { message: 'Пароль має містити мінімум 6 символів' })
-    password!: string;
-
-    @IsString()
-    @IsNotEmpty({ message: "Ім'я є обов'язковим" })
-    name!: string;
-}
-
-export class LoginDto {
-    @IsEmail({}, { message: 'Некоректний формат email' })
-    email!: string;
-
-    @IsString()
-    @IsNotEmpty({ message: "Пароль є обов'язковим" })
-    password!: string;
-}
+// Створюємо класи для NestJS на основі спільних Zod-схем!
+export class LoginDto extends createZodDto(LoginSchema) {}
+export class RegisterDto extends createZodDto(RegisterSchema) {}
 
 export class RefreshDto {
     @IsString()

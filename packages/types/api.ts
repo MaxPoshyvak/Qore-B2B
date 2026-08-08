@@ -1,28 +1,11 @@
-export interface UpdateUserDTO {
-    email?: string;
-    name?: string;
-}
+import { z } from 'zod';
 
-export interface ProductResponseDTO {
-    id: string;
-    title: string;
-    price: number;
-    description?: string | null;
-    createdAt: string;
-}
+export const CreateTenantSchema = z.object({
+    name: z.string().min(2, "Назва закладу обов'язкова"),
+    slug: z
+        .string()
+        .min(2, "URL закладу обов'язковий")
+        .regex(/^[a-z0-9-]+$/, 'Тільки маленькі латинські літери, цифри та дефіс'),
+});
 
-export interface CreateProductDTO {
-    title: string;
-    price: number;
-    description?: string;
-}
-
-export interface UpdateProductDTO {
-    title?: string;
-    price?: number;
-    description?: string;
-}
-
-export interface AddToWishlistDTO {
-    productId: string;
-}
+export type CreateTenantDTO = z.infer<typeof CreateTenantSchema>;

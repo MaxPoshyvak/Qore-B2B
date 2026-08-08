@@ -6,8 +6,6 @@ export const env = createEnv({
         DATABASE_URL: z.string().url(),
         STRIPE_SECRET_KEY: z.string().min(1),
         NEXTAUTH_SECRET: z.string().min(1),
-        GOOGLE_CLIENT_ID: z.string().min(1),
-        GOOGLE_CLIENT_SECRET: z.string().min(1),
     },
     client: {
         NEXT_PUBLIC_API_URL: z.string().url(),

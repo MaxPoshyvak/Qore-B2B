@@ -3,10 +3,10 @@
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 
-import { display, body, mono } from '../../lib/fonts';
-import { EASE, fadeUp, stagger } from '../../config/animations';
+import { display, body, mono } from '@/shared/lib/fonts';
+import { EASE, fadeUp, stagger } from '@/shared/config/animations';
 import { HERO_METRICS } from '../../config/landing-data';
-import { Eyebrow } from '../ui/Eyebrow';
+import { Eyebrow } from '@/shared/ui/Eyebrow';
 import { MagneticButton } from '../ui/MagneticButton';
 import { AnimatedNumber } from '../ui/AnimatedNumber';
 import { LightningWithSparks } from '../ui/LightningWithSparks';
@@ -48,16 +48,16 @@ export function HeroSection() {
                     <motion.p
                         variants={fadeUp}
                         className="mt-6 max-w-md text-[15.5px] leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
-                        Qore is a platform for cafés and restaurants. Guests at the same table see a shared menu in
-                        real time and split the bill themselves, while the AI engine lifts average order value and
-                        takes routine work off your team.
+                        Qore is a platform for cafés and restaurants. Guests at the same table see a shared menu in real
+                        time and split the bill themselves, while the AI engine lifts average order value and takes
+                        routine work off your team.
                     </motion.p>
 
                     <motion.div variants={fadeUp} className="mt-9 flex flex-wrap items-center gap-4">
                         <MagneticButton
                             primary
                             showSparks
-                            href="#pricing"
+                            href="/register"
                             className={`${body.className} flex cursor-pointer items-center gap-2 rounded-full bg-[#0A0A0C] px-6 py-3.5 text-[14px] font-medium text-white transition-colors hover:bg-[#232327] dark:bg-[#F5F4F2] dark:text-[#0A0A0C] dark:hover:bg-white`}>
                             Start for free
                             <ArrowRight size={16} />

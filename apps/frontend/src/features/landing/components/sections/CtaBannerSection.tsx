@@ -2,7 +2,7 @@
 
 import { ArrowRight } from 'lucide-react';
 
-import { display, body } from '../../lib/fonts';
+import { display, body } from '@/shared/lib/fonts';
 import { Reveal } from '../ui/Reveal';
 import { MagneticButton } from '../ui/MagneticButton';
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { mono } from '../../lib/fonts';
+import { mono } from '@/shared/lib/fonts';
 
 export function Eyebrow({ children, tone = 'blue' }: { children: React.ReactNode; tone?: 'blue' | 'violet' | 'green' }) {
     const colors = {

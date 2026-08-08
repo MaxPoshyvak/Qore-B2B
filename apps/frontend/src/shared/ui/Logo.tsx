@@ -1,6 +1,6 @@
 'use client';
 
-import { display } from '../../lib/fonts';
+import { display } from '@/shared/lib/fonts';
 
 export function Logo() {
     return (

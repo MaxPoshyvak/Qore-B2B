@@ -1,6 +1,6 @@
 'use client';
 
-import { mono } from '../../lib/fonts';
+import { mono } from '@/shared/lib/fonts';
 import { INTEGRATIONS } from '../../config/landing-data';
 
 export function IntegrationsMarquee() {

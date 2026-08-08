@@ -2,8 +2,8 @@
 
 import { motion } from 'framer-motion';
 
-import { display, body } from '../../lib/fonts';
-import { GlowCard } from './GlowCard';
+import { display, body } from '@/shared/lib/fonts';
+import { GlowCard } from '@/shared/ui/GlowCard';
 import { TiltCard } from './TiltCard';
 import { CoffeeSteam } from './CoffeeSteam';
 import { LightningWithSparks } from './LightningWithSparks';

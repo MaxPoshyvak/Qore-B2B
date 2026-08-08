@@ -3,14 +3,14 @@
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 
-import { display, body } from '../../lib/fonts';
-import { EASE } from '../../config/animations';
+import { display, body } from '@/shared/lib/fonts';
+import { EASE } from '@/shared/config/animations';
 import { AI_PILLS } from '../../config/landing-data';
-import { Eyebrow } from '../ui/Eyebrow';
+import { Eyebrow } from '@/shared/ui/Eyebrow';
 import { Reveal } from '../ui/Reveal';
 import { MagneticButton } from '../ui/MagneticButton';
 import { TiltCard } from '../ui/TiltCard';
-import { GlowCard } from '../ui/GlowCard';
+import { GlowCard } from '@/shared/ui/GlowCard';
 import { AIDemo } from '../demo/AIDemo';
 
 export function AiShowcaseSection() {

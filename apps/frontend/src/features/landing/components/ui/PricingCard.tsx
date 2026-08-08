@@ -3,8 +3,8 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, Check } from 'lucide-react';
 
-import { display, mono, body } from '../../lib/fonts';
-import { EASE } from '../../config/animations';
+import { display, mono, body } from '@/shared/lib/fonts';
+import { EASE } from '@/shared/config/animations';
 import { MagneticButton } from './MagneticButton';
 
 export function PricingCard({

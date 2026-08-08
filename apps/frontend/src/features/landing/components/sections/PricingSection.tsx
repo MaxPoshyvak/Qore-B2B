@@ -1,8 +1,8 @@
 'use client';
 
-import { display } from '../../lib/fonts';
+import { display } from '@/shared/lib/fonts';
 import { PRICING_PLANS } from '../../config/landing-data';
-import { Eyebrow } from '../ui/Eyebrow';
+import { Eyebrow } from '@/shared/ui/Eyebrow';
 import { Reveal } from '../ui/Reveal';
 import { PricingCard } from '../ui/PricingCard';
 

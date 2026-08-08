@@ -2,10 +2,10 @@
 
 import { motion } from 'framer-motion';
 
-import { display } from '../../lib/fonts';
-import { EASE, fadeUp, stagger } from '../../config/animations';
+import { display } from '@/shared/lib/fonts';
+import { EASE, fadeUp, stagger } from '@/shared/config/animations';
 import { FEATURES } from '../../config/landing-data';
-import { Eyebrow } from '../ui/Eyebrow';
+import { Eyebrow } from '@/shared/ui/Eyebrow';
 import { Reveal } from '../ui/Reveal';
 import { FeatureCard } from '../ui/FeatureCard';
 

@@ -4,13 +4,14 @@ import { useEffect, useState } from 'react';
 import { AnimatePresence, motion, useScroll } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 
-import { body } from '../../lib/fonts';
-import { EASE } from '../../config/animations';
+import { body } from '@/shared/lib/fonts';
+import { EASE } from '@/shared/config/animations';
 import { NAV_LINKS } from '../../config/landing-data';
-import type { Theme } from '../../hooks/useTheme';
-import { Logo } from '../ui/Logo';
-import { ThemeToggle } from '../ui/ThemeToggle';
+import type { Theme } from '@/shared/hooks/useTheme';
+import { Logo } from '@/shared/ui/Logo';
+import { ThemeToggle } from '@/shared/ui/ThemeToggle';
 import { MagneticButton } from '../ui/MagneticButton';
+import Link from 'next/link';
 
 export function Navbar({ theme, toggleTheme }: { theme: Theme; toggleTheme: () => void }) {
     const [hovered, setHovered] = useState<string | null>(null);
@@ -54,15 +55,15 @@ export function Navbar({ theme, toggleTheme }: { theme: Theme; toggleTheme: () =
 
                     <div className="flex items-center gap-2.5">
                         <ThemeToggle theme={theme} toggle={toggleTheme} className="hidden sm:flex" />
-                        <a
-                            href="#"
+                        <Link
+                            href="/login"
                             className={`${body.className} hidden text-[13.5px] text-[#6B6A65] hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:text-[#F5F4F2] lg:block`}>
                             Log in
-                        </a>
+                        </Link>
                         <MagneticButton
                             primary
                             showSparks
-                            href="#pricing"
+                            href="/register"
                             className={`${body.className} hidden cursor-pointer rounded-full bg-[#0A0A0C] px-4 py-2 text-[13.5px] font-medium text-white transition-colors hover:bg-[#232327] dark:bg-[#F5F4F2] dark:text-[#0A0A0C] dark:hover:bg-white sm:inline-block`}>
                             Start for free
                         </MagneticButton>
@@ -95,17 +96,17 @@ export function Navbar({ theme, toggleTheme }: { theme: Theme; toggleTheme: () =
                                     </a>
                                 ))}
                                 <div className="mt-2 flex items-center justify-between border-t border-[#E7E5E0] pt-4 dark:border-white/10">
-                                    <a
-                                        href="#"
+                                    <Link
+                                        href="/login"
                                         className={`${body.className} text-[14px] text-[#6B6A65] dark:text-[#94938D]`}>
                                         Log in
-                                    </a>
+                                    </Link>
                                     <ThemeToggle theme={theme} toggle={toggleTheme} />
                                 </div>
                                 <MagneticButton
                                     primary
                                     showSparks
-                                    href="#pricing"
+                                    href="/register"
                                     onClick={() => setMobileOpen(false)}
                                     className={`${body.className} mt-3 flex cursor-pointer items-center justify-center rounded-full bg-[#0A0A0C] px-4 py-3 text-[14px] font-medium text-white dark:bg-[#F5F4F2] dark:text-[#0A0A0C]`}>
                                     Start for free

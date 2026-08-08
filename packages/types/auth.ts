@@ -1,13 +1,16 @@
-import { User } from '@my-app/database';
+import { z } from 'zod';
 
-// Робимо пароль обов'язковим за допомогою NonNullable
-export interface LoginDTO extends Pick<User, 'email'> {
-    password: NonNullable<User['password']>;
-}
+export const LoginSchema = z.object({
+    email: z.string().email('Invalid email'),
+    password: z.string().min(6, 'Minimum 6 characters'),
+});
 
-export interface RegisterDTO extends LoginDTO {
-    name: NonNullable<User['name']>;
-}
+export const RegisterSchema = LoginSchema.extend({
+    name: z.string().min(2, 'Name is required'),
+});
+
+export type LoginDTO = z.infer<typeof LoginSchema>;
+export type RegisterDTO = z.infer<typeof RegisterSchema>;
 
 export interface UserResponseDTO {
     id: string;

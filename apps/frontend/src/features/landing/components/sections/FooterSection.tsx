@@ -1,8 +1,8 @@
 'use client';
 
-import { display, mono } from '../../lib/fonts';
+import { display, mono } from '@/shared/lib/fonts';
 import { FOOTER_COLUMNS, FOOTER_LINK_HREF } from '../../config/landing-data';
-import { Logo } from '../ui/Logo';
+import { Logo } from '@/shared/ui/Logo';
 
 export function FooterSection() {
     return (

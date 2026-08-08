@@ -9,6 +9,7 @@
         "lint": "next lint"
     },
     "dependencies": {
+        "@hookform/resolvers": "^5.7.1",
         "@my-app/database": "*",
         "@my-app/types": "*",
         "@tailwindcss/postcss": "^4.3.3",
@@ -19,7 +20,8 @@
         "next": "latest",
         "next-auth": "^4.24.15",
         "react": "latest",
-        "react-dom": "latest"
+        "react-dom": "latest",
+        "react-hook-form": "^7.85.0"
     },
     "devDependencies": {
         "@t3-oss/env-nextjs": "latest",

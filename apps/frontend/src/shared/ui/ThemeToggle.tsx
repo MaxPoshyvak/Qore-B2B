@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Moon, Sun } from 'lucide-react';
 
-import type { Theme } from '../../hooks/useTheme';
+import type { Theme } from '@/shared/hooks/useTheme';
 
 export function ThemeToggle({
     theme,

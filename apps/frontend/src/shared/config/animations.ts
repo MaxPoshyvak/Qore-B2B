@@ -1,6 +1,6 @@
 import type { Variants } from 'framer-motion';
 
-/** Shared easing curve used across the landing page. */
+/** Shared easing curve used across the app. */
 export const EASE = [0.16, 1, 0.3, 1] as const;
 
 /** Single element fade + rise. */

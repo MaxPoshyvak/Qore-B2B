@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 
-import { EASE } from '../../config/animations';
+import { EASE } from '@/shared/config/animations';
 
 export function Reveal({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
     return (
