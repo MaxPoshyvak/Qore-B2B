@@ -67,7 +67,7 @@ export class AuthService {
         try {
             const payload = await this.jwtService.verifyAsync(refreshToken, { secret: env.JWT_SECRET });
             const user = await this.prisma.user.findUnique({ where: { id: payload.sub } });
-            if (!user) throw new Error();
+            if (!user) throw new UnauthorizedException('Invalid refresh token');
 
             const tokens = await this.generateTokens(user.id, user.email);
             return { success: true, data: tokens };

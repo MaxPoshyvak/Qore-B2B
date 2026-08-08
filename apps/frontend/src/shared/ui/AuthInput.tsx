@@ -4,18 +4,24 @@ import { forwardRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, Eye, EyeOff } from 'lucide-react';
 
-type AuthInputProps = {
+type AuthInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> & {
     label: string;
     error?: string;
-} & React.InputHTMLAttributes<HTMLInputElement>;
+    size?: 'md' | 'lg';
+};
 
 export const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(function AuthInput(
-    { label, error, type = 'text', id, className = '', ...props },
+    { label, error, type = 'text', id, className = '', size = 'md', ...props },
     ref,
 ) {
     const [reveal, setReveal] = useState(false);
     const isPassword = type === 'password';
     const inputType = isPassword ? (reveal ? 'text' : 'password') : type;
+
+    const sizeClasses =
+        size === 'lg'
+            ? 'rounded-3xl px-5 py-4 text-[17px] focus:shadow-[0_0_0_4px_rgba(59,130,246,0.12)]'
+            : 'rounded-2xl px-4 py-3 text-[15px]';
 
     return (
         <label className="block">
@@ -27,11 +33,11 @@ export const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(function A
                     ref={ref}
                     id={id}
                     type={inputType}
-                    className={`w-full rounded-2xl border bg-white px-4 py-3 text-[15px] text-[#0A0A0C] outline-none transition-colors placeholder:text-[#A8A6A0] dark:bg-[#141417] dark:text-[#F5F4F2] dark:placeholder:text-[#5A5A56] ${
+                    className={`w-full border bg-white text-[#0A0A0C] outline-none transition-colors placeholder:text-[#A8A6A0] dark:bg-[#141417] dark:text-[#F5F4F2] dark:placeholder:text-[#5A5A56] ${
                         error
                             ? 'border-red-400/70 focus:border-red-400'
                             : 'border-[#E7E5E0] focus:border-[#3B82F6]/60 dark:border-[#232327]'
-                    } ${isPassword ? 'pr-11' : ''} ${className}`}
+                    } ${sizeClasses} ${isPassword ? 'pr-11' : ''} ${className}`}
                     {...props}
                 />
                 {isPassword && (

@@ -8,7 +8,9 @@ Your task is to write clean, highly scalable, and production-ready code. You mus
 - **Monorepo:** Turborepo, Bun (`bun@1.3.14`).
 - **Frontend:** Next.js (App Router), React, Tailwind CSS, Framer Motion, React Hook Form.
 - **Backend:** NestJS, Prisma ORM, PostgreSQL.
-- **Shared:** `@my-app/types` package for shared logic.
+- **Shared:** @my-app/types package for shared logic. DONT USE `@my-app/types/api or @my-app/types/auth` package. All shared types and Zod schemas must be in `@my-app/types`.
+
+ALl website only in English. All variable names must be in English.
 
 # 🏗 CRITICAL ARCHITECTURAL RULES
 

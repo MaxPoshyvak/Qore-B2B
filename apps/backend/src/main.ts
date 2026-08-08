@@ -5,6 +5,7 @@ import { env } from './config/env';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import { ZodValidationPipe } from 'nestjs-zod';
+import { HttpExceptionFilter } from 'src/common/filters/http-exception.filter';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -24,6 +25,7 @@ async function bootstrap() {
     SwaggerModule.setup('api-docs', app, document);
     app.setGlobalPrefix('api');
     app.useGlobalPipes(new ZodValidationPipe());
+    app.useGlobalFilters(new HttpExceptionFilter());
 
     await app.listen(env.PORT, () => {
         console.log(`🚀 Сервер на порту ${env.PORT} | режим: ${env.NODE_ENV}`);

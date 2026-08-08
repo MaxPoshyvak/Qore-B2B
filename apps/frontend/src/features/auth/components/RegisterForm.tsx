@@ -13,8 +13,8 @@ import { RegisterSchema, type RegisterDTO } from '@my-app/types';
 import { AuthService } from '../api/auth.service';
 import { display } from '@/shared/lib/fonts';
 import { EASE } from '@/shared/config/animations';
-import { AuthInput } from './AuthInput';
-import { AuthButton } from './AuthButton';
+import { AuthInput } from '@/shared/ui/AuthInput';
+import { AuthButton } from '@/shared/ui/AuthButton';
 
 export function RegisterForm() {
     const router = useRouter();

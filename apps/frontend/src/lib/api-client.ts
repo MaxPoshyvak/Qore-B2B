@@ -36,6 +36,7 @@ export async function apiClient<T>(
     useBaseResType: boolean = true,
 ): Promise<SuccessResponse<T> | T> {
     const token = await getAuthToken();
+    console.log('📝 TOKEN FROM SESSION:', token);
 
     const headers = new Headers({
         'Content-Type': 'application/json',
@@ -55,7 +56,7 @@ export async function apiClient<T>(
     if (!response.ok) {
         if (response.status === 401) {
             if (typeof window !== 'undefined') {
-                window.location.href = '/login';
+                // window.location.href = '/login';
             }
             return new Promise(() => {});
         }

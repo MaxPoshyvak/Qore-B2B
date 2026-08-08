@@ -12,8 +12,8 @@ import Link from 'next/link';
 import { LoginSchema, type LoginDTO } from '@my-app/types';
 import { display } from '@/shared/lib/fonts';
 import { EASE } from '@/shared/config/animations';
-import { AuthInput } from './AuthInput';
-import { AuthButton } from './AuthButton';
+import { AuthInput } from '@/shared/ui/AuthInput';
+import { AuthButton } from '@/shared/ui/AuthButton';
 
 export function LoginForm() {
     const router = useRouter();

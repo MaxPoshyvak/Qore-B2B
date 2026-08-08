@@ -115,9 +115,10 @@ export const authOptions: NextAuthOptions = {
         },
 
         async session({ session, token }) {
-            // Віддаємо на клієнт тільки публічну інфу (безпека)
-            session.user.id = token.id;
+            session.user.id = token.id as string;
             session.error = token.error;
+
+            session.accessToken = token.accessToken as string;
 
             return session;
         },
