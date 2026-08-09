@@ -2,8 +2,8 @@
 
 import { motion } from 'framer-motion';
 import { useTheme } from '@/shared/hooks/useTheme';
-import { Logo } from '@/shared/ui/Logo';
 import { ThemeToggle } from '@/shared/ui/ThemeToggle';
+import { BaseHeader } from '@/shared/ui/BaseHeader';
 
 export function OnboardingShell({ children }: { children: React.ReactNode }) {
     const { theme, toggle, mounted } = useTheme();
@@ -35,12 +35,7 @@ export function OnboardingShell({ children }: { children: React.ReactNode }) {
             {/* Vignette to keep content readable */}
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_38%,transparent_35%,#FAFAF9_100%)] dark:bg-[radial-gradient(ellipse_80%_60%_at_50%_38%,transparent_35%,#08080A_100%)]" />
 
-            <header className="sticky top-3 z-40 px-3 sm:top-4 sm:px-6">
-                <div className="mx-auto flex max-w-6xl items-center justify-between rounded-full border border-[#E7E5E0]/80 bg-white/70 px-4 py-2.5 backdrop-blur-xl dark:border-white/10 dark:bg-black/40 sm:px-5">
-                    <Logo />
-                    {mounted && <ThemeToggle theme={theme} toggle={toggle} />}
-                </div>
-            </header>
+            <BaseHeader>{mounted && <ThemeToggle theme={theme} toggle={toggle} />}</BaseHeader>
 
             <main className="relative mx-auto flex min-h-[calc(100vh-7rem)] max-w-2xl flex-col items-center justify-center px-4 py-10 text-center sm:px-6">
                 {children}

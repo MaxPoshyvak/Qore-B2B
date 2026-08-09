@@ -36,7 +36,6 @@ export function OnboardingForm() {
     const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
     const [isAutoGenerating, setIsAutoGenerating] = useState(false);
 
-    // Таймер для 300мс паузи після стирання останньої букви
     const autoGenTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const {
@@ -49,27 +48,24 @@ export function OnboardingForm() {
         formState: { errors, isSubmitted },
     } = useForm<CreateTenantDTO>({
         resolver: zodResolver(CreateTenantSchema),
-        mode: 'onSubmit', // 🔥 Валідація ТІЛЬКИ при відправці форми! Жодного червоного кольору під час набору
+        mode: 'onSubmit',
         defaultValues: { name: '', slug: '' },
     });
 
     const name = watch('name') || '';
     const hasName = name.trim().length > 0;
 
-    // Авто-генерація slug на основі назви (тільки якщо юзер не редагував вручну)
     useEffect(() => {
         if (isSlugManuallyEdited) return;
         setValue('slug', cyrillicToSlug(name), { shouldValidate: false });
     }, [name, isSlugManuallyEdited, setValue]);
 
-    // Очищення таймера при розмонтуванні
     useEffect(() => {
         return () => {
             if (autoGenTimeoutRef.current) clearTimeout(autoGenTimeoutRef.current);
         };
     }, []);
 
-    // Редирект після успіху
     useEffect(() => {
         if (phase !== 'success') return;
         const t = setTimeout(() => {
@@ -85,37 +81,30 @@ export function OnboardingForm() {
         const clean = sanitizeSlug(e.target.value);
         e.target.value = clean;
 
-        // Очищаємо помилки під час введення
         clearErrors('slug');
 
-        // Якщо був запуск таймера — скасовуємо його
         if (autoGenTimeoutRef.current) {
             clearTimeout(autoGenTimeoutRef.current);
             autoGenTimeoutRef.current = null;
         }
 
         if (clean === '') {
-            // Відправляємо порожнє значення у форму
             slugReg.onChange(e);
 
             if (hasName) {
-                // 🔥 Чекаємо 300мс паузи перед тим, як відновити авто-генерацію
                 autoGenTimeoutRef.current = setTimeout(() => {
                     setIsSlugManuallyEdited(false);
                     setIsAutoGenerating(true);
 
-                    // Повертаємо авто-згенерований slug
                     const newSlug = cyrillicToSlug(name);
                     setValue('slug', newSlug, { shouldValidate: false });
 
-                    // Вимикаємо анімацію магії через 600мс
                     setTimeout(() => setIsAutoGenerating(false), 600);
                 }, 300);
             } else {
                 setIsSlugManuallyEdited(false);
             }
         } else {
-            // Користувач пише свій кастомний slug
             setIsSlugManuallyEdited(true);
             slugReg.onChange(e);
         }
@@ -145,7 +134,6 @@ export function OnboardingForm() {
         }
     }
 
-    // Червоний колір показуємо ТІЛЬКИ після спроби відправки форми (isSubmitted) або при 409 Conflict від бекенду
     const hasSlugError = Boolean(errors.slug && isSubmitted);
 
     return (

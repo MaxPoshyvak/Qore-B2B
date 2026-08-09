@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { TenantsService } from './tenants.service';
 import { CreateTenantDto } from 'src/modules/tenants/dto/tenants.dto';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
@@ -12,5 +12,15 @@ export class TenantsController {
     @Post()
     create(@CurrentUser('id') userId: string, @Body() createTenantDto: CreateTenantDto) {
         return this.tenantsService.createTenant(createTenantDto, userId);
+    }
+
+    @Get('my')
+    getMyTenants(@CurrentUser('id') userId: string) {
+        return this.tenantsService.getTenantsByUserId(userId);
+    }
+
+    @Get('/by-slug/:slug')
+    getBySlug(@Param('slug') slug: string, @CurrentUser('id') userId: string) {
+        return this.tenantsService.getTenantBySlug(slug, userId);
     }
 }

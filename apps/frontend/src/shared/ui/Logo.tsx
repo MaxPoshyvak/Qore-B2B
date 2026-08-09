@@ -4,7 +4,7 @@ import { display } from '@/shared/lib/fonts';
 
 export function Logo() {
     return (
-        <a href="#" className="flex items-center gap-2">
+        <a href="/" className="flex items-center gap-2">
             <span
                 className="relative flex h-8 w-8 items-center justify-center rounded-xl text-white"
                 style={{ background: 'linear-gradient(135deg, #3B82F6, #8B5CF6)' }}>

@@ -3,7 +3,7 @@
 import { body } from '@/shared/lib/fonts';
 import { useTheme } from '@/shared/hooks/useTheme';
 import { AmbientBackground } from '@/shared/ui/AmbientBackground';
-import { Navbar } from './sections/Navbar';
+import { Navbar } from './ui/Navbar';
 import { HeroSection } from './sections/HeroSection';
 import { IntegrationsMarquee } from './demo/IntegrationsMarquee';
 import { ComparisonSection } from './sections/ComparisonSection';
@@ -14,6 +14,7 @@ import { SplitBillSection } from './sections/SplitBillSection';
 import { PricingSection } from './sections/PricingSection';
 import { CtaBannerSection } from './sections/CtaBannerSection';
 import { FooterSection } from './sections/FooterSection';
+import { SessionProvider } from 'next-auth/react';
 
 export function LandingView() {
     const { theme, toggle, mounted } = useTheme();
@@ -45,7 +46,9 @@ export function LandingView() {
             />
 
             <AmbientBackground />
-            <Navbar theme={theme} toggleTheme={toggle} />
+            <SessionProvider>
+                <Navbar theme={theme} toggleTheme={toggle} />
+            </SessionProvider>
 
             <HeroSection />
             <IntegrationsMarquee />
