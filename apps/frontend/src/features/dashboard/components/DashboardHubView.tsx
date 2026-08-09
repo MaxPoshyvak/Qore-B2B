@@ -24,14 +24,16 @@ const item = {
 };
 
 function planLabel(plan?: string | null): { text: string; business: boolean } {
-    if (!plan) return { text: 'Active', business: false };
-    const text = plan.charAt(0).toUpperCase() + plan.slice(1);
-    return { text, business: plan.toLowerCase() === 'business' };
+    if (!plan) return { text: 'Free', business: false };
+    const normalizedPlan = plan.toLowerCase();
+    const text = normalizedPlan.charAt(0).toUpperCase() + normalizedPlan.slice(1);
+    return { text, business: normalizedPlan === 'business' };
 }
 
 export function DashboardHubView({ tenants, userName }: { tenants: Tenant[]; userName?: string }) {
     const { theme, toggle, mounted } = useTheme();
     const [copied, setCopied] = useState<string | null>(null);
+    const isBusinessPlan = tenants.some((tenant) => tenant.subscriptionPlan?.toLowerCase() === 'business');
 
     async function copySlug(slug: string, e: React.MouseEvent) {
         e.preventDefault();
@@ -52,12 +54,14 @@ export function DashboardHubView({ tenants, userName }: { tenants: Tenant[]; use
             {/* Header */}
             <BaseHeader>
                 {mounted && <ThemeToggle theme={theme} toggle={toggle} />}
-                <Link
-                    href="/onboarding"
-                    className="flex items-center gap-1.5 rounded-full bg-[#0A0A0C] px-4 py-2 text-[13.5px] font-medium text-white transition-colors hover:bg-[#232327] dark:bg-[#F5F4F2] dark:text-[#0A0A0C] dark:hover:bg-white">
-                    <Plus size={15} strokeWidth={2.25} />
-                    Add venue
-                </Link>
+                {isBusinessPlan && (
+                    <Link
+                        href="/onboarding"
+                        className="flex items-center gap-1.5 rounded-full bg-[#0A0A0C] px-4 py-2 text-[13.5px] font-medium text-white transition-colors hover:bg-[#232327] dark:bg-[#F5F4F2] dark:text-[#0A0A0C] dark:hover:bg-white">
+                        <Plus size={15} strokeWidth={2.25} />
+                        Add venue
+                    </Link>
+                )}
             </BaseHeader>
 
             <main className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
@@ -134,25 +138,26 @@ export function DashboardHubView({ tenants, userName }: { tenants: Tenant[]; use
                         );
                     })}
 
-                    {/* Quick-add card */}
-                    <motion.div variants={item}>
-                        <Link
-                            href="/onboarding"
-                            className="group flex h-full min-h-[15rem] flex-col items-center justify-center rounded-3xl border-2 border-dashed border-black/15 bg-transparent p-6 text-center transition-colors hover:border-[#3B82F6]/40 dark:border-white/15 dark:hover:border-[#3B82F6]/40">
-                            <motion.span
-                                animate={{ scale: [1, 1.08, 1] }}
-                                transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
-                                className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#3B82F6]/10 text-[#3B82F6]">
-                                <Plus size={24} strokeWidth={2} />
-                            </motion.span>
-                            <h3 className="mt-4 text-[16px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                New Venue
-                            </h3>
-                            <p className="mt-1 text-[13px] text-[#6B6A65] dark:text-[#94938D]">
-                                Expand your network
-                            </p>
-                        </Link>
-                    </motion.div>
+                    {isBusinessPlan && (
+                        <motion.div variants={item}>
+                            <Link
+                                href="/onboarding"
+                                className="group flex h-full min-h-[15rem] flex-col items-center justify-center rounded-3xl border-2 border-dashed border-black/15 bg-transparent p-6 text-center transition-colors hover:border-[#3B82F6]/40 dark:border-white/15 dark:hover:border-[#3B82F6]/40">
+                                <motion.span
+                                    animate={{ scale: [1, 1.08, 1] }}
+                                    transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+                                    className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#3B82F6]/10 text-[#3B82F6]">
+                                    <Plus size={24} strokeWidth={2} />
+                                </motion.span>
+                                <h3 className="mt-4 text-[16px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]">
+                                    New Venue
+                                </h3>
+                                <p className="mt-1 text-[13px] text-[#6B6A65] dark:text-[#94938D]">
+                                    Expand your network
+                                </p>
+                            </Link>
+                        </motion.div>
+                    )}
                 </motion.div>
             </main>
         </div>

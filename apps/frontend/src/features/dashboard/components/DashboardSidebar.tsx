@@ -18,6 +18,9 @@ import {
     ArrowLeft,
     User,
     Store,
+    Crown,
+    Plus,
+    Sparkles,
 } from 'lucide-react';
 
 import { Logo } from '@/shared/ui/Logo';
@@ -34,6 +37,37 @@ const NAV = [
     { label: 'Settings', suffix: '/settings', icon: Settings },
 ];
 
+function getPlanDetails(plan?: string | null) {
+    const normalizedPlan = plan?.toLowerCase();
+
+    if (normalizedPlan === 'business') {
+        return {
+            label: 'Business Plan',
+            icon: Crown,
+            badgeClassName:
+                'border-[#8B5CF6]/30 bg-gradient-to-r from-[#3B82F6]/15 to-[#8B5CF6]/15 text-[#6D28D9] dark:text-[#C4B5FD]',
+            isBusiness: true,
+        };
+    }
+
+    if (normalizedPlan === 'pro') {
+        return {
+            label: 'Pro Plan',
+            icon: Sparkles,
+            badgeClassName: 'border-[#3B82F6]/25 bg-[#3B82F6]/10 text-[#2563EB] dark:text-[#60A5FA]',
+            isBusiness: false,
+        };
+    }
+
+    return {
+        label: 'Free Plan',
+        icon: Sparkles,
+        badgeClassName:
+            'border-[#E7E5E0] bg-black/[0.03] text-[#6B6A65] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D]',
+        isBusiness: false,
+    };
+}
+
 function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () => void }) {
     const pathname = usePathname();
     const { theme, toggle, mounted } = useTheme();
@@ -42,6 +76,9 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
     const [switcherOpen, setSwitcherOpen] = useState(false);
 
     const others = (myTenants?.data ?? []).filter((t) => t.slug !== slug);
+    const hasMultipleVenues = (myTenants?.data?.length || 0) > 1;
+    const plan = getPlanDetails(tenant?.data.subscriptionPlan);
+    const PlanIcon = plan.icon;
 
     return (
         <div className="flex h-full flex-col px-5 py-6">
@@ -56,9 +93,7 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
 
             {/* Venue identity + live public link */}
             <div className="mt-8">
-                <p className="text-[12px] uppercase tracking-[0.18em] text-[#6B6A65] dark:text-[#94938D]">
-                    Your venue
-                </p>
+                <p className="text-[12px] uppercase tracking-[0.18em] text-[#6B6A65] dark:text-[#94938D]">Your venue</p>
                 <h2 className="mt-1 truncate text-[18px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]">
                     {tenant?.data.name ?? 'Workspace'}
                 </h2>
@@ -72,19 +107,23 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                 </Link>
             </div>
 
-            {/* Workspace switcher */}
-            {others.length > 0 && (
+            {(others.length > 0 || plan.isBusiness) && (
                 <div className="relative mt-4">
-                    <button
-                        type="button"
-                        onClick={() => setSwitcherOpen((v) => !v)}
-                        className="flex w-full items-center justify-between rounded-xl border border-[#E7E5E0]/80 bg-white/60 px-3 py-2 text-[13px] font-medium text-[#0A0A0C] transition-colors hover:border-[#3B82F6]/40 dark:border-white/10 dark:bg-white/5 dark:text-[#F5F4F2]">
-                        <span className="flex items-center gap-2">
-                            <Store size={14} className="text-[#8B5CF6]" />
-                            Switch workspace
-                        </span>
-                        <ChevronDown size={15} className={`transition-transform ${switcherOpen ? 'rotate-180' : ''}`} />
-                    </button>
+                    {others.length > 0 && hasMultipleVenues && (
+                        <button
+                            type="button"
+                            onClick={() => setSwitcherOpen((v) => !v)}
+                            className="flex w-full items-center justify-between rounded-xl border border-[#E7E5E0]/80 bg-white/60 px-3 py-2 text-[13px] font-medium text-[#0A0A0C] transition-colors hover:border-[#3B82F6]/40 dark:border-white/10 dark:bg-white/5 dark:text-[#F5F4F2]">
+                            <span className="flex items-center gap-2">
+                                <Store size={14} className="text-[#8B5CF6]" />
+                                Switch workspace
+                            </span>
+                            <ChevronDown
+                                size={15}
+                                className={`transition-transform ${switcherOpen ? 'rotate-180' : ''}`}
+                            />
+                        </button>
+                    )}
                     <AnimatePresence>
                         {switcherOpen && (
                             <motion.div
@@ -124,8 +163,8 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                             onClick={onNavigate}
                             className={`relative flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-[14px] transition-colors ${
                                 active
-                                    ? 'bg-white/5 text-[#F5F4F2]'
-                                    : 'text-[#94938D] hover:bg-white/5 hover:text-[#F5F4F2]'
+                                    ? 'bg-[#3B82F6]/10 text-[#3B82F6] dark:bg-white/5 dark:text-[#F5F4F2]'
+                                    : 'text-[#6B6A65] hover:bg-black/5 hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:bg-white/5 dark:hover:text-[#F5F4F2]'
                             }`}>
                             <span
                                 className={`absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-full bg-[#3B82F6] transition-opacity ${
@@ -144,22 +183,64 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                 })}
             </nav>
 
+            {/* Subscription plan */}
+            <div className="mt-5 rounded-2xl border border-[#E7E5E0]/80 bg-white/60 p-3 dark:border-white/10 dark:bg-white/5">
+                <div className="flex items-center justify-between gap-2">
+                    <span
+                        className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${plan.badgeClassName}`}>
+                        <PlanIcon size={12} />
+                        {plan.label}
+                    </span>
+                    {plan.isBusiness && (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-medium text-[#16A34A] dark:text-[#4ADE80]">
+                            <span className="h-1.5 w-1.5 rounded-full bg-current" />
+                            Active
+                        </span>
+                    )}
+                    {!plan.isBusiness && (
+                        <Link
+                            href={`/dashboard/${slug}/settings`}
+                            onClick={onNavigate}
+                            className="inline-flex items-center justify-center gap-1 text-[12px] font-semibold text-[#3B82F6] transition-colors hover:text-[#2563EB] dark:hover:text-[#60A5FA]">
+                            <Sparkles size={12} />
+                            Upgrade
+                        </Link>
+                    )}
+                </div>
+            </div>
+
+            {/* Workspace switcher */}
+            {/* {(others.length > 0 || plan.isBusiness) && (
+                <div className="relative mt-4">
+                    {plan.isBusiness && (
+                        <Link
+                            href="/onboarding"
+                            onClick={onNavigate}
+                            className="mt-2 flex items-center justify-center gap-1.5 rounded-xl border border-[#3B82F6]/25 bg-[#3B82F6]/10 px-3 py-2 text-[12px] font-semibold text-[#2563EB] transition-all hover:border-[#3B82F6]/50 hover:bg-[#3B82F6]/15 dark:text-[#60A5FA]">
+                            <Plus size={14} />
+                            Add venue
+                        </Link>
+                    )}
+                </div>
+            )} */}
+
             {/* Footer */}
             <div className="mt-4 flex items-center justify-between border-t border-[#E7E5E0]/80 pt-4 dark:border-white/10">
-                <Link
-                    href="/dashboard"
-                    className="flex items-center gap-2 text-[13px] text-[#6B6A65] transition-colors hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:text-[#F5F4F2]">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] text-white">
-                        <User size={15} />
-                    </span>
-                    <span className="flex items-center gap-1">
-                        <ArrowLeft size={13} />
-                        All venues
-                    </span>
-                </Link>
-                <div className="hidden md:block">
-                    {mounted && <ThemeToggle theme={theme} toggle={toggle} />}
-                </div>
+                {hasMultipleVenues && (
+                    <Link
+                        href="/dashboard"
+                        className="flex items-center gap-2 text-[13px] text-[#6B6A65] transition-colors hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:text-[#F5F4F2]">
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] text-white">
+                            <User size={15} />
+                        </span>
+                        <span className="flex items-center gap-1">
+                            <ArrowLeft size={13} />
+                            All venues
+                        </span>
+                    </Link>
+                )}
+                {!hasMultipleVenues && <span />}
+                <div className="hidden md:block">{mounted && <ThemeToggle theme={theme} toggle={toggle} />}</div>
             </div>
         </div>
     );
@@ -168,7 +249,7 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
 export function DashboardSidebar() {
     const { slug } = useParams<{ slug: string }>();
     return (
-        <aside className="hidden md:flex md:h-full md:w-64 md:shrink-0 md:flex-col md:overflow-y-auto md:border-r md:border-white/10 md:bg-black/40 md:backdrop-blur-xl">
+        <aside className="hidden md:flex md:h-full md:w-64 md:shrink-0 md:flex-col md:overflow-y-auto md:border-r md:border-[#E7E5E0] md:bg-white dark:md:border-white/10 dark:md:bg-[#0A0A0C]">
             <SidebarContent slug={slug ?? ''} />
         </aside>
     );
@@ -181,8 +262,8 @@ export function DashboardMobileNav() {
 
     return (
         <div className="md:hidden">
-            <div className="sticky top-0 z-30 flex items-center justify-between border-b border-white/10 bg-black/40 px-4 py-3 backdrop-blur-xl">
-                <span className="truncate text-[15px] font-semibold text-[#F5F4F2]">
+            <div className="sticky top-0 z-30 flex items-center justify-between border-b border-[#E7E5E0] bg-white px-4 py-3 dark:border-white/10 dark:bg-[#0A0A0C]">
+                <span className="truncate text-[15px] font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
                     {tenant?.data.name ?? 'Workspace'}
                 </span>
                 <div className="flex items-center gap-1">
@@ -191,14 +272,14 @@ export function DashboardMobileNav() {
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label="Open public page"
-                        className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-[#94938D]">
+                        className="flex h-9 w-9 items-center justify-center rounded-full border border-[#E7E5E0] text-[#6B6A65] dark:border-white/10 dark:text-[#94938D]">
                         <ExternalLink size={16} />
                     </Link>
                     <button
                         type="button"
                         aria-label="Open menu"
                         onClick={() => setOpen(true)}
-                        className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-[#F5F4F2]">
+                        className="flex h-9 w-9 items-center justify-center rounded-full border border-[#E7E5E0] text-[#0A0A0C] dark:border-white/10 dark:text-[#F5F4F2]">
                         <Menu size={18} />
                     </button>
                 </div>
@@ -219,13 +300,13 @@ export function DashboardMobileNav() {
                             animate={{ x: 0 }}
                             exit={{ x: '-100%' }}
                             transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-                            className="fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto border-r border-white/10 bg-[#0A0A0C]">
+                            className="fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto border-r border-[#E7E5E0] bg-white dark:border-white/10 dark:bg-[#0A0A0C]">
                             <div className="flex justify-end p-3">
                                 <button
                                     type="button"
                                     aria-label="Close menu"
                                     onClick={() => setOpen(false)}
-                                    className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-[#F5F4F2]">
+                                    className="flex h-9 w-9 items-center justify-center rounded-full border border-[#E7E5E0] text-[#0A0A0C] dark:border-white/10 dark:text-[#F5F4F2]">
                                     <X size={18} />
                                 </button>
                             </div>

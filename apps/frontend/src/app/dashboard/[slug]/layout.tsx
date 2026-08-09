@@ -12,7 +12,7 @@ export default async function DashboardLayout({
     await params;
 
     return (
-        <div className="relative flex min-h-screen flex-col bg-[#0A0A0C] text-[#F5F4F2] md:h-screen md:flex-row md:overflow-hidden">
+        <div className="relative flex min-h-screen flex-col bg-[#FAFAF9] text-[#0A0A0C] dark:bg-[#0A0A0C] dark:text-[#F5F4F2] md:h-screen md:flex-row md:overflow-hidden">
             <AmbientBackground />
             <DashboardSidebar />
             <DashboardMobileNav />
