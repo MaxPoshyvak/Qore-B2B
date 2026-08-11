@@ -38,3 +38,77 @@ export const UpdateMenuItemSchema = z.object({
 
 export type CreateMenuItemDTO = z.infer<typeof CreateMenuItemSchema>;
 export type UpdateMenuItemDTO = z.infer<typeof UpdateMenuItemSchema>;
+
+/**
+ * Form-input shape of `CreateMenuItemSchema`.
+ *
+ * `isAvailable` uses `.default(true)`, so the schema input and output types
+ * diverge. `zodResolver` is typed `Resolver<z.input, Context, z.output>`,
+ * which means React Hook Form must be generic over the *input* type.
+ */
+export type CreateMenuItemInput = z.input<typeof CreateMenuItemSchema>;
+
+/* ------------------------------------------------------------------ */
+/*  Menu API response contracts                                       */
+/* ------------------------------------------------------------------ */
+
+/**
+ * A menu item exactly as it arrives over HTTP.
+ *
+ * Note: the menu endpoints return raw Prisma rows, so the persisted column
+ * name `isActive` is used here — the *write* contract exposes it as
+ * `isAvailable`. Prisma `Decimal` columns are serialized to strings in JSON,
+ * hence `price` / `happyHourPrice` are strings rather than numbers.
+ */
+export interface MenuItemResponse {
+    id: string;
+    tenantId: string;
+    categoryId: string;
+    name: string;
+    description: string | null;
+    price: string;
+    happyHourPrice: string | null;
+    imageUrl: string | null;
+    allergens: unknown;
+    tags: unknown;
+    isActive: boolean;
+    sortOrder: number;
+}
+
+export interface MenuCategoryResponse {
+    id: string;
+    tenantId: string;
+    name: string;
+    icon: string | null;
+    color: string | null;
+    sortOrder: number;
+    isActive: boolean;
+}
+
+/** `GET /menu/categories/:tenantId` returns every category with its items. */
+export interface MenuCategoryWithItemsResponse extends MenuCategoryResponse {
+    items: MenuItemResponse[];
+}
+
+/* ------------------------------------------------------------------ */
+/*  Public (B2C) menu                                                 */
+/* ------------------------------------------------------------------ */
+
+/** Guest-facing venue info — never expose owner id or internal flags. */
+export interface PublicMenuVenueResponse {
+    id: string;
+    name: string;
+    slug: string;
+    description: string | null;
+    logoUrl: string | null;
+}
+
+/** Public category payload — only categories that still contain items. */
+export interface PublicMenuCategoryResponse extends MenuCategoryResponse {
+    items: MenuItemResponse[];
+}
+
+export interface PublicMenuResponseDTO {
+    venue: PublicMenuVenueResponse;
+    categories: PublicMenuCategoryResponse[];
+}

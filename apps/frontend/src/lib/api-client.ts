@@ -56,7 +56,7 @@ export async function apiClient<T>(
     if (!response.ok) {
         if (response.status === 401) {
             if (typeof window !== 'undefined') {
-                // window.location.href = '/login';
+                window.location.href = '/login';
             }
             return new Promise(() => {});
         }

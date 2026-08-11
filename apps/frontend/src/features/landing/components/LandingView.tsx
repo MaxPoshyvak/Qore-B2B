@@ -14,7 +14,7 @@ import { SplitBillSection } from './sections/SplitBillSection';
 import { PricingSection } from './sections/PricingSection';
 import { CtaBannerSection } from './sections/CtaBannerSection';
 import { FooterSection } from './sections/FooterSection';
-import { SessionProvider } from 'next-auth/react';
+
 
 export function LandingView() {
     const { theme, toggle, mounted } = useTheme();
@@ -46,9 +46,7 @@ export function LandingView() {
             />
 
             <AmbientBackground />
-            <SessionProvider>
-                <Navbar theme={theme} toggleTheme={toggle} />
-            </SessionProvider>
+            <Navbar theme={theme} toggleTheme={toggle} />
 
             <HeroSection />
             <IntegrationsMarquee />

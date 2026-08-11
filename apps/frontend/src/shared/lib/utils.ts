@@ -1,3 +1,21 @@
+/**
+ * Formats a monetary amount for display.
+ *
+ * Prisma serializes `Decimal` columns as strings over JSON, so prices arriving
+ * from the API are strings — both shapes are accepted here.
+ */
+export function formatPrice(value: string | number, currency = 'USD'): string {
+    const amount = typeof value === 'number' ? value : Number.parseFloat(value);
+    if (!Number.isFinite(amount)) return '—';
+
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    }).format(amount);
+}
+
 export function cyrillicToSlug(text: string): string {
     const cyrillicMap: Record<string, string> = {
         а: 'a',
