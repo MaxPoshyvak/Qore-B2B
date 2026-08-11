@@ -54,7 +54,9 @@ model Tenant {
   address     String?
   phone       String?
   logoUrl     String?
+  coverUrl    String?
   description String?
+  instagram   String?
 
   subscriptionPlan      SubscriptionPlan @default(free)
   subscriptionExpiresAt DateTime?
@@ -81,13 +83,16 @@ model Tenant {
 }
 
 model TenantSettings {
-  id                      String @id @default(cuid())
-  tenant                  Tenant @relation(fields: [tenantId], references: [id])
-  tenantId                String @unique
+  id                      String  @id @default(cuid())
+  tenant                  Tenant  @relation(fields: [tenantId], references: [id])
+  tenantId                String  @unique
   workingHours            Json
-  reservationStepMinutes  Int    @default(30)
-  minReservationTime      Int    @default(30)
-  maxGuestsPerReservation Int    @default(12)
+  wifiSsid                String?
+  wifiPassword            String?
+  googleMapsUrl           String?
+  reservationStepMinutes  Int     @default(30)
+  minReservationTime      Int     @default(30)
+  maxGuestsPerReservation Int     @default(12)
 }
 
 model Table {
