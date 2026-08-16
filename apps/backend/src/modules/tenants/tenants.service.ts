@@ -1,7 +1,7 @@
 import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTenantDto } from './dto/tenants.dto';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { SuccessResponse } from '@my-app/types';
+import { SuccessResponse, UpdateTenantSettingsDto } from '@my-app/types';
 import { Tenant } from '@my-app/database';
 
 @Injectable()
@@ -68,5 +68,62 @@ export class TenantsService {
         }
 
         return { success: true, data: tenant };
+    }
+
+    /**
+     * Public, auth-free tenant lookup for the B2C venue page. Resolves by slug
+     * only and always joins `settings` so guests see hours, Wi-Fi and location
+     * without a JWT. The 404 must stay indistinguishable from an unauthorized
+     * call, hence no ownership/session check here.
+     */
+    async getPublicTenantBySlug(slug: string): Promise<SuccessResponse<Tenant>> {
+        const tenant = await this.prisma.tenant.findUnique({
+            where: { slug },
+            include: { settings: true },
+        });
+
+        if (!tenant) {
+            throw new NotFoundException('Tenant not found');
+        }
+
+        return { success: true, data: tenant };
+    }
+
+    async updateTenantSettings(
+        slug: string,
+        dto: UpdateTenantSettingsDto,
+        userId: string,
+    ): Promise<SuccessResponse<Tenant>> {
+        const tenant = await this.prisma.tenant.findFirst({
+            where: { slug, ownerId: userId },
+        });
+
+        if (!tenant) {
+            throw new NotFoundException('Tenant not found');
+        }
+
+        const updatedTenant = await this.prisma.tenant.update({
+            where: { slug },
+            data: {
+                settings: {
+                    update: {
+                        name: dto.name,
+                        description: dto.description,
+                        logoUrl: dto.logoUrl,
+                        coverUrl: dto.coverUrl,
+                        phone: dto.phone,
+                        address: dto.address,
+                        instagramUrl: dto.instagramUrl,
+                        googleMapsUrl: dto.googleMapsUrl,
+                        wifiName: dto.wifiName,
+                        wifiPassword: dto.wifiPassword,
+                        workingHours: dto.workingHours,
+                    },
+                },
+            },
+            include: { settings: true },
+        });
+
+        return { success: true, data: updatedTenant };
     }
 }

@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { TenantsService } from './tenants.service';
-import { CreateTenantDto } from 'src/modules/tenants/dto/tenants.dto';
+import { CreateTenantDto, UpdateTenantSettingsDto } from 'src/modules/tenants/dto/tenants.dto';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
@@ -22,5 +22,20 @@ export class TenantsController {
     @Get('/by-slug/:slug')
     getBySlug(@Param('slug') slug: string, @CurrentUser('id') userId: string) {
         return this.tenantsService.getTenantBySlug(slug, userId);
+    }
+
+    // Intentionally unauthenticated: venue guests only know the public slug.
+    @Get('/public/:slug')
+    getPublicBySlug(@Param('slug') slug: string) {
+        return this.tenantsService.getPublicTenantBySlug(slug);
+    }
+
+    @Patch('/:slug/settings')
+    updateTenantSettings(
+        @Param('slug') slug: string,
+        @Body() updateTenantSettingsDto: UpdateTenantSettingsDto,
+        @CurrentUser('id') userId: string,
+    ) {
+        return this.tenantsService.updateTenantSettings(slug, updateTenantSettingsDto, userId);
     }
 }

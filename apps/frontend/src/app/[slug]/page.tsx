@@ -5,12 +5,11 @@ import { useParams } from 'next/navigation';
 import { Calendar, Users, UtensilsCrossed } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-import { useGetPublicMenu } from '@/entities/menu/hooks/useGetPublicMenu';
+import { useGetPublicTenant } from '@/entities/tenant/hooks/useGetPublicTenant';
 import { AmbientBackground } from '@/shared/ui/AmbientBackground';
 import { BaseHeader } from '@/shared/ui/BaseHeader';
 import { ThemeToggle } from '@/shared/ui/ThemeToggle';
 import { useTheme } from '@/shared/hooks/useTheme';
-import { EASE } from '@/shared/config/animations';
 import { MenuNotFound } from '@/features/public-menu/components/MenuNotFound';
 import {
     VenueActionGrid,
@@ -19,21 +18,6 @@ import {
     VenueInfoSection,
 } from '@/features/public-venue/components';
 import { fadeUpItem } from '@/features/public-venue/components/ActionCard';
-
-/*
- * Address / phone / hours / Wi-Fi / socials are not yet exposed by the public
- * venue API — these are placeholders to be wired to real data later.
- */
-const VENUE_PLACEHOLDERS = {
-    tagline: 'Artisan Coffee & Specialty Bakery',
-    wifiSsid: 'CafeBoard-Guest',
-    wifiPassword: 'welcome123',
-    address: '123 Market Street, Downtown',
-    phone: '+1 (555) 012-3456',
-    instagramUrl: 'https://instagram.com/cafeboard',
-    hours: 'Mon–Sun · 08:00 – 22:00',
-    statusLabel: 'Open Now • 08:00 - 22:00',
-};
 
 function StatusBadge({ label }: { label: string }) {
     return (
@@ -77,11 +61,11 @@ export default function PublicVenuePage() {
     const { slug } = useParams<{ slug: string }>();
     const resolvedSlug = slug ?? '';
     const { theme, toggle, mounted } = useTheme();
-    const { data, isLoading } = useGetPublicMenu(resolvedSlug);
+    const { data: tenant, isLoading, isError } = useGetPublicTenant(resolvedSlug);
 
-    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-        VENUE_PLACEHOLDERS.address,
-    )}`;
+    const mapsUrl =
+        tenant?.settings?.googleMapsUrl ??
+        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(tenant?.address ?? resolvedSlug)}`;
 
     return (
         <main className="relative min-h-screen bg-transparent text-[#0A0A0C] antialiased dark:bg-transparent dark:text-[#F5F4F2]">
@@ -89,25 +73,25 @@ export default function PublicVenuePage() {
 
             <BaseHeader
                 centerContent={
-                    data?.venue.name ? (
+                    tenant?.name ? (
                         <span className="text-sm font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                            {data.venue.name}
+                            {tenant.name}
                         </span>
                     ) : null
                 }>
-                <StatusBadge label={VENUE_PLACEHOLDERS.statusLabel} />
+                <StatusBadge label="Open Now • 08:00 - 22:00" />
                 {mounted && <ThemeToggle theme={theme} toggle={toggle} />}
             </BaseHeader>
 
             <div className="mx-auto max-w-3xl px-4 pb-20">
                 {isLoading ? (
                     <div className="mt-6 h-48 animate-pulse rounded-[2rem] bg-white/40 dark:bg-white/5" />
-                ) : !data ? (
+                ) : isError || !tenant ? (
                     <MenuNotFound slug={resolvedSlug} />
                 ) : (
                     <>
                         <motion.div variants={fadeUpItem} initial="hidden" animate="show">
-                            <VenueHero venue={data.venue} tagline={VENUE_PLACEHOLDERS.tagline} />
+                            <VenueHero venue={tenant} />
                         </motion.div>
 
                         {/* Primary hero actions */}
@@ -137,22 +121,15 @@ export default function PublicVenuePage() {
 
                         {/* Secondary action grid */}
                         <div className="mt-8">
-                            <VenueActionGrid
-                                slug={resolvedSlug}
-                                wifiSsid={VENUE_PLACEHOLDERS.wifiSsid}
-                                wifiPassword={VENUE_PLACEHOLDERS.wifiPassword}
-                                address={VENUE_PLACEHOLDERS.address}
-                                mapsUrl={mapsUrl}
-                                instagramUrl={VENUE_PLACEHOLDERS.instagramUrl}
-                            />
+                            <VenueActionGrid slug={resolvedSlug} tenant={tenant} mapsUrl={mapsUrl} />
                         </div>
 
                         {/* Venue info & hours */}
                         <motion.div variants={fadeUpItem} initial="hidden" animate="show" className="mt-8">
                             <VenueInfoSection
-                                hours={VENUE_PLACEHOLDERS.hours}
-                                phone={VENUE_PLACEHOLDERS.phone}
-                                address={VENUE_PLACEHOLDERS.address}
+                                workingHours={tenant.settings?.workingHours ?? null}
+                                phone={tenant.phone}
+                                address={tenant.address}
                             />
                         </motion.div>
 

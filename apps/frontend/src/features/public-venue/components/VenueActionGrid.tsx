@@ -3,9 +3,10 @@
 import { Check, Copy, ExternalLink, MapPin, MessageSquareHeart, Wifi } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import type { PublicTenantResponse } from '@my-app/types';
 
 import { useCopyToClipboard } from '../lib/useCopyToClipboard';
-import { ActionCard } from './ActionCard';
+import { ActionCard, fadeUpItem } from './ActionCard';
 
 function InstagramGlyph() {
     return (
@@ -19,54 +20,63 @@ function InstagramGlyph() {
 
 type VenueActionGridProps = {
     slug: string;
-    wifiSsid: string;
-    wifiPassword: string;
-    address: string;
+    tenant: PublicTenantResponse;
     mapsUrl: string;
-    instagramUrl: string;
 };
 
-export function VenueActionGrid({
-    slug,
-    wifiSsid,
-    wifiPassword,
-    address,
-    mapsUrl,
-    instagramUrl,
-}: VenueActionGridProps) {
+export function VenueActionGrid({ slug, tenant, mapsUrl }: VenueActionGridProps) {
     const { copied, copy } = useCopyToClipboard();
+    const { settings } = tenant;
 
-    return (
-        <motion.div
-            variants={{
-                hidden: {},
-                show: { transition: { staggerChildren: 0.08 } },
-            }}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: '-60px' }}
-            className="grid grid-cols-2 gap-4">
-            {/* Guest Wi-Fi */}
-            <ActionCard
-                icon={Wifi}
-                title="Guest Wi-Fi"
-                description={wifiSsid}
-                action={
-                    <button
-                        type="button"
-                        onClick={() => copy(wifiPassword)}
-                        className="inline-flex items-center gap-1.5 rounded-full border border-[#3B82F6]/25 bg-[#3B82F6]/10 px-3 py-1.5 text-xs font-medium text-[#2563EB] transition-colors hover:border-[#3B82F6]/50 hover:bg-[#3B82F6]/15 dark:text-[#60A5FA]">
-                        {copied ? <Check size={14} /> : <Copy size={14} />}
-                        {copied ? 'Copied!' : 'Copy Password'}
-                    </button>
-                }
-            />
+    const instagramHandle = tenant.instagram;
+    const instagramUrl = instagramHandle
+        ? instagramHandle.startsWith('http')
+            ? instagramHandle
+            : `https://instagram.com/${instagramHandle.replace(/^@/, '')}`
+        : null;
 
-            {/* Location & Route */}
+    const cards: React.ReactNode[] = [];
+
+    // Guest Wi-Fi — only when an SSID is configured.
+    if (settings?.wifiSsid) {
+        cards.push(
+            <motion.div key="wifi" variants={fadeUpItem}>
+                <ActionCard
+                    icon={Wifi}
+                    title="Guest Wi-Fi"
+                    description={settings.wifiSsid}
+                    action={
+                        <button
+                            type="button"
+                            onClick={() => copy(settings.wifiPassword ?? '')}
+                            className="inline-flex items-center gap-1.5 rounded-full border border-[#3B82F6]/25 bg-[#3B82F6]/10 px-3 py-1.5 text-xs font-medium text-[#2563EB] transition-colors hover:border-[#3B82F6]/50 hover:bg-[#3B82F6]/15 dark:text-[#60A5FA]">
+                            {copied ? <Check size={14} /> : <Copy size={14} />}
+                            {copied ? 'Copied!' : 'Copy Password'}
+                        </button>
+                    }
+                />
+            </motion.div>,
+        );
+    } else {
+        cards.push(
+            <motion.div key="wifi" variants={fadeUpItem}>
+                <ActionCard
+                    icon={Wifi}
+                    title="Guest Wi-Fi"
+                    description="Available upon request"
+                    action={<span />}
+                />
+            </motion.div>,
+        );
+    }
+
+    // Location & Route
+    cards.push(
+        <motion.div key="location" variants={fadeUpItem}>
             <ActionCard
                 icon={MapPin}
                 title="Location & Route"
-                description={address}
+                description={tenant.address ?? 'Address not set'}
                 action={
                     <a
                         href={mapsUrl}
@@ -78,8 +88,12 @@ export function VenueActionGrid({
                     </a>
                 }
             />
+        </motion.div>,
+    );
 
-            {/* Leave Feedback */}
+    // Leave Feedback
+    cards.push(
+        <motion.div key="feedback" variants={fadeUpItem}>
             <ActionCard
                 icon={MessageSquareHeart}
                 title="Leave Feedback"
@@ -93,23 +107,40 @@ export function VenueActionGrid({
                     </Link>
                 }
             />
+        </motion.div>,
+    );
 
-            {/* Socials / Instagram */}
-            <ActionCard
-                iconNode={<InstagramGlyph />}
-                title="Socials"
-                description="Follow us on Instagram"
-                action={
-                    <a
-                        href={instagramUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-full border border-[#3B82F6]/25 bg-[#3B82F6]/10 px-3 py-1.5 text-xs font-medium text-[#2563EB] transition-colors hover:border-[#3B82F6]/50 hover:bg-[#3B82F6]/15 dark:text-[#60A5FA]">
-                        <ExternalLink size={14} />
-                        Follow
-                    </a>
-                }
-            />
+    // Socials / Instagram — only when a handle is configured.
+    if (instagramUrl) {
+        cards.push(
+            <motion.div key="instagram" variants={fadeUpItem}>
+                <ActionCard
+                    iconNode={<InstagramGlyph />}
+                    title="Socials"
+                    description="Follow us on Instagram"
+                    action={
+                        <a
+                            href={instagramUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 rounded-full border border-[#3B82F6]/25 bg-[#3B82F6]/10 px-3 py-1.5 text-xs font-medium text-[#2563EB] transition-colors hover:border-[#3B82F6]/50 hover:bg-[#3B82F6]/15 dark:text-[#60A5FA]">
+                            <ExternalLink size={14} />
+                            Follow
+                        </a>
+                    }
+                />
+            </motion.div>,
+        );
+    }
+
+    return (
+        <motion.div
+            variants={{ hidden: {}, show: { transition: { staggerChildren: 0.08 } } }}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: '-60px' }}
+            className="grid grid-cols-2 gap-4">
+            {cards}
         </motion.div>
     );
 }

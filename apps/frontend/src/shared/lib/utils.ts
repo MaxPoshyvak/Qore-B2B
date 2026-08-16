@@ -16,6 +16,33 @@ export function formatPrice(value: string | number, currency = 'USD'): string {
     }).format(amount);
 }
 
+/**
+ * Tiny class-name combiner (clsx + tailwind-merge style, dependency-free).
+ * Filters out falsy values and merges conflicting Tailwind utilities so later
+ * classes win over earlier ones (e.g. `px-2 px-4` -> `px-4`, `bg-red bg-blue` -> `bg-blue`).
+ */
+export function cn(...classes: Array<string | false | null | undefined>): string {
+    const classList: string[] = [];
+
+    for (const entry of classes) {
+        if (!entry) continue;
+        for (const part of entry.split(' ')) {
+            const trimmed = part.trim();
+            if (!trimmed) continue;
+            // Strip the conflicting utility if a later one with the same base arrives.
+            const base = trimmed.split('-')[0];
+            for (let i = classList.length - 1; i >= 0; i--) {
+                if (classList[i].split('-')[0] === base) {
+                    classList.splice(i, 1);
+                }
+            }
+            classList.push(trimmed);
+        }
+    }
+
+    return classList.join(' ');
+}
+
 export function cyrillicToSlug(text: string): string {
     const cyrillicMap: Record<string, string> = {
         а: 'a',
