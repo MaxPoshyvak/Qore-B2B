@@ -2,9 +2,10 @@
 
 import * as React from 'react';
 import { useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { AnimatePresence, motion } from 'framer-motion';
 import { z } from 'zod';
 import {
     updateTenantSettingsSchema,
@@ -58,21 +59,20 @@ export function SettingsForm({ slug, initialData }: SettingsFormProps) {
     const searchParams = useSearchParams();
     const requestedTab = searchParams.get('section');
     const [tab, setTab] = useState<TabValue>(isTabValue(requestedTab) ? requestedTab : 'general');
-    const { mutate, isPending } = useUpdateTenantSettings(slug);
-    const settings = initialData.settings as
-        | (PublicTenantResponse['settings'] & { wifiName?: string | null })
-        | null;
+    const { mutateAsync, isPending } = useUpdateTenantSettings(slug);
+
+    const settings = initialData.settings;
 
     const defaults: UpdateTenantSettingsDto = {
         name: initialData.name ?? '',
-        description: initialData.description ?? '',
-        logoUrl: initialData.logoUrl ?? '',
-        coverUrl: initialData.coverUrl ?? '',
-        phone: initialData.phone ?? '',
-        address: initialData.address ?? '',
-        instagramUrl: initialData.instagram ?? '',
+        description: settings?.description ?? '',
+        logoUrl: settings?.logoUrl ?? '',
+        coverUrl: settings?.coverUrl ?? '',
+        phone: settings?.phone ?? '',
+        address: settings?.address ?? '',
+        instagramUrl: settings?.instagramUrl ?? '',
         googleMapsUrl: settings?.googleMapsUrl ?? '',
-        wifiName: settings?.wifiName ?? settings?.wifiSsid ?? '',
+        wifiSsid: settings?.wifiSsid ?? '',
         wifiPassword: settings?.wifiPassword ?? '',
         workingHours: (settings?.workingHours as WorkingHours) ?? emptyWorkingHours(),
     };
@@ -83,7 +83,16 @@ export function SettingsForm({ slug, initialData }: SettingsFormProps) {
         mode: 'onSubmit',
     });
 
-    const onSubmit = (values: UpdateTenantSettingsDto) => mutate(values);
+    const onSubmit = async (values: UpdateTenantSettingsDto) => {
+        await mutateAsync(values);
+        methods.reset(values);
+    };
+
+    const onError = (errors: FieldErrors<UpdateTenantSettingsDto>) => {
+        console.log('Form Validation Errors:', errors);
+    };
+
+    const { isDirty, isSubmitting } = methods.formState;
 
     React.useEffect(() => {
         if (isTabValue(requestedTab) && requestedTab !== tab) setTab(requestedTab);
@@ -101,17 +110,21 @@ export function SettingsForm({ slug, initialData }: SettingsFormProps) {
         <FormProvider {...methods}>
             <Toaster />
 
-            <div className="mx-auto max-w-6xl px-1">
+            <div className="relative mx-auto max-w-6xl px-1">
+                <div className="pointer-events-none absolute -right-24 -top-20 h-72 w-72 rounded-full bg-[#3B82F6]/5 blur-3xl" />
                 <header className="mb-6 md:mb-8">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-[#3B82F6]/20 bg-[#3B82F6]/10 px-3 py-1 text-xs font-medium text-[#2563EB] dark:text-[#60A5FA]">
+                        Venue Settings
+                    </span>
                     <h1
                         className={cn(
                             display.className,
                             'text-2xl font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2] md:text-3xl',
                         )}>
-                        Venue Settings
+                        Manage your venue profile &amp; preferences
                     </h1>
                     <p className="mt-1.5 text-sm text-[#6B6A65] dark:text-[#94938D]">
-                        Manage how your venue appears to guests.
+                        Update public info, Wi-Fi access, contacts, and working schedules in real time.
                     </p>
                     <div className="hide-scrollbar -mx-4 mt-5 flex gap-2 overflow-x-auto px-4 md:hidden">
                         {TABS.map((t) => (
@@ -133,25 +146,49 @@ export function SettingsForm({ slug, initialData }: SettingsFormProps) {
 
                 <Tabs value={tab} onValueChange={changeTab}>
                     <div className="w-full">
-                        <form onSubmit={methods.handleSubmit(onSubmit)}>
-                            <TabsContent value="general">
-                                <GeneralTab />
-                            </TabsContent>
-                            <TabsContent value="contacts">
-                                <ContactsTab />
-                            </TabsContent>
-                            <TabsContent value="guest">
-                                <GuestServicesTab />
-                            </TabsContent>
-                            <TabsContent value="hours">
-                                <WorkingHoursTab />
-                            </TabsContent>
-
-                            <div className="mt-6 flex justify-end">
-                                <PrimaryButton type="submit" loading={isPending} className="w-full px-8 sm:w-auto">
-                                    {isPending ? 'Saving…' : 'Save changes'}
-                                </PrimaryButton>
+                        <form onSubmit={methods.handleSubmit(onSubmit, onError)}>
+                            <div className="rounded-2xl border border-black/5 bg-card/50 p-6 shadow-sm backdrop-blur-sm dark:border-white/10">
+                                <TabsContent value="general">
+                                    <GeneralTab />
+                                </TabsContent>
+                                <TabsContent value="contacts">
+                                    <ContactsTab />
+                                </TabsContent>
+                                <TabsContent value="guest">
+                                    <GuestServicesTab />
+                                </TabsContent>
+                                <TabsContent value="hours">
+                                    <WorkingHoursTab />
+                                </TabsContent>
                             </div>
+                            <AnimatePresence>
+                                {isDirty && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 24, x: '-50%' }}
+                                        animate={{ opacity: 1, y: 0, x: '-50%' }}
+                                        exit={{ opacity: 0, y: 24, x: '-50%' }}
+                                        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                                        className="fixed bottom-6 left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-lg items-center justify-between gap-4 rounded-full bg-zinc-900 px-4 py-3 text-white shadow-2xl sm:px-6">
+                                        <span className="text-sm font-medium">You have unsaved changes.</span>
+                                        <div className="flex shrink-0 items-center gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => methods.reset()}
+                                                disabled={isSubmitting || isPending}
+                                                className="rounded-full px-3 py-2 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-50">
+                                                Reset
+                                            </button>
+                                            <PrimaryButton
+                                                type="submit"
+                                                loading={isSubmitting || isPending}
+                                                size="sm"
+                                                className="rounded-full bg-white px-4 text-zinc-900 shadow-none hover:bg-zinc-100">
+                                                Save Changes
+                                            </PrimaryButton>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </form>
                     </div>
                 </Tabs>
@@ -189,13 +226,7 @@ function useTabs() {
     return ctx;
 }
 
-function TabsContent({
-    value,
-    children,
-}: {
-    value: string;
-    children: React.ReactNode;
-}) {
+function TabsContent({ value, children }: { value: string; children: React.ReactNode }) {
     const { value: active } = useTabs();
     if (active !== value) return null;
     return <div className="animate-fade-up">{children}</div>;

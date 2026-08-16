@@ -180,22 +180,29 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                                 <span className="flex-1">{item.label}</span>
                                 {item.badge != null && <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#3B82F6] px-1.5 text-[11px] font-semibold text-white">{item.badge}</span>}
                             </Link>
-                            {isSettings && (
-                                <div className="hidden flex-col gap-0.5 border-l border-[#E7E5E0] pl-4 md:flex dark:border-white/10">
-                                    {SETTINGS_SECTIONS.map((section) => {
-                                        const sectionActive = active && (searchParams.get('section') ?? 'general') === section.value;
-                                        return (
-                                            <Link
-                                                key={section.value}
-                                                href={`${href}?section=${section.value}`}
-                                                onClick={onNavigate}
-                                                className={`rounded-lg px-3 py-1.5 text-[13px] transition-colors ${sectionActive ? 'bg-[#3B82F6]/10 font-medium text-[#2563EB] dark:text-[#60A5FA]' : 'text-[#6B6A65] hover:bg-black/5 hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:bg-white/5 dark:hover:text-[#F5F4F2]'}`}>
-                                                {section.label}
-                                            </Link>
-                                        );
-                                    })}
-                                </div>
-                            )}
+                            <AnimatePresence initial={false}>
+                                {isSettings && pathname.includes('/settings') && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                                        className="hidden overflow-hidden border-l border-[#E7E5E0] pl-4 pt-1.5 md:flex md:flex-col md:gap-1 dark:border-white/10">
+                                        {SETTINGS_SECTIONS.map((section) => {
+                                            const sectionActive = active && (searchParams.get('section') ?? 'general') === section.value;
+                                            return (
+                                                <Link
+                                                    key={section.value}
+                                                    href={`${href}?section=${section.value}`}
+                                                    onClick={onNavigate}
+                                                    className={`rounded-lg px-3 py-1.5 text-[13px] transition-colors ${sectionActive ? 'bg-[#3B82F6]/10 font-medium text-[#2563EB] dark:text-[#60A5FA]' : 'text-[#6B6A65] hover:bg-black/5 hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:bg-white/5 dark:hover:text-[#F5F4F2]'}`}>
+                                                    {section.label}
+                                                </Link>
+                                            );
+                                        })}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                     );
                 })}

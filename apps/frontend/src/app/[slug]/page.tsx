@@ -2,60 +2,19 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { Calendar, Users, UtensilsCrossed } from 'lucide-react';
+import { ArrowRight, CalendarDays, UtensilsCrossed } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 import { useGetPublicTenant } from '@/entities/tenant/hooks/useGetPublicTenant';
 import { AmbientBackground } from '@/shared/ui/AmbientBackground';
 import { BaseHeader } from '@/shared/ui/BaseHeader';
+import { MagneticButton } from '@/shared/ui/MagneticButton';
+import { Reveal } from '@/shared/ui/Reveal';
 import { ThemeToggle } from '@/shared/ui/ThemeToggle';
+import { body } from '@/shared/lib/fonts';
 import { useTheme } from '@/shared/hooks/useTheme';
 import { MenuNotFound } from '@/features/public-menu/components/MenuNotFound';
-import {
-    VenueActionGrid,
-    VenueFooter,
-    VenueHero,
-    VenueInfoSection,
-} from '@/features/public-venue/components';
-import { fadeUpItem } from '@/features/public-venue/components/ActionCard';
-
-function StatusBadge({ label }: { label: string }) {
-    return (
-        <span className="inline-flex items-center gap-2 rounded-full border border-[#10B981]/25 bg-[#10B981]/10 px-3 py-1.5 text-xs font-medium text-[#04916C] dark:text-[#10B981]">
-            <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#10B981] opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-[#10B981]" />
-            </span>
-            {label}
-        </span>
-    );
-}
-
-function PrimaryButton({
-    href,
-    icon,
-    children,
-    variant = 'primary',
-}: {
-    href: string;
-    icon: React.ReactNode;
-    children: React.ReactNode;
-    variant?: 'primary' | 'secondary';
-}) {
-    const base =
-        'flex w-full items-center justify-center gap-2.5 rounded-2xl px-5 py-4 text-[15px] font-semibold transition-all hover:-translate-y-0.5';
-    const styles =
-        variant === 'primary'
-            ? 'bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] text-white shadow-lg shadow-[#3B82F6]/20 hover:opacity-95'
-            : 'border border-black/10 bg-white/60 text-[#0A0A0C] hover:border-[#3B82F6]/40 dark:border-white/10 dark:bg-white/5 dark:text-[#F5F4F2] dark:hover:border-[#3B82F6]/40';
-
-    return (
-        <Link href={href} className={`${base} ${styles}`}>
-            {icon}
-            {children}
-        </Link>
-    );
-}
+import { VenueActionGrid, VenueFooter, VenueHero } from '@/features/public-venue/components';
 
 export default function PublicVenuePage() {
     const { slug } = useParams<{ slug: string }>();
@@ -65,7 +24,7 @@ export default function PublicVenuePage() {
 
     const mapsUrl =
         tenant?.settings?.googleMapsUrl ??
-        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(tenant?.address ?? resolvedSlug)}`;
+        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(tenant?.settings?.address ?? resolvedSlug)}`;
 
     return (
         <main className="relative min-h-screen bg-transparent text-[#0A0A0C] antialiased dark:bg-transparent dark:text-[#F5F4F2]">
@@ -74,66 +33,58 @@ export default function PublicVenuePage() {
             <BaseHeader
                 centerContent={
                     tenant?.name ? (
-                        <span className="text-sm font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                            {tenant.name}
-                        </span>
+                        <span className="text-sm font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">{tenant.name}</span>
                     ) : null
                 }>
-                <StatusBadge label="Open Now • 08:00 - 22:00" />
                 {mounted && <ThemeToggle theme={theme} toggle={toggle} />}
             </BaseHeader>
 
-            <div className="mx-auto max-w-3xl px-4 pb-20">
+            <div className="mx-auto max-w-2xl px-4 pb-20 sm:px-6">
                 {isLoading ? (
-                    <div className="mt-6 h-48 animate-pulse rounded-[2rem] bg-white/40 dark:bg-white/5" />
+                    <div className="mt-6 h-52 animate-pulse rounded-[2rem] bg-white/40 dark:bg-white/5" />
                 ) : isError || !tenant ? (
                     <MenuNotFound slug={resolvedSlug} />
                 ) : (
                     <>
-                        <motion.div variants={fadeUpItem} initial="hidden" animate="show">
+                        <Reveal>
                             <VenueHero venue={tenant} />
-                        </motion.div>
+                        </Reveal>
 
-                        {/* Primary hero actions */}
-                        <motion.div
-                            variants={fadeUpItem}
-                            initial="hidden"
-                            animate="show"
-                            className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                            <PrimaryButton
-                                href={`/${resolvedSlug}/menu`}
-                                variant="primary"
-                                icon={<UtensilsCrossed size={18} strokeWidth={2} />}>
-                                Explore Digital Menu
-                            </PrimaryButton>
-                            <PrimaryButton
-                                href={`/${resolvedSlug}/reserve`}
-                                variant="secondary"
-                                icon={
-                                    <span className="flex items-center gap-1">
-                                        <Calendar size={18} strokeWidth={2} />
-                                        <Users size={18} strokeWidth={2} />
+                        {/* Primary hook + secondary action */}
+                        <Reveal delay={0.1}>
+                            <div className="mt-6 flex flex-col gap-3">
+                                <MagneticButton
+                                    href={`/${resolvedSlug}/menu`}
+                                    showSparks
+                                    className="w-full rounded-full bg-[#0A0A0C] px-6 py-4 text-[15px] font-medium text-white shadow-lg shadow-[#0A0A0C]/15 transition-colors hover:bg-[#232327] dark:bg-[#F5F4F2] dark:text-[#0A0A0C] dark:shadow-white/10 dark:hover:bg-white">
+                                    <span className={`${body.className} flex w-full items-center justify-center gap-2`}>
+                                        <UtensilsCrossed size={18} strokeWidth={2} />
+                                        View Menu
+                                        <ArrowRight size={18} strokeWidth={2} />
                                     </span>
-                                }>
-                                Book a Table
-                            </PrimaryButton>
-                        </motion.div>
+                                </MagneticButton>
 
-                        {/* Secondary action grid */}
+                                <Link
+                                    href={`/${resolvedSlug}/reserve`}
+                                    className={`${body.className} flex w-full items-center justify-center gap-2 rounded-full border border-[#E7E5E0] px-6 py-4 text-[15px] font-medium text-[#0A0A0C] transition-colors hover:border-[#3B82F6]/40 dark:border-[#232327] dark:text-[#F5F4F2]`}>
+                                    <CalendarDays size={18} strokeWidth={2} />
+                                    Book a Table
+                                </Link>
+                            </div>
+                        </Reveal>
+
+                        {/* Interactive info cards */}
                         <div className="mt-8">
                             <VenueActionGrid slug={resolvedSlug} tenant={tenant} mapsUrl={mapsUrl} />
                         </div>
 
-                        {/* Venue info & hours */}
-                        <motion.div variants={fadeUpItem} initial="hidden" animate="show" className="mt-8">
-                            <VenueInfoSection
-                                workingHours={tenant.settings?.workingHours ?? null}
-                                phone={tenant.phone}
-                                address={tenant.address}
-                            />
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true }}
+                            className="mt-10">
+                            <VenueFooter />
                         </motion.div>
-
-                        <VenueFooter />
                     </>
                 )}
             </div>

@@ -11,36 +11,36 @@ const CATEGORIES_URL = '/menu/categories';
 /**
  * Menu category data access.
  *
- * The menu controllers return raw Prisma rows rather than the
- * `SuccessResponse<T>` envelope used by the tenants module, so every call
- * passes `useBaseResType: false` to get the payload back untouched.
+ * The menu controllers return the global `SuccessResponse<T>` envelope, so we
+ * call `apiClient` with its default behaviour (which resolves the envelope) and
+ * unwrap `data` here, exposing the raw payload to hooks and components.
  */
 export class CategoryService {
     static async getByTenant(tenantId: string): Promise<MenuCategoryWithItemsResponse[]> {
-        return apiClient<MenuCategoryWithItemsResponse[]>(
-            `${CATEGORIES_URL}/${tenantId}`,
-            { method: 'GET' },
-            false,
-        );
+        const res = await apiClient<MenuCategoryWithItemsResponse[]>(`${CATEGORIES_URL}/${tenantId}`, {
+            method: 'GET',
+        });
+        return res.data;
     }
 
     static async create(dto: CreateCategoryDTO): Promise<MenuCategoryResponse> {
-        return apiClient<MenuCategoryResponse>(
-            CATEGORIES_URL,
-            { method: 'POST', body: JSON.stringify(dto) },
-            false,
-        );
+        const res = await apiClient<MenuCategoryResponse>(CATEGORIES_URL, {
+            method: 'POST',
+            body: JSON.stringify(dto),
+        });
+        return res.data;
     }
 
     static async update(id: string, dto: UpdateCategoryDTO): Promise<MenuCategoryResponse> {
-        return apiClient<MenuCategoryResponse>(
-            `${CATEGORIES_URL}/${id}`,
-            { method: 'PATCH', body: JSON.stringify(dto) },
-            false,
-        );
+        const res = await apiClient<MenuCategoryResponse>(`${CATEGORIES_URL}/${id}`, {
+            method: 'PATCH',
+            body: JSON.stringify(dto),
+        });
+        return res.data;
     }
 
     static async remove(id: string): Promise<MenuCategoryResponse> {
-        return apiClient<MenuCategoryResponse>(`${CATEGORIES_URL}/${id}`, { method: 'DELETE' }, false);
+        const res = await apiClient<MenuCategoryResponse>(`${CATEGORIES_URL}/${id}`, { method: 'DELETE' });
+        return res.data;
     }
 }

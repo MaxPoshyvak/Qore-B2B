@@ -67,7 +67,7 @@ function DayRow({
                 const isOpen = openField.value;
 
                 return (
-                    <div className="mb-3 flex flex-col gap-4 rounded-lg border border-black/5 bg-card p-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/10">
+                    <div className={`mb-3 flex flex-col gap-4 rounded-2xl border p-4 transition-colors sm:flex-row sm:items-center sm:justify-between ${isOpen ? 'border-[#3B82F6]/20 bg-[#3B82F6]/[0.04] dark:border-[#3B82F6]/30 dark:bg-[#3B82F6]/[0.08]' : 'border-black/5 bg-card/50 opacity-80 dark:border-white/10'}`}>
                         <div className="flex items-center gap-4 sm:w-40">
                             <button
                                 type="button"

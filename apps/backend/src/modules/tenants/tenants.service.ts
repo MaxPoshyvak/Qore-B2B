@@ -2,7 +2,7 @@ import { ConflictException, ForbiddenException, Injectable, NotFoundException } 
 import { CreateTenantDto } from './dto/tenants.dto';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { SuccessResponse, UpdateTenantSettingsDto } from '@my-app/types';
-import { Tenant } from '@my-app/database';
+import { Prisma, Tenant } from '@my-app/database';
 
 @Injectable()
 export class TenantsService {
@@ -89,35 +89,46 @@ export class TenantsService {
         return { success: true, data: tenant };
     }
 
-    async updateTenantSettings(
-        slug: string,
-        dto: UpdateTenantSettingsDto,
-        userId: string,
-    ): Promise<SuccessResponse<Tenant>> {
+    async updateTenantSettings(slug: string, dto: UpdateTenantSettingsDto, userId: string) {
         const tenant = await this.prisma.tenant.findFirst({
             where: { slug, ownerId: userId },
+            include: { settings: true },
         });
 
         if (!tenant) {
-            throw new NotFoundException('Tenant not found');
+            throw new NotFoundException('Tenant not found or access denied');
         }
 
+        const { name, workingHours, ...settingsData } = dto;
+
+        // 1. Оновлюємо назву закладу у базовій моделі Tenant, якщо вона змінилась
+        if (name && name !== tenant.name) {
+            await this.prisma.tenant.update({
+                where: { id: tenant.id },
+                data: { name },
+            });
+        }
+
+        // 2. Готуємо об'єкт налаштувань
+        const formattedSettings: Prisma.TenantSettingsUpdateInput = {
+            ...settingsData,
+        };
+
+        if (workingHours !== undefined) {
+            formattedSettings.workingHours = workingHours as Prisma.InputJsonValue;
+        }
+
+        // 3. Атомарно оновлюємо або створюємо налаштування
         const updatedTenant = await this.prisma.tenant.update({
-            where: { slug },
+            where: { id: tenant.id },
             data: {
                 settings: {
-                    update: {
-                        name: dto.name,
-                        description: dto.description,
-                        logoUrl: dto.logoUrl,
-                        coverUrl: dto.coverUrl,
-                        phone: dto.phone,
-                        address: dto.address,
-                        instagramUrl: dto.instagramUrl,
-                        googleMapsUrl: dto.googleMapsUrl,
-                        wifiName: dto.wifiName,
-                        wifiPassword: dto.wifiPassword,
-                        workingHours: dto.workingHours,
+                    upsert: {
+                        create: {
+                            ...(settingsData as Prisma.TenantSettingsCreateWithoutTenantInput),
+                            workingHours: (workingHours ?? {}) as Prisma.InputJsonValue,
+                        },
+                        update: formattedSettings,
                     },
                 },
             },

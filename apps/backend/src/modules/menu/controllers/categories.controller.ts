@@ -12,6 +12,8 @@ import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { CategoriesService } from '../services/categories.service';
 import { CreateCategoryDto, UpdateCategoryDto } from '../dto/category.dto';
+import { SuccessResponse } from '@my-app/types';
+import { MenuCategory } from '@my-app/database';
 
 @UseGuards(JwtAuthGuard)
 @Controller('menu/categories')
@@ -22,7 +24,7 @@ export class CategoriesController {
     createCategory(
         @CurrentUser('id') userId: string,
         @Body() dto: CreateCategoryDto,
-    ) {
+    ): Promise<SuccessResponse<MenuCategory>> {
         return this.categoriesService.createCategory(dto, userId);
     }
 
@@ -30,7 +32,7 @@ export class CategoriesController {
     getCategories(
         @CurrentUser('id') userId: string,
         @Param('tenantId') tenantId: string,
-    ) {
+    ): Promise<SuccessResponse<MenuCategory[]>> {
         return this.categoriesService.getCategoriesByTenant(tenantId, userId);
     }
 
@@ -39,7 +41,7 @@ export class CategoriesController {
         @CurrentUser('id') userId: string,
         @Param('id') id: string,
         @Body() dto: UpdateCategoryDto,
-    ) {
+    ): Promise<SuccessResponse<MenuCategory>> {
         return this.categoriesService.updateCategory(id, dto, userId);
     }
 
@@ -47,7 +49,7 @@ export class CategoriesController {
     deleteCategory(
         @CurrentUser('id') userId: string,
         @Param('id') id: string,
-    ) {
+    ): Promise<SuccessResponse<MenuCategory>> {
         return this.categoriesService.deleteCategory(id, userId);
     }
 }

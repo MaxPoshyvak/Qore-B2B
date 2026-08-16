@@ -8,3 +8,4 @@ packages/database/.prisma/
 dist/
 *.tsbuildinfo
 .prisma/
+DESIGN_SYSTEM.md

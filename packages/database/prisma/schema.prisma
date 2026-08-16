@@ -48,16 +48,9 @@ model User {
 }
 
 model Tenant {
-  id          String  @id @default(cuid())
-  name        String
-  slug        String  @unique
-  address     String?
-  phone       String?
-  logoUrl     String?
-  coverUrl    String?
-  description String?
-  instagram   String?
-
+  id                    String           @id @default(cuid())
+  name                  String
+  slug                  String           @unique
   subscriptionPlan      SubscriptionPlan @default(free)
   subscriptionExpiresAt DateTime?
   stripeSubscriptionId  String?          @unique
@@ -83,16 +76,28 @@ model Tenant {
 }
 
 model TenantSettings {
-  id                      String  @id @default(cuid())
-  tenant                  Tenant  @relation(fields: [tenantId], references: [id])
-  tenantId                String  @unique
-  workingHours            Json
-  wifiSsid                String?
-  wifiPassword            String?
-  googleMapsUrl           String?
-  reservationStepMinutes  Int     @default(30)
-  minReservationTime      Int     @default(30)
-  maxGuestsPerReservation Int     @default(12)
+  id       String @id @default(cuid())
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenantId String @unique
+
+  // Профіль закладу
+  description   String?
+  logoUrl       String?
+  coverUrl      String?
+  phone         String?
+  address       String?
+  instagramUrl  String?
+  googleMapsUrl String?
+
+  // Сервіси та Графік
+  workingHours Json
+  wifiSsid     String?
+  wifiPassword String?
+
+  // Бронювання
+  reservationStepMinutes  Int @default(30)
+  minReservationTime      Int @default(30)
+  maxGuestsPerReservation Int @default(12)
 }
 
 model Table {

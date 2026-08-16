@@ -8,26 +8,28 @@ const ITEMS_URL = '/menu/items';
  *
  * Items are always read through `CategoryService.getByTenant` (the API nests
  * them inside their category), so only write operations live here.
- * As with categories, responses are unwrapped — hence `useBaseResType: false`.
+ * The controllers return the global `SuccessResponse<T>` envelope, so we
+ * resolve it via `apiClient` (default behaviour) and unwrap `data` here.
  */
 export class MenuItemService {
     static async create(dto: CreateMenuItemDTO): Promise<MenuItemResponse> {
-        return apiClient<MenuItemResponse>(
-            ITEMS_URL,
-            { method: 'POST', body: JSON.stringify(dto) },
-            false,
-        );
+        const res = await apiClient<MenuItemResponse>(ITEMS_URL, {
+            method: 'POST',
+            body: JSON.stringify(dto),
+        });
+        return res.data;
     }
 
     static async update(id: string, dto: UpdateMenuItemDTO): Promise<MenuItemResponse> {
-        return apiClient<MenuItemResponse>(
-            `${ITEMS_URL}/${id}`,
-            { method: 'PATCH', body: JSON.stringify(dto) },
-            false,
-        );
+        const res = await apiClient<MenuItemResponse>(`${ITEMS_URL}/${id}`, {
+            method: 'PATCH',
+            body: JSON.stringify(dto),
+        });
+        return res.data;
     }
 
     static async remove(id: string): Promise<MenuItemResponse> {
-        return apiClient<MenuItemResponse>(`${ITEMS_URL}/${id}`, { method: 'DELETE' }, false);
+        const res = await apiClient<MenuItemResponse>(`${ITEMS_URL}/${id}`, { method: 'DELETE' });
+        return res.data;
     }
 }

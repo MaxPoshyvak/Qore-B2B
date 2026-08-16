@@ -1,5 +1,7 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
+import { SuccessResponse } from '@my-app/types';
+import { MenuItem } from '@my-app/database';
 import type { CreateMenuItemDTO, UpdateMenuItemDTO } from '@my-app/types';
 
 @Injectable()
@@ -17,10 +19,10 @@ export class MenuItemsService {
         }
     }
 
-    async createMenuItem(dto: CreateMenuItemDTO, userId: string) {
+    async createMenuItem(dto: CreateMenuItemDTO, userId: string): Promise<SuccessResponse<MenuItem>> {
         await this.assertOwnsTenant(dto.tenantId, userId);
 
-        return this.prisma.menuItem.create({
+        const result = await this.prisma.menuItem.create({
             data: {
                 name: dto.name,
                 price: dto.price,
@@ -30,9 +32,11 @@ export class MenuItemsService {
                 isActive: dto.isAvailable,
             },
         });
+
+        return { success: true, data: result };
     }
 
-    async updateMenuItem(id: string, dto: UpdateMenuItemDTO, userId: string) {
+    async updateMenuItem(id: string, dto: UpdateMenuItemDTO, userId: string): Promise<SuccessResponse<MenuItem>> {
         const existing = await this.prisma.menuItem.findUnique({
             where: { id },
             select: { tenantId: true },
@@ -40,7 +44,7 @@ export class MenuItemsService {
         if (!existing) throw new NotFoundException('Menu item not found');
         await this.assertOwnsTenant(existing.tenantId, userId);
 
-        return this.prisma.menuItem.update({
+        const result = await this.prisma.menuItem.update({
             where: { id },
             data: {
                 ...(dto.name !== undefined && { name: dto.name }),
@@ -50,9 +54,11 @@ export class MenuItemsService {
                 ...(dto.isAvailable !== undefined && { isActive: dto.isAvailable }),
             },
         });
+
+        return { success: true, data: result };
     }
 
-    async deleteMenuItem(id: string, userId: string) {
+    async deleteMenuItem(id: string, userId: string): Promise<SuccessResponse<MenuItem>> {
         const existing = await this.prisma.menuItem.findUnique({
             where: { id },
             select: { tenantId: true },
@@ -60,6 +66,8 @@ export class MenuItemsService {
         if (!existing) throw new NotFoundException('Menu item not found');
         await this.assertOwnsTenant(existing.tenantId, userId);
 
-        return this.prisma.menuItem.delete({ where: { id } });
+        const result = await this.prisma.menuItem.delete({ where: { id } });
+
+        return { success: true, data: result };
     }
 }

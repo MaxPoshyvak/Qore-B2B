@@ -1,6 +1,8 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import type { CreateCategoryDTO, UpdateCategoryDTO } from '@my-app/types';
+import { SuccessResponse } from '@my-app/types';
+import { MenuCategory } from '@my-app/database';
+import type { CreateCategoryDTO, PublicMenuResponseDTO, UpdateCategoryDTO } from '@my-app/types';
 
 @Injectable()
 export class CategoriesService {
@@ -17,25 +19,29 @@ export class CategoriesService {
         }
     }
 
-    async createCategory(dto: CreateCategoryDTO, userId: string) {
+    async createCategory(dto: CreateCategoryDTO, userId: string): Promise<SuccessResponse<MenuCategory>> {
         await this.assertOwnsTenant(dto.tenantId, userId);
 
-        return this.prisma.menuCategory.create({
+        const result = await this.prisma.menuCategory.create({
             data: { name: dto.name, tenantId: dto.tenantId },
         });
+
+        return { success: true, data: result };
     }
 
-    async getCategoriesByTenant(tenantId: string, userId: string) {
+    async getCategoriesByTenant(tenantId: string, userId: string): Promise<SuccessResponse<MenuCategory[]>> {
         await this.assertOwnsTenant(tenantId, userId);
 
-        return this.prisma.menuCategory.findMany({
+        const result = await this.prisma.menuCategory.findMany({
             where: { tenantId },
             orderBy: { sortOrder: 'asc' },
             include: { items: { orderBy: { sortOrder: 'asc' } } },
         });
+
+        return { success: true, data: result };
     }
 
-    async updateCategory(id: string, dto: UpdateCategoryDTO, userId: string) {
+    async updateCategory(id: string, dto: UpdateCategoryDTO, userId: string): Promise<SuccessResponse<MenuCategory>> {
         const existing = await this.prisma.menuCategory.findUnique({
             where: { id },
             select: { tenantId: true },
@@ -43,13 +49,15 @@ export class CategoriesService {
         if (!existing) throw new NotFoundException('Category not found');
         await this.assertOwnsTenant(existing.tenantId, userId);
 
-        return this.prisma.menuCategory.update({
+        const result = await this.prisma.menuCategory.update({
             where: { id },
             data: { name: dto.name },
         });
+
+        return { success: true, data: result };
     }
 
-    async deleteCategory(id: string, userId: string) {
+    async deleteCategory(id: string, userId: string): Promise<SuccessResponse<MenuCategory>> {
         const existing = await this.prisma.menuCategory.findUnique({
             where: { id },
             select: { tenantId: true },
@@ -57,7 +65,9 @@ export class CategoriesService {
         if (!existing) throw new NotFoundException('Category not found');
         await this.assertOwnsTenant(existing.tenantId, userId);
 
-        return this.prisma.menuCategory.delete({ where: { id } });
+        const result = await this.prisma.menuCategory.delete({ where: { id } });
+
+        return { success: true, data: result };
     }
 
     /**
@@ -68,16 +78,14 @@ export class CategoriesService {
      * `isAvailable`), and empty categories are dropped so guests never see
      * headers with no dishes.
      */
-    async getPublicMenuBySlug(slug: string) {
-        const tenant = await this.prisma.tenant.findUnique({
+    async getPublicMenuBySlug(slug: string): Promise<SuccessResponse<PublicMenuResponseDTO>> {
+        if (!slug || typeof slug !== 'string') {
+            throw new NotFoundException('Venue not found');
+        }
+
+        const tenant = await this.prisma.tenant.findFirst({
             where: { slug },
-            select: {
-                id: true,
-                name: true,
-                slug: true,
-                description: true,
-                logoUrl: true,
-            },
+            include: { settings: true },
         });
 
         if (!tenant) throw new NotFoundException('Venue not found');
@@ -97,18 +105,18 @@ export class CategoriesService {
             },
         });
 
-        return {
+        const result: PublicMenuResponseDTO = {
             venue: {
                 id: tenant.id,
                 name: tenant.name,
                 slug: tenant.slug,
-                description: tenant.description,
-                logoUrl: tenant.logoUrl,
+                // Profile fields live on `TenantSettings` (1-to-1), not `Tenant`.
+                description: tenant.settings?.description ?? null,
+                logoUrl: tenant.settings?.logoUrl ?? null,
             },
             categories: categories.map((category) => ({
                 ...category,
-                // Decimal/Json columns don't satisfy the serialized response
-                // contract (prices are strings over the wire), so map explicitly.
+                // Decimal columns serialize to strings over the wire.
                 items: category.items.map((item) => ({
                     ...item,
                     price: item.price.toString(),
@@ -116,5 +124,7 @@ export class CategoriesService {
                 })),
             })),
         };
+
+        return { success: true, data: result };
     }
 }
