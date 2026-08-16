@@ -17,7 +17,7 @@ export function ContactsTab() {
                 <CardTitle>Contacts</CardTitle>
                 <CardDescription>How guests and suppliers can reach your venue.</CardDescription>
             </CardHeader>
-            <CardContent className="flex flex-col gap-4">
+            <CardContent className="flex max-w-xl flex-col gap-4">
                 <AuthInput
                     id="phone"
                     label="Phone"

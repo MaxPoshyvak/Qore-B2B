@@ -18,7 +18,7 @@ export function GuestServicesTab() {
                 <CardTitle>Guest Services</CardTitle>
                 <CardDescription>Details your guests can use during their visit.</CardDescription>
             </CardHeader>
-            <CardContent className="flex flex-col gap-4">
+            <CardContent className="flex max-w-xl flex-col gap-4">
                 <AuthInput
                     id="wifiName"
                     label="Wi-Fi name (SSID)"

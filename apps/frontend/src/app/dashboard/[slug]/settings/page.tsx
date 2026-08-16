@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation';
 
 import { useGetTenantBySlug } from '@/entities/tenant/hooks/useTenants';
-import { SettingsForm } from '@/features/dashboard/settings/components/SettingsForm';
+import { SettingsForm } from '@/features/dashboard-settings/components/SettingsForm';
 import type { PublicTenantResponse } from '@my-app/types';
 
 export default function VenueSettingsPage() {

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useParams, usePathname } from 'next/navigation';
+import { useParams, usePathname, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     LayoutDashboard,
@@ -37,6 +37,13 @@ const NAV = [
     { label: 'Settings', suffix: '/settings', icon: Settings },
 ];
 
+const SETTINGS_SECTIONS = [
+    { label: 'General', value: 'general' },
+    { label: 'Contacts', value: 'contacts' },
+    { label: 'Guest Services', value: 'guest' },
+    { label: 'Working Hours', value: 'hours' },
+] as const;
+
 function getPlanDetails(plan?: string | null) {
     const normalizedPlan = plan?.toLowerCase();
 
@@ -70,6 +77,7 @@ function getPlanDetails(plan?: string | null) {
 
 function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () => void }) {
     const pathname = usePathname();
+    const searchParams = useSearchParams();
     const { theme, toggle, mounted } = useTheme();
     const { data: tenant } = useGetTenantBySlug(slug);
     const { data: myTenants } = useGetMyTenants();
@@ -154,31 +162,41 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
             <nav className="mt-6 flex flex-1 flex-col gap-1">
                 {NAV.map((item) => {
                     const href = `/dashboard/${slug}${item.suffix}`;
-                    const active = pathname === href;
+                    const isSettings = item.suffix === '/settings';
+                    const active = isSettings ? pathname.startsWith(href) : pathname === href;
                     const Icon = item.icon;
                     return (
-                        <Link
-                            key={item.label}
-                            href={href}
-                            onClick={onNavigate}
-                            className={`relative flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-[14px] transition-colors ${
-                                active
-                                    ? 'bg-[#3B82F6]/10 text-[#3B82F6] dark:bg-white/5 dark:text-[#F5F4F2]'
-                                    : 'text-[#6B6A65] hover:bg-black/5 hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:bg-white/5 dark:hover:text-[#F5F4F2]'
-                            }`}>
-                            <span
-                                className={`absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-full bg-[#3B82F6] transition-opacity ${
-                                    active ? 'opacity-100' : 'opacity-0'
-                                }`}
-                            />
-                            <Icon size={17} strokeWidth={1.9} />
-                            <span className="flex-1">{item.label}</span>
-                            {item.badge != null && (
-                                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#3B82F6] px-1.5 text-[11px] font-semibold text-white">
-                                    {item.badge}
-                                </span>
+                        <div key={item.label}>
+                            <Link
+                                href={isSettings ? `${href}?section=general` : href}
+                                onClick={onNavigate}
+                                className={`relative flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-[14px] transition-colors ${
+                                    active
+                                        ? 'bg-[#3B82F6]/10 text-[#3B82F6] dark:bg-white/5 dark:text-[#F5F4F2]'
+                                        : 'text-[#6B6A65] hover:bg-black/5 hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:bg-white/5 dark:hover:text-[#F5F4F2]'
+                                }`}>
+                                <span className={`absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-full bg-[#3B82F6] transition-opacity ${active ? 'opacity-100' : 'opacity-0'}`} />
+                                <Icon size={17} strokeWidth={1.9} />
+                                <span className="flex-1">{item.label}</span>
+                                {item.badge != null && <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#3B82F6] px-1.5 text-[11px] font-semibold text-white">{item.badge}</span>}
+                            </Link>
+                            {isSettings && (
+                                <div className="hidden flex-col gap-0.5 border-l border-[#E7E5E0] pl-4 md:flex dark:border-white/10">
+                                    {SETTINGS_SECTIONS.map((section) => {
+                                        const sectionActive = active && (searchParams.get('section') ?? 'general') === section.value;
+                                        return (
+                                            <Link
+                                                key={section.value}
+                                                href={`${href}?section=${section.value}`}
+                                                onClick={onNavigate}
+                                                className={`rounded-lg px-3 py-1.5 text-[13px] transition-colors ${sectionActive ? 'bg-[#3B82F6]/10 font-medium text-[#2563EB] dark:text-[#60A5FA]' : 'text-[#6B6A65] hover:bg-black/5 hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:bg-white/5 dark:hover:text-[#F5F4F2]'}`}>
+                                                {section.label}
+                                            </Link>
+                                        );
+                                    })}
+                                </div>
                             )}
-                        </Link>
+                        </div>
                     );
                 })}
             </nav>

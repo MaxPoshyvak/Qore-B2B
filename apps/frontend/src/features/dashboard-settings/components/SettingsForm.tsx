@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { z } from 'zod';
 import {
     updateTenantSettingsSchema,
@@ -40,13 +41,23 @@ const TABS = [
     { value: 'hours', label: 'Working Hours' },
 ] as const;
 
+type TabValue = (typeof TABS)[number]['value'];
+
+function isTabValue(value: string | null): value is TabValue {
+    return TABS.some((tab) => tab.value === value);
+}
+
 type SettingsFormProps = {
     slug: string;
     initialData: PublicTenantResponse;
 };
 
 export function SettingsForm({ slug, initialData }: SettingsFormProps) {
-    const [tab, setTab] = useState<string>('general');
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const requestedTab = searchParams.get('section');
+    const [tab, setTab] = useState<TabValue>(isTabValue(requestedTab) ? requestedTab : 'general');
     const { mutate, isPending } = useUpdateTenantSettings(slug);
     const settings = initialData.settings as
         | (PublicTenantResponse['settings'] & { wifiName?: string | null })
@@ -74,6 +85,18 @@ export function SettingsForm({ slug, initialData }: SettingsFormProps) {
 
     const onSubmit = (values: UpdateTenantSettingsDto) => mutate(values);
 
+    React.useEffect(() => {
+        if (isTabValue(requestedTab) && requestedTab !== tab) setTab(requestedTab);
+    }, [requestedTab, tab]);
+
+    const changeTab = (value: string) => {
+        if (!isTabValue(value)) return;
+        setTab(value);
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('section', value);
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    };
+
     return (
         <FormProvider {...methods}>
             <Toaster />
@@ -90,21 +113,26 @@ export function SettingsForm({ slug, initialData }: SettingsFormProps) {
                     <p className="mt-1.5 text-sm text-[#6B6A65] dark:text-[#94938D]">
                         Manage how your venue appears to guests.
                     </p>
+                    <div className="hide-scrollbar -mx-4 mt-5 flex gap-2 overflow-x-auto px-4 md:hidden">
+                        {TABS.map((t) => (
+                            <button
+                                key={t.value}
+                                type="button"
+                                onClick={() => changeTab(t.value)}
+                                className={cn(
+                                    'shrink-0 rounded-xl border px-3.5 py-2 text-sm font-medium transition-colors',
+                                    tab === t.value
+                                        ? 'border-[#3B82F6]/20 bg-[#3B82F6]/10 text-[#2563EB] dark:text-[#60A5FA]'
+                                        : 'border-[#E7E5E0] bg-white/60 text-[#6B6A65] hover:border-[#3B82F6]/30 dark:border-white/10 dark:bg-white/5 dark:text-[#94938D]',
+                                )}>
+                                {t.label}
+                            </button>
+                        ))}
+                    </div>
                 </header>
 
-                <Tabs value={tab} onValueChange={setTab}>
-                    <TabsList className="flex flex-row justify-start gap-2 overflow-x-auto bg-transparent p-0 h-auto w-full md:w-64 md:flex-col md:overflow-visible hide-scrollbar">
-                        {TABS.map((t) => (
-                            <TabsTrigger
-                                key={t.value}
-                                value={t.value}
-                                className="w-auto justify-start px-4 py-2 text-left text-sm font-medium md:w-full">
-                                {t.label}
-                            </TabsTrigger>
-                        ))}
-                    </TabsList>
-
-                    <div className="flex-1 w-full">
+                <Tabs value={tab} onValueChange={changeTab}>
+                    <div className="w-full">
                         <form onSubmit={methods.handleSubmit(onSubmit)}>
                             <TabsContent value="general">
                                 <GeneralTab />
@@ -159,40 +187,6 @@ function useTabs() {
     const ctx = React.useContext(TabsContext);
     if (!ctx) throw new Error('Tabs components must be used within <Tabs>');
     return ctx;
-}
-
-function TabsList({ className, children }: { className?: string; children: React.ReactNode }) {
-    return <div role="tablist" className={cn(className)}>{children}</div>;
-}
-
-function TabsTrigger({
-    value,
-    className,
-    children,
-}: {
-    value: string;
-    className?: string;
-    children: React.ReactNode;
-}) {
-    const { value: active, onValueChange } = useTabs();
-    const selected = active === value;
-    return (
-        <button
-            type="button"
-            role="tab"
-            aria-selected={selected}
-            onClick={() => onValueChange(value)}
-            className={cn(
-                'whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium transition-colors',
-                'text-[#6B6A65] hover:bg-black/[0.04] dark:text-[#94938D] dark:hover:bg-white/[0.06]',
-                'data-[state=active]:bg-black/[0.05] data-[state=active]:text-[#0A0A0C] data-[state=active]:shadow-none',
-                'dark:data-[state=active]:bg-white/10 dark:data-[state=active]:text-[#F5F4F2]',
-                className,
-            )}
-            data-state={selected ? 'active' : 'inactive'}>
-            {children}
-        </button>
-    );
 }
 
 function TabsContent({

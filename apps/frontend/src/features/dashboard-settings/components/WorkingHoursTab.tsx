@@ -4,15 +4,6 @@ import { Controller, useFormContext, type Path } from 'react-hook-form';
 import { z } from 'zod';
 import type { UpdateTenantSettingsDto } from '@my-app/types';
 import { workingHoursSchema } from '@my-app/types';
-import { Badge } from '@/shared/ui/shadcn/Badge';
-import { Switch } from '@/shared/ui/shadcn/Switch';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/shared/ui/shadcn/Select';
 
 type WorkingHours = z.infer<typeof workingHoursSchema>;
 
@@ -26,8 +17,8 @@ const DAYS: { key: keyof WorkingHours; label: string }[] = [
     { key: 'sunday', label: 'Sunday' },
 ];
 
-const TIME_OPTIONS = Array.from({ length: 48 }, (_, i) => {
-    const hour = Math.floor(i / 2);
+const TIME_OPTIONS = Array.from({ length: 32 }, (_, i) => {
+    const hour = 8 + Math.floor(i / 2);
     const minute = i % 2 === 0 ? '00' : '30';
     return `${String(hour).padStart(2, '0')}:${minute}`;
 });
@@ -78,11 +69,15 @@ function DayRow({
                 return (
                     <div className="mb-3 flex flex-col gap-4 rounded-lg border border-black/5 bg-card p-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/10">
                         <div className="flex items-center gap-4 sm:w-40">
-                            <Switch
-                                checked={!!isOpen}
-                                onCheckedChange={(checked) => openField.onChange(checked)}
+                            <button
+                                type="button"
+                                role="switch"
+                                aria-checked={!!isOpen}
                                 aria-label={`${label} open`}
-                            />
+                                onClick={() => openField.onChange(!isOpen)}
+                                className={`relative h-6 w-11 shrink-0 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6]/30 ${isOpen ? 'bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6]' : 'bg-black/15 dark:bg-white/15'}`}>
+                                <span className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${isOpen ? 'translate-x-5' : ''}`} />
+                            </button>
                             <span className="text-sm font-medium text-[#0A0A0C] dark:text-[#F5F4F2]">
                                 {label}
                             </span>
@@ -106,9 +101,9 @@ function DayRow({
                                     />
                                 </>
                             ) : (
-                                <Badge variant="secondary" className="px-3 py-1">
+                                <span className="rounded-full border border-[#E7E5E0] bg-black/[0.03] px-3 py-1 text-xs font-medium text-[#6B6A65] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D]">
                                     Closed
-                                </Badge>
+                                </span>
                             )}
                         </div>
                     </div>
@@ -134,18 +129,20 @@ function TimeSelect({
             control={control}
             name={name}
             render={({ field }) => (
-                <Select value={(field.value as string) ?? ''} onValueChange={field.onChange}>
-                    <SelectTrigger ariaLabel={ariaLabel} className="w-[120px]">
-                        <SelectValue placeholder={placeholder} />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {TIME_OPTIONS.map((time) => (
-                            <SelectItem key={time} value={time}>
-                                {time}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+                <select
+                    ref={field.ref}
+                    value={(field.value as string) ?? ''}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    aria-label={ariaLabel}
+                    className="h-10 w-32 appearance-none rounded-xl border border-[#E7E5E0] bg-white px-3 text-sm text-[#0A0A0C] outline-none transition-colors focus:border-[#3B82F6]/60 focus:ring-2 focus:ring-[#3B82F6]/15 dark:border-[#232327] dark:bg-[#141417] dark:text-[#F5F4F2]">
+                    <option value="">{placeholder}</option>
+                    {TIME_OPTIONS.map((time) => (
+                        <option key={time} value={time}>
+                            {time}
+                        </option>
+                    ))}
+                </select>
             )}
         />
     );
