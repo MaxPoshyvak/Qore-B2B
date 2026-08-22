@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
 
-import { MenuBoard } from '@/features/menu-management';
+import { MenuBoard } from '@/features/dashboard-menu';
 import { EASE } from '@/shared/config/animations';
 import { display } from '@/shared/lib/fonts';
 

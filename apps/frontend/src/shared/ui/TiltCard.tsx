@@ -3,16 +3,24 @@
 import { useRef } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop';
+
 export function TiltCard({
     children,
     className = '',
     strength = 8,
+    disabled = false,
 }: {
     children: React.ReactNode;
     className?: string;
     strength?: number;
+    /** When true (e.g. on mobile), render a static wrapper with no tilt. */
+    disabled?: boolean;
 }) {
     const ref = useRef<HTMLDivElement>(null);
+    const isDesktop = useIsDesktop();
+    const isDisabled = disabled || !isDesktop;
+
     const rx = useMotionValue(0);
     const ry = useMotionValue(0);
     const srx = useSpring(rx, { stiffness: 500, damping: 30, mass: 0.2 });
@@ -29,6 +37,10 @@ export function TiltCard({
     function onLeave() {
         rx.set(0);
         ry.set(0);
+    }
+
+    if (isDisabled) {
+        return <div className={`h-full ${className}`}>{children}</div>;
     }
 
     return (

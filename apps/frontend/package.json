@@ -19,9 +19,11 @@
         "lucide-react": "^1.30.0",
         "next": "latest",
         "next-auth": "^4.24.15",
+        "qrcode.react": "^4.2.0",
         "react": "latest",
         "react-dom": "latest",
-        "react-hook-form": "^7.85.0"
+        "react-hook-form": "^7.85.0",
+        "zustand": "^5.0.15"
     },
     "devDependencies": {
         "@t3-oss/env-nextjs": "latest",

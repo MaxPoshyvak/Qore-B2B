@@ -1,0 +1,212 @@
+'use client';
+
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
+import {
+    type AddCartItemDto,
+    type CartItemResponse,
+    type CartSessionResponse,
+    type UpdateCartItemDto,
+} from '@my-app/types';
+import { CartApi } from '../api/cart.api';
+import { useCartStore } from '../store/useCartStore';
+
+type CartMutationContext = { previousCart?: CartSessionResponse };
+
+/** Resolves the cache key shared by the query and its mutations for a given cart. */
+const cartKey = (tableId: string | null, sessionId: string | null) => sessionId ?? tableId;
+
+/**
+ * Live shared cart — polls every 3s for a real-time feel.
+ * - Dine-in:  polls `GET /cart/table/:tableId`.
+ * - Takeaway: polls `GET /cart/session/:sessionId`.
+ */
+export const useSharedCart = (tableId: string | null, sessionId: string | null = null) => {
+    const key = cartKey(tableId, sessionId);
+    return useQuery({
+        queryKey: ['shared-cart', key],
+        queryFn: () =>
+            sessionId ? CartApi.getSessionById(sessionId) : CartApi.getSession(tableId as string),
+        enabled: Boolean(key),
+        refetchInterval: 3000,
+    });
+};
+
+export const useAddCartItem = (tableId: string | null, sessionId: string | null = null) => {
+    const queryClient = useQueryClient();
+    const key = cartKey(tableId, sessionId);
+
+    return useMutation<CartSessionResponse, Error, AddCartItemDto, CartMutationContext>({
+        mutationFn: (dto: AddCartItemDto) =>
+            sessionId ? CartApi.addItemBySession(sessionId, dto) : CartApi.addItem(tableId as string, dto),
+        onMutate: async (dto) => {
+            if (!key) return {};
+            await queryClient.cancelQueries({ queryKey: ['shared-cart', key] });
+
+            const previousCart = queryClient.getQueryData<CartSessionResponse>(['shared-cart', key]);
+
+            queryClient.setQueryData<CartSessionResponse>(['shared-cart', key], (old) => {
+                if (!old) return old;
+
+                const items = [...old.items];
+                const existing = items.find(
+                    (i) => i.menuItemId === dto.menuItemId && i.guestSessionId === dto.guestSessionId,
+                );
+
+                if (existing) {
+                    return {
+                        ...old,
+                        items: items.map((i) =>
+                            i.id === existing.id ? { ...i, quantity: i.quantity + dto.quantity } : i,
+                        ),
+                    };
+                }
+
+                const mockItem: CartItemResponse = {
+                    id: `temp-${dto.menuItemId}-${dto.guestSessionId}`,
+                    cartSessionId: old.id,
+                    menuItemId: dto.menuItemId,
+                    menuItem: null,
+                    quantity: dto.quantity,
+                    guestSessionId: dto.guestSessionId,
+                    guestName: dto.guestName,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                };
+
+                return { ...old, items: [...items, mockItem] };
+            });
+
+            return { previousCart };
+        },
+        onError: (_err, _vars, context) => {
+            if (context?.previousCart) {
+                queryClient.setQueryData(['shared-cart', key], context.previousCart);
+            }
+        },
+        onSettled: () => {
+            if (key) queryClient.invalidateQueries({ queryKey: ['shared-cart', key] });
+        },
+    });
+};
+
+export const useUpdateCartItem = (tableId: string | null, sessionId: string | null = null) => {
+    const queryClient = useQueryClient();
+    const key = cartKey(tableId, sessionId);
+
+    return useMutation<CartItemResponse | null, Error, { itemId: string; dto: UpdateCartItemDto }, CartMutationContext>({
+        mutationFn: ({ itemId, dto }: { itemId: string; dto: UpdateCartItemDto }) =>
+            CartApi.updateItem(itemId, dto),
+        onMutate: async ({ itemId, dto }) => {
+            if (!key) return {};
+            await queryClient.cancelQueries({ queryKey: ['shared-cart', key] });
+
+            const previousCart = queryClient.getQueryData<CartSessionResponse>(['shared-cart', key]);
+
+            queryClient.setQueryData<CartSessionResponse>(['shared-cart', key], (old) => {
+                if (!old) return old;
+
+                // Remove when quantity hits zero, otherwise update in place.
+                const items =
+                    dto.quantity === 0
+                        ? old.items.filter((i) => i.id !== itemId)
+                        : old.items.map((i) => (i.id === itemId ? { ...i, quantity: dto.quantity } : i));
+
+                return { ...old, items };
+            });
+
+            return { previousCart };
+        },
+        onError: (_err, _vars, context) => {
+            if (context?.previousCart) {
+                queryClient.setQueryData(['shared-cart', key], context.previousCart);
+            }
+        },
+        onSettled: () => {
+            if (key) queryClient.invalidateQueries({ queryKey: ['shared-cart', key] });
+        },
+    });
+};
+
+export const useRemoveCartItem = (tableId: string | null, sessionId: string | null = null) => {
+    const queryClient = useQueryClient();
+    const key = cartKey(tableId, sessionId);
+
+    return useMutation<CartItemResponse, Error, { itemId: string; guestSessionId: string }, CartMutationContext>({
+        mutationFn: ({ itemId, guestSessionId }: { itemId: string; guestSessionId: string }) =>
+            CartApi.removeItem(itemId, guestSessionId),
+        onMutate: async ({ itemId }) => {
+            if (!key) return {};
+            await queryClient.cancelQueries({ queryKey: ['shared-cart', key] });
+
+            const previousCart = queryClient.getQueryData<CartSessionResponse>(['shared-cart', key]);
+
+            queryClient.setQueryData<CartSessionResponse>(['shared-cart', key], (old) => {
+                if (!old) return old;
+
+                return { ...old, items: old.items.filter((i) => i.id !== itemId) };
+            });
+
+            return { previousCart };
+        },
+        onError: (_err, _vars, context) => {
+            if (context?.previousCart) {
+                queryClient.setQueryData(['shared-cart', key], context.previousCart);
+            }
+        },
+        onSettled: () => {
+            if (key) queryClient.invalidateQueries({ queryKey: ['shared-cart', key] });
+        },
+    });
+};
+
+/** Dine-in only: toggles the current guest's readiness (no-op in takeaway mode). */
+export const useToggleCartReady = (tableId: string) => {
+    const queryClient = useQueryClient();
+
+    return useMutation<CartSessionResponse, Error, string, CartMutationContext>({
+        mutationFn: (guestSessionId: string) => CartApi.toggleCartReady(tableId, guestSessionId),
+        onMutate: async (guestSessionId) => {
+            await queryClient.cancelQueries({ queryKey: ['shared-cart', tableId] });
+
+            const previousCart = queryClient.getQueryData<CartSessionResponse>(['shared-cart', tableId]);
+
+            queryClient.setQueryData<CartSessionResponse>(['shared-cart', tableId], (old) => {
+                if (!old) return old;
+
+                const confirmed = old.confirmedGuests ?? [];
+                const next = confirmed.includes(guestSessionId)
+                    ? confirmed.filter((id) => id !== guestSessionId)
+                    : [...confirmed, guestSessionId];
+
+                return { ...old, confirmedGuests: next };
+            });
+
+            return { previousCart };
+        },
+        onError: (_err, _vars, context) => {
+            if (context?.previousCart) {
+                queryClient.setQueryData(['shared-cart', tableId], context.previousCart);
+            }
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ['shared-cart', tableId] });
+        },
+    });
+};
+
+/** Creates a takeaway (single-player) cart session and stores its id locally. */
+export const useCreateTakeawaySession = () => {
+    const queryClient = useQueryClient();
+    const setTakeawaySessionId = useCartStore((s) => s.setTakeawaySessionId);
+    const setOrderTypeModalOpen = useCartStore((s) => s.setOrderTypeModalOpen);
+
+    return useMutation<CartSessionResponse, Error, void, unknown>({
+        mutationFn: () => CartApi.createTakeawaySession(),
+        onSuccess: (session) => {
+            setTakeawaySessionId(session.id);
+            setOrderTypeModalOpen(false);
+            queryClient.invalidateQueries({ queryKey: ['shared-cart', session.id] });
+        },
+    });
+};

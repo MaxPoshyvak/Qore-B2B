@@ -20,11 +20,11 @@ export function GuestServicesTab() {
             </CardHeader>
             <CardContent className="flex max-w-xl flex-col gap-4">
                 <AuthInput
-                    id="wifiName"
+                    id="wifiSsid"
                     label="Wi-Fi name (SSID)"
                     placeholder="CafeBoard-Guest"
-                    error={errors.wifiName?.message}
-                    {...register('wifiName')}
+                    error={errors.wifiSsid?.message}
+                    {...register('wifiSsid')}
                 />
                 <AuthInput
                     id="wifiPassword"

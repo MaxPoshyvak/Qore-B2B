@@ -59,6 +59,15 @@ ALl website only in English. All variable names must be in English.
     - Use `p-6` instead of `p-[24px]`.
 - Only use `[]` brackets for highly specific magic numbers that cannot be mapped to the standard scale.
 
+## 8. Mobile Performance & Heavy Visual Effects
+
+- **Absolute Rule:** Heavy visual effects (e.g., 3D tilt, complex backdrop-blurs, heavy Framer Motion animations, custom cursors) designed for Desktop MUST be strictly disabled on Mobile and Touch devices.
+- **Why:** These effects consume significant CPU/GPU resources and battery on mobile devices, causing unnecessary lag. Additionally, touch devices do not have a true "hover" state, which leads to sticky and buggy UI interactions.
+- **Implementation (Tailwind & React):**
+    - ALWAYS wrap hover-based heavy effects in desktop breakpoints (e.g., use `md:hover:scale-105` or `lg:hover:blur-md` instead of just `hover:...`).
+    - For complex React/Framer Motion components (like custom cursors or 3D Tilt cards), conditionally disable the effect or completely unmount the component on screens smaller than the `md` breakpoint (using window size hooks or CSS `display: none`).
+    - Utilize Tailwind's `@media (hover: hover)` utility classes where appropriate to ensure hover styles only apply to devices with a pointing device.
+
 # 🧠 Behavior & Thinking Process
 
 1. **Analyze before coding:** Always read the existing codebase architecture and file structure before suggesting new files.

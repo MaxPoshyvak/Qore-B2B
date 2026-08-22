@@ -6,6 +6,7 @@ import type { PublicMenuVenueResponse } from '@my-app/types';
 
 import { EASE } from '@/shared/config/animations';
 import { display } from '@/shared/lib/fonts';
+import { Eyebrow } from '@/shared/ui/Eyebrow';
 
 type VenueHeaderProps = {
     venue: PublicMenuVenueResponse;
@@ -40,8 +41,11 @@ export function VenueHeader({ venue }: VenueHeaderProps) {
             </div>
 
             <div className="mt-4">
+                <div className="flex justify-center">
+                    <Eyebrow tone="blue">Digital Menu</Eyebrow>
+                </div>
                 <h1
-                    className={`${display.className} text-3xl font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2] sm:text-4xl`}>
+                    className={`${display.className} text-[40px] font-bold leading-[1.05] tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2] sm:text-[58px]`}>
                     {venue.name}
                 </h1>
 

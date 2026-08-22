@@ -111,6 +111,8 @@ model Table {
 
   orders       Order[]
   cartSessions CartSession[]
+
+  @@unique([tenantId, name])
 }
 
 model MenuCategory {
@@ -142,6 +144,7 @@ model MenuItem {
   sortOrder      Int          @default(0)
 
   orderItems OrderItem[]
+  cartItems  CartItem[]
 }
 
 model Reservation {
@@ -180,15 +183,42 @@ model TenantTheme {
 }
 
 // Сесія "спільного кошика" для столика
-model CartSession {
-  id         String    @id @default(cuid())
-  table      Table     @relation(fields: [tableId], references: [id])
-  tableId    String
-  guestLabel String // напр. "Гість 1", генерується на клієнті
-  createdAt  DateTime  @default(now())
-  closedAt   DateTime?
+// ------------------------------------------------------
+// 🛒 СИСТЕМА СПІЛЬНОГО КОШИКА (Чернетка замовлення)
+// ------------------------------------------------------
 
-  orderItemsAdded OrderItem[] @relation("AddedBy")
+// Одна сесія кошика = Одне сидіння гостей за столом
+model CartSession {
+  id              String    @id @default(cuid())
+  table           Table?    @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  tableId         String?
+  isActive        Boolean   @default(true) // true, поки гості замовляють. false - коли закрили рахунок
+  isTakeaway      Boolean   @default(false) // true для замовлень "з собою" без прив'язки до столу
+  confirmedGuests String[]  @default([])
+
+  items CartItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Конкретна страва, яку хтось додав у спільний кошик
+model CartItem {
+  id            String      @id @default(cuid())
+  cartSession   CartSession @relation(fields: [cartSessionId], references: [id], onDelete: Cascade)
+  cartSessionId String
+
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  menuItemId String
+
+  quantity Int @default(1)
+
+  // Ідентифікація того, хто додав страву
+  guestSessionId String // Унікальний ID браузера гостя (з Zustand)
+  guestName      String // Наприклад: "Максим"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Order {
@@ -198,29 +228,36 @@ model Order {
   table         Table?        @relation(fields: [tableId], references: [id])
   tableId       String?
   status        OrderStatus   @default(new)
-  paymentStatus PaymentStatus @default(pending) // кухня стартує лише коли paid
+  paymentStatus PaymentStatus @default(pending)
   isOrderAhead  Boolean       @default(false)
   pickupAt      DateTime?
   totalAmount   Decimal
-  createdAt     DateTime      @default(now())
 
   items OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model OrderItem {
-  id               String       @id @default(cuid())
-  order            Order        @relation(fields: [orderId], references: [id])
-  orderId          String
-  menuItem         MenuItem     @relation(fields: [menuItemId], references: [id])
-  menuItemId       String
-  quantity         Int          @default(1)
-  priceAtOrder     Decimal
-  addedBySession   CartSession? @relation("AddedBy", fields: [addedBySessionId], references: [id])
-  addedBySessionId String?
-  paidByGuestId    String? // для split bill
+  id      String @id @default(cuid())
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId String
 
-  isLockedForPayment Boolean   @default(false) // захист від подвійного списання
-  lockedAt           DateTime? // для TTL — автозняття локу, якщо оплата не завершилась
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  menuItemId String
+
+  quantity     Int     @default(1)
+  priceAtOrder Decimal // Фіксуємо ціну на момент замовлення (якщо ціна в меню зміниться)
+
+  // Переносимо дані про гостя з CartItem, щоб знати, хто замовив страву у фінальному чеку
+  guestSessionId String?
+  guestName      String?
+
+  // Для спліт-чеку (Split Bill)
+  paidByGuestId      String? // Хто саме оплатив цю позицію
+  isLockedForPayment Boolean   @default(false) // Захист від подвійного списання
+  lockedAt           DateTime? // Таймер розблокування, якщо оплата зависла
 }
 
 model HappyHourRule {

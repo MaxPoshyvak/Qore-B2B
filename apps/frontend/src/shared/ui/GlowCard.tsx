@@ -2,18 +2,25 @@
 
 import { useRef } from 'react';
 
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop';
+
 export function GlowCard({
     children,
     className = '',
     glow = '59,130,246',
     variant = 'solid',
+    disabled = false,
 }: {
     children: React.ReactNode;
     className?: string;
     glow?: string;
     variant?: 'solid' | 'glass';
+    /** When true (e.g. on touch/mobile), the cursor-following glow is disabled. */
+    disabled?: boolean;
 }) {
     const ref = useRef<HTMLDivElement>(null);
+    const isDesktop = useIsDesktop();
+    const isDisabled = disabled || !isDesktop;
 
     function handleMove(e: React.MouseEvent<HTMLDivElement>) {
         const rect = ref.current?.getBoundingClientRect();
@@ -30,14 +37,16 @@ export function GlowCard({
     return (
         <div
             ref={ref}
-            onMouseMove={handleMove}
+            onMouseMove={isDisabled ? undefined : handleMove}
             className={`group relative flex h-full flex-col overflow-hidden ${surface} ${className}`}>
-            <div
-                className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                style={{
-                    background: `radial-gradient(300px circle at var(--x,50%) var(--y,50%), rgba(${glow},0.08), transparent 70%)`,
-                }}
-            />
+            {!isDisabled && (
+                <div
+                    className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                    style={{
+                        background: `radial-gradient(300px circle at var(--x,50%) var(--y,50%), rgba(${glow},0.08), transparent 70%)`,
+                    }}
+                />
+            )}
             <div className="relative flex h-full flex-col">{children}</div>
         </div>
     );
