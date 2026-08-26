@@ -23,6 +23,8 @@ import { GeneralTab } from './GeneralTab';
 import { ContactsTab } from './ContactsTab';
 import { GuestServicesTab } from './GuestServicesTab';
 import { WorkingHoursTab } from './WorkingHoursTab';
+import { StaffKdsTab } from './StaffKdsTab';
+import { BillingTab } from './BillingTab';
 
 type WorkingHours = z.infer<typeof workingHoursSchema>;
 
@@ -40,6 +42,8 @@ const TABS = [
     { value: 'contacts', label: 'Contacts' },
     { value: 'guest', label: 'Guest Services' },
     { value: 'hours', label: 'Working Hours' },
+    { value: 'kds', label: 'Staff & KDS' },
+    { value: 'billing', label: 'Billing & Plan' },
 ] as const;
 
 type TabValue = (typeof TABS)[number]['value'];
@@ -159,6 +163,12 @@ export function SettingsForm({ slug, initialData }: SettingsFormProps) {
                                 </TabsContent>
                                 <TabsContent value="hours">
                                     <WorkingHoursTab />
+                                </TabsContent>
+                                <TabsContent value="kds">
+                                    <StaffKdsTab slug={slug} settings={settings} />
+                                </TabsContent>
+                                <TabsContent value="billing">
+                                    <BillingTab />
                                 </TabsContent>
                             </div>
                             <AnimatePresence>

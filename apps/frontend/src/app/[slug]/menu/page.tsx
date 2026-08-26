@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
+import { useParams, useSearchParams } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 
 import { useGetPublicMenu } from '@/entities/menu/hooks/useGetPublicMenu';
@@ -21,8 +21,40 @@ import { OrderSuccessOverlay } from '@/features/public-menu/components/OrderSucc
 import { OrderTypeModal } from '@/features/public-menu/components/OrderTypeModal';
 import { TakeawayCheckoutModal } from '@/features/public-menu/components/TakeawayCheckoutModal';
 import { GuestNameModal } from '@/features/public-menu/components/GuestNameModal';
-import { useSharedCart, useAddCartItem } from '@/features/public-menu/hooks/useSharedCart';
+import {
+    useSharedCart,
+    useAddCartItem,
+    useStartNewCartSession,
+} from '@/features/public-menu/hooks/useSharedCart';
 import { useCartStore } from '@/features/public-menu/store/useCartStore';
+
+/**
+ * Bootstraps the dine-in session from the QR deep-link (`/[slug]/menu?table=<tableId>`).
+ * `useSearchParams` opts the subtree into client-side rendering, so it lives in its own
+ * component behind a `<Suspense>` boundary (App Router requirement).
+ */
+function TableSessionInitializer({ tenantSlug }: { tenantSlug: string }) {
+    const searchParams = useSearchParams();
+    const tableParam = searchParams.get('table');
+
+    const ensureTableSession = useTableSessionStore((s) => s.ensureTableSession);
+    const setTakeawaySessionId = useCartStore((s) => s.setTakeawaySessionId);
+    const setOrderTypeModalOpen = useCartStore((s) => s.setOrderTypeModalOpen);
+
+    useEffect(() => {
+        if (!tableParam) return;
+
+        // Persists the table id and mints a guest session id only if we don't have one yet.
+        ensureTableSession({ tableId: tableParam, tenantSlug });
+
+        // The guest is dining in: a leftover takeaway session would otherwise hijack the
+        // shared-cart query key (`sessionId ?? tableId`) and point at the wrong cart.
+        setTakeawaySessionId(null);
+        setOrderTypeModalOpen(false);
+    }, [tableParam, tenantSlug, ensureTableSession, setTakeawaySessionId, setOrderTypeModalOpen]);
+
+    return null;
+}
 
 /** Flushes the dish a guest tapped before naming themselves, once they have a name. */
 function SharedCartCoordinator({
@@ -66,22 +98,65 @@ export default function PublicMenuPage() {
     const { data, isLoading } = useGetPublicMenu(resolvedSlug);
 
     const tableId = useTableSessionStore((s) => s.tableId);
-    const clearTableSession = useTableSessionStore((s) => s.clearTableSession);
+    const guestSessionId = useTableSessionStore((s) => s.guestSessionId);
     const takeawaySessionId = useCartStore((s) => s.takeawaySessionId);
     const setTakeawaySessionId = useCartStore((s) => s.setTakeawaySessionId);
     const setCartDrawerOpen = useCartStore((s) => s.setCartDrawerOpen);
+    const setNameModalOpen = useCartStore((s) => s.setNameModalOpen);
+    const setOrderTypeModalOpen = useCartStore((s) => s.setOrderTypeModalOpen);
+    const setTakeawayCheckoutOpen = useCartStore((s) => s.setTakeawayCheckoutOpen);
+    const setPendingMenuItem = useCartStore((s) => s.setPendingMenuItem);
     const [takeawayPlaced, setTakeawayPlaced] = useState(false);
 
-    const { data: cart } = useSharedCart(tableId, takeawaySessionId);
+    const cartQuery = useSharedCart(tableId, takeawaySessionId);
+    const cart = cartQuery.data;
+    const startNewSession = useStartNewCartSession(tableId);
+
+    /**
+     * The payload can only be trusted once the first fetch has settled. While the query
+     * is still pending there is no `isActive` to read, and optimistically treating that
+     * as "order placed" is what used to flash the success screen right after a QR scan.
+     * Note: `isFetching` is deliberately NOT part of this guard — the cart polls every
+     * 3s, so the overlay would strobe on every background refetch.
+     */
+    const isCartSettled = cartQuery.isSuccess && !cartQuery.isPending && !cartQuery.isLoading;
+    const completedCart = isCartSettled && cart && cart.isActive === false ? cart : null;
+
+    /**
+     * The read endpoint intentionally keeps returning a table's last CLOSED session (so
+     * every guest at the table sees the confirmation). Without an ownership check, a guest
+     * who just scanned the QR would inherit the *previous* group's success screen.
+     */
+    const isMyCompletedOrder = Boolean(
+        completedCart &&
+            guestSessionId &&
+            ((completedCart.confirmedGuests ?? []).includes(guestSessionId) ||
+                completedCart.items.some((item) => item.guestSessionId === guestSessionId)),
+    );
+
+    const showDineInSuccess = Boolean(tableId && !takeawaySessionId && isMyCompletedOrder);
+    const showTakeawaySuccess = Boolean(takeawayPlaced);
+
+    // A closed session is read-only history: never render its rows as editable steppers.
+    const cartItems = cart && cart.isActive ? cart.items : [];
 
     function handleRestart() {
+        // Local UI state only — the guest's identity (table, session, name) must survive.
         setCartDrawerOpen(false);
-        if (takeawayPlaced) {
+        setNameModalOpen(false);
+        setTakeawayCheckoutOpen(false);
+        setOrderTypeModalOpen(false);
+        setPendingMenuItem(null);
+
+        if (showTakeawaySuccess) {
+            // A takeaway session is single-use: drop it so the next order starts clean.
             setTakeawayPlaced(false);
             setTakeawaySessionId(null);
-        } else {
-            clearTableSession();
+            return;
         }
+
+        // Dine-in: keep the table, ask the API for a fresh ACTIVE cart and re-sync.
+        if (tableId && !startNewSession.isPending) startNewSession.mutate();
     }
 
     return (
@@ -89,6 +164,10 @@ export default function PublicMenuPage() {
             <AmbientBackground />
 
             <BaseHeader>{mounted && <ThemeToggle theme={theme} toggle={toggle} />}</BaseHeader>
+
+            <Suspense fallback={null}>
+                <TableSessionInitializer tenantSlug={resolvedSlug} />
+            </Suspense>
 
             <div className="mx-auto max-w-6xl px-6 pb-32">
                 {isLoading ? (
@@ -103,7 +182,7 @@ export default function PublicMenuPage() {
                             categories={data.categories}
                             tableId={tableId}
                             takeawaySessionId={takeawaySessionId}
-                            cartItems={cart?.items ?? []}
+                            cartItems={cartItems}
                         />
                     </>
                 )}
@@ -117,14 +196,18 @@ export default function PublicMenuPage() {
                 cart={cart}
                 tableId={tableId}
                 takeawaySessionId={takeawaySessionId}
+                isLoading={cartQuery.isLoading}
             />
             <GuestNameModal />
             <OrderTypeModal />
             <TakeawayCheckoutModal onComplete={() => setTakeawayPlaced(true)} />
 
             <AnimatePresence>
-                {(tableId && cart && !cart.isActive) || (takeawayPlaced && takeawaySessionId) ? (
-                    <OrderSuccessOverlay onRestart={handleRestart} />
+                {showDineInSuccess || showTakeawaySuccess ? (
+                    <OrderSuccessOverlay
+                        onRestart={handleRestart}
+                        isRestarting={startNewSession.isPending}
+                    />
                 ) : null}
             </AnimatePresence>
         </main>

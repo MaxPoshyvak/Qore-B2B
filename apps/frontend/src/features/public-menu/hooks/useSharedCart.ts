@@ -10,6 +10,7 @@ import {
 } from '@my-app/types';
 import { CartApi } from '../api/cart.api';
 import { useCartStore } from '../store/useCartStore';
+import { useTableSessionStore } from '@/shared/store/useTableSessionStore';
 
 type CartMutationContext = { previousCart?: CartSessionResponse };
 
@@ -200,13 +201,37 @@ export const useCreateTakeawaySession = () => {
     const queryClient = useQueryClient();
     const setTakeawaySessionId = useCartStore((s) => s.setTakeawaySessionId);
     const setOrderTypeModalOpen = useCartStore((s) => s.setOrderTypeModalOpen);
+    const ensureGuestSessionId = useTableSessionStore((s) => s.ensureGuestSessionId);
 
     return useMutation<CartSessionResponse, Error, void, unknown>({
         mutationFn: () => CartApi.createTakeawaySession(),
         onSuccess: (session) => {
+            // Takeaway guests never scan a table, so their identity is minted here.
+            ensureGuestSessionId();
             setTakeawaySessionId(session.id);
             setOrderTypeModalOpen(false);
             queryClient.invalidateQueries({ queryKey: ['shared-cart', session.id] });
+        },
+    });
+};
+
+/**
+ * "Start new order" for a dine-in table: asks the API for a fresh ACTIVE session and
+ * refreshes the shared cart cache. The local table session (table id, guest identity,
+ * guest name) is intentionally left untouched — the guest is still sitting at the table.
+ */
+export const useStartNewCartSession = (tableId: string | null) => {
+    const queryClient = useQueryClient();
+
+    return useMutation<CartSessionResponse, Error, void, unknown>({
+        mutationFn: () => CartApi.startNewSession(tableId as string),
+        onSuccess: (session) => {
+            if (!tableId) return;
+            // Paint the fresh (empty, active) cart immediately, then re-sync.
+            queryClient.setQueryData<CartSessionResponse>(['shared-cart', tableId], session);
+        },
+        onSettled: () => {
+            if (tableId) queryClient.invalidateQueries({ queryKey: ['shared-cart', tableId] });
         },
     });
 };

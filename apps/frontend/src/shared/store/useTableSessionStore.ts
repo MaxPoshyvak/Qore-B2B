@@ -9,12 +9,21 @@ type SetTableSessionInput = {
     tenantSlug: string;
 };
 
+type EnsureTableSessionInput = {
+    tableId: string;
+    tenantSlug?: string | null;
+};
+
 type TableSessionState = {
     tableId: string | null;
     tableName: string | null;
     tenantSlug: string | null;
     guestSessionId: string;
     setTableSession: (data: SetTableSessionInput) => void;
+    /** Idempotent init from a URL (`?table=...`) — keeps the existing guest identity. */
+    ensureTableSession: (data: EnsureTableSessionInput) => void;
+    /** Guarantees a guest identity exists (used by takeaway, which never scans a table). */
+    ensureGuestSessionId: () => string;
     clearTableSession: () => void;
 };
 
@@ -29,7 +38,7 @@ function generateGuestSessionId(): string {
  *  Lives in `shared` because it is consumed by more than one feature (table-resolve, public-menu). */
 export const useTableSessionStore = create<TableSessionState>()(
     persist(
-        (set) => ({
+        (set, get) => ({
             tableId: null,
             tableName: null,
             tenantSlug: null,
@@ -39,6 +48,34 @@ export const useTableSessionStore = create<TableSessionState>()(
                     ...data,
                     guestSessionId: state.guestSessionId || generateGuestSessionId(),
                 })),
+            ensureTableSession: ({ tableId, tenantSlug }) =>
+                set((state) => {
+                    const isSameTable = state.tableId === tableId;
+                    const nextSlug = tenantSlug ?? state.tenantSlug;
+                    const guestSessionId = state.guestSessionId || generateGuestSessionId();
+
+                    // Already initialized for this table — return the identical state so
+                    // zustand skips both the notification and the storage write.
+                    if (isSameTable && state.tenantSlug === nextSlug && state.guestSessionId === guestSessionId) {
+                        return state;
+                    }
+
+                    return {
+                        tableId,
+                        // A different table invalidates the cached display name (resolved via QR).
+                        tableName: isSameTable ? state.tableName : null,
+                        tenantSlug: nextSlug,
+                        guestSessionId,
+                    };
+                }),
+            ensureGuestSessionId: () => {
+                const existing = get().guestSessionId;
+                if (existing) return existing;
+
+                const guestSessionId = generateGuestSessionId();
+                set({ guestSessionId });
+                return guestSessionId;
+            },
             clearTableSession: () =>
                 set((state) => ({
                     tableId: null,

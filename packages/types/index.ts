@@ -6,3 +6,5 @@ export * from './menu';
 export * from './tables';
 export * from './cart';
 export * from './tenant';
+export * from './tenant-settings';
+export * from './orders';

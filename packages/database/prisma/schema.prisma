@@ -98,6 +98,9 @@ model TenantSettings {
   reservationStepMinutes  Int @default(30)
   minReservationTime      Int @default(30)
   maxGuestsPerReservation Int @default(12)
+
+  kdsToken String? @unique
+  kdsPin   String?
 }
 
 model Table {
@@ -189,12 +192,12 @@ model TenantTheme {
 
 // Одна сесія кошика = Одне сидіння гостей за столом
 model CartSession {
-  id              String    @id @default(cuid())
-  table           Table?    @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  id              String   @id @default(cuid())
+  table           Table?   @relation(fields: [tableId], references: [id], onDelete: Cascade)
   tableId         String?
-  isActive        Boolean   @default(true) // true, поки гості замовляють. false - коли закрили рахунок
-  isTakeaway      Boolean   @default(false) // true для замовлень "з собою" без прив'язки до столу
-  confirmedGuests String[]  @default([])
+  isActive        Boolean  @default(true) // true, поки гості замовляють. false - коли закрили рахунок
+  isTakeaway      Boolean  @default(false) // true для замовлень "з собою" без прив'язки до столу
+  confirmedGuests String[] @default([])
 
   items CartItem[]
 
@@ -231,6 +234,7 @@ model Order {
   paymentStatus PaymentStatus @default(pending)
   isOrderAhead  Boolean       @default(false)
   pickupAt      DateTime?
+  customerName  String? // ім'я гостя для замовлень "з собою" / order-ahead 
   totalAmount   Decimal
 
   items OrderItem[]

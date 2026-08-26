@@ -27,12 +27,13 @@ import { Logo } from '@/shared/ui/Logo';
 import { ThemeToggle } from '@/shared/ui/ThemeToggle';
 import { useTheme } from '@/shared/hooks/useTheme';
 import { useGetTenantBySlug, useGetMyTenants } from '@/entities/tenant/hooks/useTenants';
+import { useActiveOrders } from '@/features/dashboard-orders/hooks/useOrders';
 
 const NAV = [
     { label: 'Overview', suffix: '', icon: LayoutDashboard },
     { label: 'Menu', suffix: '/menu', icon: UtensilsCrossed },
     { label: 'Tables & QR', suffix: '/tables', icon: QrCode },
-    { label: 'Live Orders', suffix: '/orders', icon: Bell, badge: 3 },
+    { label: 'Live Orders', suffix: '/orders', icon: Bell },
     { label: 'Analytics', suffix: '/analytics', icon: TrendingUp },
     { label: 'Settings', suffix: '/settings', icon: Settings },
 ];
@@ -42,6 +43,8 @@ const SETTINGS_SECTIONS = [
     { label: 'Contacts', value: 'contacts' },
     { label: 'Guest Services', value: 'guest' },
     { label: 'Working Hours', value: 'hours' },
+    { label: 'Staff & KDS', value: 'kds' },
+    { label: 'Billing & Plan', value: 'billing' },
 ] as const;
 
 function getPlanDetails(plan?: string | null) {
@@ -82,6 +85,10 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
     const { data: tenant } = useGetTenantBySlug(slug);
     const { data: myTenants } = useGetMyTenants();
     const [switcherOpen, setSwitcherOpen] = useState(false);
+
+    // Live count of unacknowledged (new) orders for the badge on the Live Orders link.
+    const { data: activeOrders } = useActiveOrders(tenant?.data.id);
+    const newOrdersCount = (activeOrders ?? []).filter((o) => o.status === 'new').length;
 
     const others = (myTenants?.data ?? []).filter((t) => t.slug !== slug);
     const hasMultipleVenues = (myTenants?.data?.length || 0) > 1;
@@ -175,10 +182,16 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                                         ? 'bg-[#3B82F6]/10 text-[#3B82F6] dark:bg-white/5 dark:text-[#F5F4F2]'
                                         : 'text-[#6B6A65] hover:bg-black/5 hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:bg-white/5 dark:hover:text-[#F5F4F2]'
                                 }`}>
-                                <span className={`absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-full bg-[#3B82F6] transition-opacity ${active ? 'opacity-100' : 'opacity-0'}`} />
+                                <span
+                                    className={`absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-full bg-[#3B82F6] transition-opacity ${active ? 'opacity-100' : 'opacity-0'}`}
+                                />
                                 <Icon size={17} strokeWidth={1.9} />
                                 <span className="flex-1">{item.label}</span>
-                                {item.badge != null && <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#3B82F6] px-1.5 text-[11px] font-semibold text-white">{item.badge}</span>}
+                                {item.label === 'Live Orders' && newOrdersCount > 0 && (
+                                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#3B82F6] px-1.5 text-[11px] font-semibold text-white">
+                                        {newOrdersCount}
+                                    </span>
+                                )}
                             </Link>
                             <AnimatePresence initial={false}>
                                 {isSettings && pathname.includes('/settings') && (
@@ -189,7 +202,8 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                                         transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                                         className="hidden overflow-hidden border-l border-[#E7E5E0] pl-4 pt-1.5 md:flex md:flex-col md:gap-1 dark:border-white/10">
                                         {SETTINGS_SECTIONS.map((section) => {
-                                            const sectionActive = active && (searchParams.get('section') ?? 'general') === section.value;
+                                            const sectionActive =
+                                                active && (searchParams.get('section') ?? 'general') === section.value;
                                             return (
                                                 <Link
                                                     key={section.value}
@@ -224,7 +238,7 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                     )}
                     {!plan.isBusiness && (
                         <Link
-                            href={`/dashboard/${slug}/settings`}
+                            href={`/dashboard/${slug}/settings?section=billing`}
                             onClick={onNavigate}
                             className="inline-flex items-center justify-center gap-1 text-[12px] font-semibold text-[#3B82F6] transition-colors hover:text-[#2563EB] dark:hover:text-[#60A5FA]">
                             <Sparkles size={12} />

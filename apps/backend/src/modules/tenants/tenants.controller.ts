@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { TenantsService } from './tenants.service';
 import { CreateTenantDto, UpdateTenantSettingsDto } from 'src/modules/tenants/dto/tenants.dto';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
@@ -37,5 +37,20 @@ export class TenantsController {
         @CurrentUser('id') userId: string,
     ) {
         return this.tenantsService.updateTenantSettings(slug, updateTenantSettingsDto, userId);
+    }
+
+    /**
+     * Owner-only: mint a fresh Magic-Link token + 4-digit PIN for the isolated KDS.
+     * Replaces any previously issued credentials.
+     */
+    @Post('/:id/kds-auth')
+    generateKdsAccess(@Param('id') id: string, @CurrentUser('id') userId: string) {
+        return this.tenantsService.generateKdsAccess(id, userId);
+    }
+
+    /** Owner-only: revoke KDS access (clears token + pin). */
+    @Delete('/:id/kds-auth')
+    revokeKdsAccess(@Param('id') id: string, @CurrentUser('id') userId: string) {
+        return this.tenantsService.revokeKdsAccess(id, userId);
     }
 }

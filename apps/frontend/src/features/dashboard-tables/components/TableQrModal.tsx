@@ -20,14 +20,7 @@ type TableQrModalProps = {
     onRegenerated?: (table: Table) => void;
 };
 
-export function TableQrModal({
-    open,
-    onClose,
-    slug,
-    table,
-    venueName,
-    onRegenerated,
-}: TableQrModalProps) {
+export function TableQrModal({ open, onClose, slug, table, venueName, onRegenerated }: TableQrModalProps) {
     const [currentTable, setCurrentTable] = useState<Table>(table);
     const [confirmOpen, setConfirmOpen] = useState(false);
 
@@ -74,13 +67,7 @@ export function TableQrModal({
                 <div className="print:hidden">
                     <div className="flex flex-col items-center">
                         <div className="rounded-3xl border border-[#E7E5E0] bg-white p-5 dark:border-[#232327] dark:bg-[#141417]">
-                            <QRCodeCanvas
-                                ref={canvasRef}
-                                value={qrValue}
-                                size={220}
-                                level="M"
-                                includeMargin
-                            />
+                            <QRCodeCanvas ref={canvasRef} value={qrValue} size={220} level="M" includeMargin />
                         </div>
 
                         <p className="mt-4 text-center text-sm font-medium text-[#0A0A0C] dark:text-[#F5F4F2]">
@@ -92,13 +79,14 @@ export function TableQrModal({
                     </div>
 
                     <div className="mt-6 flex flex-col gap-2 sm:flex-row">
-                        <PrimaryButton type="button" className="flex-1" onClick={handleDownload} icon={<Download size={16} />}>
-                            Download PNG
-                        </PrimaryButton>
-                        <SecondaryButton
+                        <PrimaryButton
                             type="button"
                             className="flex-1"
-                            onClick={() => window.print()}>
+                            onClick={handleDownload}
+                            icon={<Download size={16} />}>
+                            Download PNG
+                        </PrimaryButton>
+                        <SecondaryButton type="button" className="flex-1" onClick={() => window.print()}>
                             <Printer size={16} className="mr-1.5" />
                             Print QR
                         </SecondaryButton>
@@ -120,15 +108,12 @@ export function TableQrModal({
                 {/* Printable sheet — only visible when printing. */}
                 <div className="hidden print:block">
                     <div className="flex flex-col items-center gap-4 text-center">
-                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#3B82F6]">
-                            CaféBoard
-                        </p>
+                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#3B82F6]">Qore</p>
                         <h1 className="text-2xl font-bold text-black">{venueName ?? 'Your venue'}</h1>
                         <QRCodeSVG value={qrValue} size={240} level="M" includeMargin />
                         <p className="text-lg font-bold text-black">{currentTable.name}</p>
                         <p className="max-w-xs text-sm text-black/70">
-                            Scan this code with your phone camera to open the menu and start your
-                            order.
+                            Scan this code with your phone camera to open the menu and start your order.
                         </p>
                     </div>
                 </div>

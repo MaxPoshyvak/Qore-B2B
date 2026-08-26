@@ -36,7 +36,9 @@ export default function PublicTableResolvePage() {
                     tableName: data.table.name,
                     tenantSlug: data.tenant.slug,
                 });
-                router.replace(`/${data.tenant.slug}/menu?table=${encodeURIComponent(data.table.name)}`);
+                // The menu page re-initializes its session from `?table=`, so the link must
+                // carry the canonical table id (the name is kept in the session store).
+                router.replace(`/${data.tenant.slug}/menu?table=${encodeURIComponent(data.table.id)}`);
             })
             .catch(() => {
                 if (active) setStatus('error');

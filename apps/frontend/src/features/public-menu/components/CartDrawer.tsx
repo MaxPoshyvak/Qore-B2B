@@ -24,6 +24,8 @@ type CartDrawerProps = {
     cart: CartSessionResponse | undefined;
     tableId: string | null;
     takeawaySessionId: string | null;
+    /** True while the very first shared-cart fetch is still in flight. */
+    isLoading?: boolean;
 };
 
 function groupByGuest(
@@ -52,7 +54,7 @@ function groupByGuest(
     });
 }
 
-export function CartDrawer({ cart, tableId, takeawaySessionId }: CartDrawerProps) {
+export function CartDrawer({ cart, tableId, takeawaySessionId, isLoading = false }: CartDrawerProps) {
     const isOpen = useCartStore((s) => s.isCartDrawerOpen);
     const setCartDrawerOpen = useCartStore((s) => s.setCartDrawerOpen);
     const setNameModalOpen = useCartStore((s) => s.setNameModalOpen);
@@ -70,7 +72,8 @@ export function CartDrawer({ cart, tableId, takeawaySessionId }: CartDrawerProps
 
     const items = cart?.items ?? [];
     const confirmedGuests = cart?.confirmedGuests ?? [];
-    const isComplete = cart ? !cart.isActive : false;
+    // Only a settled payload may flip the drawer into its "order placed" layout.
+    const isComplete = !isLoading && cart ? cart.isActive === false : false;
     const isTakeaway = cart ? Boolean(cart.isTakeaway) : Boolean(takeawaySessionId);
     const isMineConfirmed = !isTakeaway && confirmedGuests.includes(localSessionId);
     const confirmedCount = confirmedGuests.length;
@@ -147,7 +150,12 @@ export function CartDrawer({ cart, tableId, takeawaySessionId }: CartDrawerProps
 
                         {/* Grouped guest lists */}
                         <div className="flex-1 overflow-y-auto px-5">
-                            {groups.length === 0 ? (
+                            {isLoading ? (
+                                <p className="flex items-center justify-center gap-2 py-10 text-sm text-[#6B6A65] dark:text-[#94938D]">
+                                    <Loader2 size={14} className="animate-spin" />
+                                    Loading the shared cart...
+                                </p>
+                            ) : groups.length === 0 ? (
                                 <p className="py-10 text-center text-sm text-[#6B6A65] dark:text-[#94938D]">
                                     The shared cart is empty.
                                 </p>
@@ -312,7 +320,7 @@ export function CartDrawer({ cart, tableId, takeawaySessionId }: CartDrawerProps
                                             setCartDrawerOpen(false);
                                             setTakeawayCheckoutOpen(true);
                                         }}
-                                        disabled={items.length === 0}
+                                        disabled={items.length === 0 || isLoading}
                                         className="inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#3B82F6]/20 transition-opacity hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50">
                                         Proceed to Checkout
                                     </button>
@@ -329,7 +337,7 @@ export function CartDrawer({ cart, tableId, takeawaySessionId }: CartDrawerProps
                                         <button
                                             type="button"
                                             onClick={() => toggleReady.mutate(localSessionId)}
-                                            disabled={items.length === 0}
+                                            disabled={items.length === 0 || isLoading || toggleReady.isPending}
                                             className={
                                                 isMineConfirmed
                                                     ? 'inline-flex w-full items-center justify-center rounded-2xl border border-[#3B82F6]/30 bg-[#3B82F6]/5 px-5 py-3.5 text-sm font-semibold text-[#2563EB] transition-colors hover:border-[#3B82F6]/60 dark:text-[#60A5FA] disabled:cursor-not-allowed disabled:opacity-50'

@@ -5,9 +5,10 @@ import { TenantsModule } from './modules/tenants/tenants.module';
 import { MenuModule } from 'src/modules/menu/menu.module';
 import { TablesModule } from './modules/tables/tables.module';
 import { CartModule } from './modules/cart/cart.module';
+import { OrdersModule } from './modules/orders/orders.module';
 
 @Module({
-    imports: [AuthModule, PrismaModule, TenantsModule, MenuModule, TablesModule, CartModule],
+    imports: [AuthModule, PrismaModule, TenantsModule, MenuModule, TablesModule, CartModule, OrdersModule],
     controllers: [],
     providers: [],
 })

@@ -31,6 +31,15 @@ export class CartApi {
         return res.data;
     }
 
+    /** Reopens the table with a fresh ACTIVE session after an order was placed. */
+    static async startNewSession(tableId: string): Promise<CartSessionResponse> {
+        const res = await apiClient<CartSessionResponse>(`${CART_URL}/table/${tableId}/new-session`, {
+            method: 'POST',
+            body: JSON.stringify({}),
+        });
+        return res.data;
+    }
+
     static async addItem(tableId: string, dto: AddCartItemDto): Promise<CartSessionResponse> {
         const res = await apiClient<CartSessionResponse>(`${CART_URL}/table/${tableId}/items`, {
             method: 'POST',

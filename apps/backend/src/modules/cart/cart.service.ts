@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { Prisma, CartItem, CartSession } from '@my-app/database';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { AddCartItemDto, SuccessResponse, UpdateCartItemDto } from '@my-app/types';
+import { OrdersService } from 'src/modules/orders/orders.service';
 
 export type CartSessionWithItems = Prisma.CartSessionGetPayload<{
     include: { items: { include: { menuItem: true } } };
@@ -9,7 +10,10 @@ export type CartSessionWithItems = Prisma.CartSessionGetPayload<{
 
 @Injectable()
 export class CartService {
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly orderService: OrdersService,
+    ) {}
 
     /**
      * Resolves the cart session for a table.
@@ -31,6 +35,9 @@ export class CartService {
 
         const active = await this.prisma.cartSession.findFirst({
             where: { tableId, isActive: true },
+            // Deterministic pick: if two guests reopened the table at the same instant,
+            // every client must converge on the very same session.
+            orderBy: { createdAt: 'asc' },
             include: { items: { include: { menuItem: true } } },
         });
         if (active) return active;
@@ -55,6 +62,18 @@ export class CartService {
         return { success: true, data: session };
     }
 
+    /**
+     * "Start a new order" from the guest UI: guarantees an ACTIVE (empty) session for
+     * the table. Needed because the read path deliberately keeps returning the last
+     * CLOSED session so every guest can see the "order placed" confirmation — without
+     * this, nothing would ever flip the table back into an orderable state until
+     * someone added an item.
+     */
+    async startNewSessionForTable(tableId: string): Promise<SuccessResponse<CartSessionWithItems>> {
+        const session = await this.resolveActiveSession(tableId, true);
+        return { success: true, data: session };
+    }
+
     async getSessionById(sessionId: string): Promise<SuccessResponse<CartSessionWithItems>> {
         const session = await this.prisma.cartSession.findUnique({
             where: { id: sessionId },
@@ -75,10 +94,7 @@ export class CartService {
     }
 
     /** Shared add-to-cart logic used by both table and takeaway sessions. */
-    private async applyAddItem(
-        session: CartSessionWithItems,
-        dto: AddCartItemDto,
-    ): Promise<CartSessionWithItems> {
+    private async applyAddItem(session: CartSessionWithItems, dto: AddCartItemDto): Promise<CartSessionWithItems> {
         const existingItem = await this.prisma.cartItem.findFirst({
             where: {
                 cartSessionId: session.id,
@@ -116,10 +132,7 @@ export class CartService {
         return { success: true, data: updated };
     }
 
-    async addItemForSession(
-        sessionId: string,
-        dto: AddCartItemDto,
-    ): Promise<SuccessResponse<CartSessionWithItems>> {
+    async addItemForSession(sessionId: string, dto: AddCartItemDto): Promise<SuccessResponse<CartSessionWithItems>> {
         const session = await this.prisma.cartSession.findUnique({
             where: { id: sessionId },
             include: { items: { include: { menuItem: true } } },
@@ -201,8 +214,19 @@ export class CartService {
         if (isNowConfirmed) {
             const distinctGuests = Array.from(new Set(session.items.map((i) => i.guestSessionId)));
             const everyoneReady = distinctGuests.length > 0 && distinctGuests.every((g) => confirmedGuests.includes(g));
-            if (everyoneReady) {
+            if (everyoneReady && session.tableId) {
                 isActive = false;
+                // A CartSession has no direct `tenantId` — resolve it via its table.
+                const table = await this.prisma.table.findUnique({
+                    where: { id: session.tableId },
+                    select: { tenantId: true },
+                });
+                if (!table) {
+                    throw new NotFoundException('Table not found');
+                }
+                await this.orderService.createOrderFromCart({
+                    cartSessionId: session.id,
+                });
             }
         }
 

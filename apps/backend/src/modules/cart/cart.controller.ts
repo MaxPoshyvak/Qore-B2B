@@ -26,6 +26,12 @@ export class CartController {
         return this.cartService.getSessionById(sessionId);
     }
 
+    // B2C public: reopens the table with a fresh ACTIVE session ("Start new order").
+    @Post('table/:tableId/new-session')
+    startNewSession(@Param('tableId') tableId: string): Promise<SuccessResponse<CartSessionWithItems>> {
+        return this.cartService.startNewSessionForTable(tableId);
+    }
+
     @Post('table/:tableId/items')
     addItem(
         @Param('tableId') tableId: string,

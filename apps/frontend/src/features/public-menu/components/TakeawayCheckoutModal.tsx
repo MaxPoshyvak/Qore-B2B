@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check, Clock, ShoppingBag } from 'lucide-react';
+import { Check, Clock, Loader2, ShoppingBag } from 'lucide-react';
 
 import { Modal } from '@/shared/ui/Modal';
 import { EASE } from '@/shared/config/animations';
@@ -10,6 +10,7 @@ import { display, mono } from '@/shared/lib/fonts';
 import { formatPrice } from '@/shared/lib/utils';
 import { useCartStore } from '../store/useCartStore';
 import { useSharedCart } from '../hooks/useSharedCart';
+import { useCreatePublicOrder } from '@/features/dashboard-orders/hooks/useOrders';
 
 type TakeawayCheckoutModalProps = {
     onComplete?: () => void;
@@ -30,9 +31,11 @@ export function TakeawayCheckoutModal({ onComplete }: TakeawayCheckoutModalProps
     const pickupTime = useCartStore((s) => s.pickupTime);
     const setPickupTime = useCartStore((s) => s.setPickupTime);
     const takeawaySessionId = useCartStore((s) => s.takeawaySessionId);
+    const setTakeawaySessionId = useCartStore((s) => s.setTakeawaySessionId);
     const setCartDrawerOpen = useCartStore((s) => s.setCartDrawerOpen);
 
     const { data: cart } = useSharedCart(null, takeawaySessionId);
+    const placeOrder = useCreatePublicOrder();
 
     const [name, setName] = useState(guestName ?? '');
     const [error, setError] = useState<string | null>(null);
@@ -62,20 +65,35 @@ export function TakeawayCheckoutModal({ onComplete }: TakeawayCheckoutModalProps
             setError('Please choose a pickup time');
             return;
         }
+        if (!takeawaySessionId) {
+            setError('Your cart session expired. Please start a new order.');
+            return;
+        }
 
+        // Persist the name locally so the success overlay / future steps can use it.
         setGuestName(name);
 
-        // Simulate order placement — wire to the orders endpoint in a later step.
-        console.log('[TakeawayCheckout] order placed', {
-            sessionId: takeawaySessionId,
-            guestName: name.trim(),
-            pickupMode,
-            pickupTime: pickupMode === 'scheduled' ? pickupTime : null,
-            items,
-            total,
-        });
-
-        setSubmitted(true);
+        placeOrder.mutate(
+            {
+                cartSessionId: takeawaySessionId,
+                customerName: name.trim(),
+                pickupTime: pickupMode === 'scheduled' ? (pickupTime ?? undefined) : undefined,
+            },
+            {
+                onSuccess: () => {
+                    // Drop the (now closed) session id locally so the cart query stops
+                    // pointing at it; the page-level success overlay takes over.
+                    setTakeawaySessionId(null);
+                    setCartDrawerOpen(false);
+                    setOpen(false);
+                    setSubmitted(true);
+                    onComplete?.();
+                },
+                onError: (err) => {
+                    setError(err.message || 'Something went wrong placing your order.');
+                },
+            },
+        );
     }
 
     function handleDone() {
@@ -210,9 +228,19 @@ export function TakeawayCheckoutModal({ onComplete }: TakeawayCheckoutModalProps
                     <button
                         type="button"
                         onClick={handleSubmit}
-                        className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#3B82F6]/20 transition-opacity hover:opacity-95">
-                        <ShoppingBag size={16} />
-                        Confirm &amp; Pay
+                        disabled={placeOrder.isPending}
+                        className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#3B82F6]/20 transition-opacity hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60">
+                        {placeOrder.isPending ? (
+                            <>
+                                <Loader2 size={16} className="animate-spin" />
+                                Placing order...
+                            </>
+                        ) : (
+                            <>
+                                <ShoppingBag size={16} />
+                                Confirm &amp; Pay
+                            </>
+                        )}
                     </button>
                 </div>
             )}

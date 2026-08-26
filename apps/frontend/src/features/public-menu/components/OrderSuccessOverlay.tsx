@@ -1,16 +1,18 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Check, UtensilsCrossed } from 'lucide-react';
+import { Check, Loader2, UtensilsCrossed } from 'lucide-react';
 
 import { EASE } from '@/shared/config/animations';
 import { display } from '@/shared/lib/fonts';
 
 type OrderSuccessOverlayProps = {
     onRestart: () => void;
+    /** True while a fresh cart session is being opened — blocks double submissions. */
+    isRestarting?: boolean;
 };
 
-export function OrderSuccessOverlay({ onRestart }: OrderSuccessOverlayProps) {
+export function OrderSuccessOverlay({ onRestart, isRestarting = false }: OrderSuccessOverlayProps) {
     return (
         <motion.div
             initial={{ opacity: 0 }}
@@ -47,8 +49,10 @@ export function OrderSuccessOverlay({ onRestart }: OrderSuccessOverlayProps) {
                     <button
                         type="button"
                         onClick={onRestart}
-                        className="mt-7 inline-flex w-full items-center justify-center rounded-2xl border border-[#E7E5E0] px-5 py-3.5 text-[14px] font-medium text-[#0A0A0C] transition-colors hover:border-[#3B82F6]/40 dark:border-[#232327] dark:text-[#F5F4F2]">
-                        Start New Order
+                        disabled={isRestarting}
+                        className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#E7E5E0] px-5 py-3.5 text-[14px] font-medium text-[#0A0A0C] transition-colors hover:border-[#3B82F6]/40 disabled:cursor-not-allowed disabled:opacity-60 dark:border-[#232327] dark:text-[#F5F4F2]">
+                        {isRestarting && <Loader2 size={15} className="animate-spin" />}
+                        {isRestarting ? 'Preparing your table...' : 'Start New Order'}
                     </button>
                 </div>
             </motion.div>

@@ -3,6 +3,16 @@ import { env } from '@/env';
 import { ErrorResponse, SuccessResponse } from '@my-app/types';
 import { getSession } from 'next-auth/react';
 
+/** Error thrown by `apiClient` that carries the originating HTTP status code. */
+export class ApiError extends Error {
+    status: number;
+    constructor(status: number, message: string) {
+        super(message);
+        this.name = 'ApiError';
+        this.status = status;
+    }
+}
+
 async function getAuthToken(): Promise<string | undefined> {
     if (typeof window !== 'undefined') {
         const session = await getSession();
@@ -53,8 +63,13 @@ export async function apiClient<T>(
         credentials: 'include',
     });
 
+    // KDS endpoints authenticate with a Magic-Link token + PIN header, not a JWT.
+    // They must surface 401 to the caller (so the lock screen can re-appear) instead
+    // of being bounced to the login page like an expired dashboard session.
+    const allow401 = (options as { allow401?: boolean }).allow401 === true;
+
     if (!response.ok) {
-        if (response.status === 401) {
+        if (response.status === 401 && !allow401) {
             if (typeof window !== 'undefined') {
                 window.location.href = '/login';
             }
@@ -68,7 +83,10 @@ export async function apiClient<T>(
             console.error('Failed to parse error response');
         }
 
-        throw new Error(errorData.error || `API Error ${response.status}: ${response.statusText}`);
+        throw new ApiError(
+            response.status,
+            errorData.error || `API Error ${response.status}: ${response.statusText}`,
+        );
     }
 
     const json = await response.json();
