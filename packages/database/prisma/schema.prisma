@@ -23,6 +23,7 @@ enum OrderStatus {
 enum ReservationStatus {
   pending
   confirmed
+  completed
   cancelled
 }
 

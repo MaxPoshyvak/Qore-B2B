@@ -29,10 +29,10 @@ import { useTheme } from '@/shared/hooks/useTheme';
 import { useGetTenantBySlug, useGetMyTenants } from '@/entities/tenant/hooks/useTenants';
 import { useActiveOrders } from '@/features/dashboard-orders/hooks/useOrders';
 
-const NAV = [
+const NAV: { label: string; suffix: string; section?: string; icon: typeof LayoutDashboard }[] = [
     { label: 'Overview', suffix: '', icon: LayoutDashboard },
     { label: 'Menu', suffix: '/menu', icon: UtensilsCrossed },
-    { label: 'Tables & QR', suffix: '/tables', icon: QrCode },
+    { label: 'Tables & Reservations', suffix: '/tables-reservations', section: 'tables', icon: QrCode },
     { label: 'Live Orders', suffix: '/orders', icon: Bell },
     { label: 'Analytics', suffix: '/analytics', icon: TrendingUp },
     { label: 'Settings', suffix: '/settings', icon: Settings },
@@ -45,6 +45,11 @@ const SETTINGS_SECTIONS = [
     { label: 'Working Hours', value: 'hours' },
     { label: 'Staff & KDS', value: 'kds' },
     { label: 'Billing & Plan', value: 'billing' },
+] as const;
+
+const TABLES_SECTIONS = [
+    { label: 'Table Management', value: 'tables' },
+    { label: 'Reservations', value: 'reservations' },
 ] as const;
 
 function getPlanDetails(plan?: string | null) {
@@ -168,14 +173,25 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
             {/* Nav links */}
             <nav className="mt-6 flex flex-1 flex-col gap-1">
                 {NAV.map((item) => {
-                    const href = `/dashboard/${slug}${item.suffix}`;
+                    const baseHref = `/dashboard/${slug}${item.suffix}`;
                     const isSettings = item.suffix === '/settings';
-                    const active = isSettings ? pathname.startsWith(href) : pathname === href;
+                    const isTablesReservations = item.suffix === '/tables-reservations';
+                    const defaultSection = isTablesReservations ? 'tables' : 'general';
+                    const href = isSettings || isTablesReservations
+                        ? `${baseHref}?section=${defaultSection}`
+                        : item.section
+                          ? `${baseHref}?section=${item.section}`
+                          : baseHref;
+                    const active = isSettings || isTablesReservations
+                        ? pathname.startsWith(baseHref)
+                        : pathname === href;
+                    const showDropdown = (isSettings && pathname.includes('/settings')) ||
+                        (isTablesReservations && pathname.includes('/tables-reservations'));
                     const Icon = item.icon;
                     return (
                         <div key={item.label}>
                             <Link
-                                href={isSettings ? `${href}?section=general` : href}
+                                href={href}
                                 onClick={onNavigate}
                                 className={`relative flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-[14px] transition-colors ${
                                     active
@@ -194,20 +210,20 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                                 )}
                             </Link>
                             <AnimatePresence initial={false}>
-                                {isSettings && pathname.includes('/settings') && (
+                                {showDropdown && (
                                     <motion.div
                                         initial={{ opacity: 0, height: 0 }}
                                         animate={{ opacity: 1, height: 'auto' }}
                                         exit={{ opacity: 0, height: 0 }}
                                         transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                                         className="hidden overflow-hidden border-l border-[#E7E5E0] pl-4 pt-1.5 md:flex md:flex-col md:gap-1 dark:border-white/10">
-                                        {SETTINGS_SECTIONS.map((section) => {
+                                        {(isSettings ? SETTINGS_SECTIONS : TABLES_SECTIONS).map((section) => {
                                             const sectionActive =
-                                                active && (searchParams.get('section') ?? 'general') === section.value;
+                                                active && (searchParams.get('section') ?? defaultSection) === section.value;
                                             return (
                                                 <Link
                                                     key={section.value}
-                                                    href={`${href}?section=${section.value}`}
+                                                    href={`${baseHref}?section=${section.value}`}
                                                     onClick={onNavigate}
                                                     className={`rounded-lg px-3 py-1.5 text-[13px] transition-colors ${sectionActive ? 'bg-[#3B82F6]/10 font-medium text-[#2563EB] dark:text-[#60A5FA]' : 'text-[#6B6A65] hover:bg-black/5 hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:bg-white/5 dark:hover:text-[#F5F4F2]'}`}>
                                                     {section.label}

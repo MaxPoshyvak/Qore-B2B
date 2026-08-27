@@ -1,10 +1,10 @@
 import { redirect } from 'next/navigation';
 
-export default async function TablesRedirect({
+export default async function ReservationsRedirect({
     params,
 }: {
     params: Promise<{ slug: string }>;
 }) {
     const { slug } = await params;
-    redirect(`/dashboard/${slug}/tables-reservations?section=tables`);
+    redirect(`/dashboard/${slug}/tables-reservations?section=reservations`);
 }

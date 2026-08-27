@@ -21,6 +21,7 @@ import { OrderSuccessOverlay } from '@/features/public-menu/components/OrderSucc
 import { OrderTypeModal } from '@/features/public-menu/components/OrderTypeModal';
 import { TakeawayCheckoutModal } from '@/features/public-menu/components/TakeawayCheckoutModal';
 import { GuestNameModal } from '@/features/public-menu/components/GuestNameModal';
+import { ReservationAlert } from '@/features/reservations/components/ReservationAlert';
 import {
     useSharedCart,
     useAddCartItem,
@@ -170,6 +171,8 @@ export default function PublicMenuPage() {
             </Suspense>
 
             <div className="mx-auto max-w-6xl px-6 pb-32">
+                <ReservationAlert slug={resolvedSlug} tableId={tableId} />
+
                 {isLoading ? (
                     <PublicMenuSkeleton />
                 ) : !data ? (

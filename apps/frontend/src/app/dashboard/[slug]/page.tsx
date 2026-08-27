@@ -35,7 +35,7 @@ const METRICS = [
 
 const QUICK_ACTIONS = [
     { label: 'Add Dish to Menu', icon: Plus, href: '/menu' },
-    { label: 'Print Table QRs', icon: Printer, href: '/tables' },
+    { label: 'Print Table QRs', icon: Printer, href: '/tables-reservations?section=tables' },
     { label: 'View Kitchen Board', icon: ChefHat, href: '/orders' },
 ];
 

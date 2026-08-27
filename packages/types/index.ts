@@ -8,3 +8,4 @@ export * from './cart';
 export * from './tenant';
 export * from './tenant-settings';
 export * from './orders';
+export * from './reservations';
