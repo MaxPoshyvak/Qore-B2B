@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { OrderStatus, PaymentStatus, Prisma } from '@my-app/database';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { CreateOrderDto, OrderResponse, UpdateOrderStatusDto } from '@my-app/types';
+import { CreateOrderDto, OrderResponse, PublicOrderResponse, UpdateOrderStatusDto } from '@my-app/types';
 
 @Injectable()
 export class OrdersService {
@@ -108,6 +108,35 @@ export class OrdersService {
         });
 
         return orders as unknown as OrderResponse[];
+    }
+
+    /**
+     * Публічне отримання замовлення для сторінки трекінгу гостя.
+     * Повертає лише базові дані (статус, сума, позиції) — без конфіденційних полів.
+     * orderId є непередбачуваним cuid, тому ендпоінт залишається публічним.
+     */
+    async getPublicOrderById(orderId: string): Promise<PublicOrderResponse> {
+        const order = await this.prisma.order.findUnique({
+            where: { id: orderId },
+            include: { items: { include: { menuItem: true } } },
+        });
+
+        if (!order) {
+            throw new NotFoundException('Order not found');
+        }
+
+        return {
+            id: order.id,
+            status: order.status,
+            totalAmount: Number(order.totalAmount),
+            items: order.items.map((item) => ({
+                id: item.id,
+                menuItemName: item.menuItem?.name ?? 'Item',
+                quantity: item.quantity,
+                priceAtOrder: Number(item.priceAtOrder),
+            })),
+            createdAt: order.createdAt.toISOString(),
+        };
     }
 
     async updateOrderStatus(tenantId: string, orderId: string, dto: UpdateOrderStatusDto): Promise<OrderResponse> {

@@ -52,6 +52,13 @@ const TABLES_SECTIONS = [
     { label: 'Reservations', value: 'reservations' },
 ] as const;
 
+const ANALYTICS_SECTIONS = [
+    { label: 'Overview', value: 'overview' },
+    { label: 'Sales & Menu', value: 'sales' },
+    { label: 'Guests & Traffic', value: 'guests' },
+    { label: 'Feedback & AI', value: 'feedback' },
+] as const;
+
 function getPlanDetails(plan?: string | null) {
     const normalizedPlan = plan?.toLowerCase();
 
@@ -176,17 +183,25 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                     const baseHref = `/dashboard/${slug}${item.suffix}`;
                     const isSettings = item.suffix === '/settings';
                     const isTablesReservations = item.suffix === '/tables-reservations';
-                    const defaultSection = isTablesReservations ? 'tables' : 'general';
-                    const href = isSettings || isTablesReservations
+                    const isAnalytics = item.suffix === '/analytics';
+                    const defaultSection = isTablesReservations
+                        ? 'tables'
+                        : isAnalytics
+                          ? 'overview'
+                          : 'general';
+                    const href = isSettings || isTablesReservations || isAnalytics
                         ? `${baseHref}?section=${defaultSection}`
                         : item.section
                           ? `${baseHref}?section=${item.section}`
                           : baseHref;
-                    const active = isSettings || isTablesReservations
-                        ? pathname.startsWith(baseHref)
-                        : pathname === href;
-                    const showDropdown = (isSettings && pathname.includes('/settings')) ||
-                        (isTablesReservations && pathname.includes('/tables-reservations'));
+                    const active =
+                        isSettings || isTablesReservations || isAnalytics
+                            ? pathname.startsWith(baseHref)
+                            : pathname === href;
+                    const showDropdown =
+                        (isSettings && pathname.includes('/settings')) ||
+                        (isTablesReservations && pathname.includes('/tables-reservations')) ||
+                        (isAnalytics && pathname.includes('/analytics'));
                     const Icon = item.icon;
                     return (
                         <div key={item.label}>
@@ -217,9 +232,15 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                                         exit={{ opacity: 0, height: 0 }}
                                         transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                                         className="hidden overflow-hidden border-l border-[#E7E5E0] pl-4 pt-1.5 md:flex md:flex-col md:gap-1 dark:border-white/10">
-                                        {(isSettings ? SETTINGS_SECTIONS : TABLES_SECTIONS).map((section) => {
+                                        {(isSettings
+                                            ? SETTINGS_SECTIONS
+                                            : isTablesReservations
+                                              ? TABLES_SECTIONS
+                                              : ANALYTICS_SECTIONS
+                                        ).map((section) => {
                                             const sectionActive =
-                                                active && (searchParams.get('section') ?? defaultSection) === section.value;
+                                                active &&
+                                                (searchParams.get('section') ?? defaultSection) === section.value;
                                             return (
                                                 <Link
                                                     key={section.value}

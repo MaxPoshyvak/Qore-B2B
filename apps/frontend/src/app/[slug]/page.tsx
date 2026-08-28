@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ArrowRight, CalendarDays, UtensilsCrossed } from 'lucide-react';
+import { ArrowRight, CalendarDays, Star, UtensilsCrossed } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 import { useGetPublicTenant } from '@/entities/tenant/hooks/useGetPublicTenant';
@@ -65,10 +65,17 @@ export default function PublicVenuePage() {
                                 </MagneticButton>
 
                                 <Link
-                                    href={`/${resolvedSlug}/reserve`}
+                                    href={`/${resolvedSlug}/book`}
                                     className={`${body.className} flex w-full items-center justify-center gap-2 rounded-full border border-[#E7E5E0] px-6 py-4 text-[15px] font-medium text-[#0A0A0C] transition-colors hover:border-[#3B82F6]/40 dark:border-[#232327] dark:text-[#F5F4F2]`}>
                                     <CalendarDays size={18} strokeWidth={2} />
                                     Book a Table
+                                </Link>
+
+                                <Link
+                                    href={`/${resolvedSlug}/reviews`}
+                                    className={`${body.className} flex w-full items-center justify-center gap-2 rounded-full border border-[#FBBF24]/40 bg-[#FBBF24]/5 px-6 py-4 text-[15px] font-medium text-[#0A0A0C] transition-colors hover:border-[#FBBF24]/70 dark:border-[#FBBF24]/30 dark:text-[#F5F4F2]`}>
+                                    <Star size={18} strokeWidth={2} />
+                                    View Reviews
                                 </Link>
                             </div>
                         </Reveal>

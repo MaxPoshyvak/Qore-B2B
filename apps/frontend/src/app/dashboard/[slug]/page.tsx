@@ -6,38 +6,28 @@ import { motion } from 'framer-motion';
 import {
     DollarSign,
     ClipboardList,
-    Users,
+    CalendarDays,
     Coffee,
     ExternalLink,
-    Plus,
-    Printer,
+    Bell,
     ChefHat,
-    TrendingUp,
+    CalendarPlus,
 } from 'lucide-react';
 
 import { display } from '@/shared/lib/fonts';
 import { EASE } from '@/shared/config/animations';
 import { useGetTenantBySlug } from '@/entities/tenant/hooks/useTenants';
+import { useDashboardToday } from '@/features/dashboard/hooks/useDashboardToday';
+import { formatPrice } from '@/shared/lib/utils';
 import { GlowCard } from '@/shared/ui/GlowCard';
 
-const METRICS = [
-    {
-        label: "Today's revenue",
-        value: '$1,240.00',
-        icon: DollarSign,
-        trend: '+12.5%',
-        positive: true,
-    },
-    { label: 'Active orders', value: '8 active', icon: ClipboardList },
-    { label: 'Occupied tables', value: '12 / 20', icon: Users },
-    { label: 'Top dish today', value: 'Cappuccino', sub: '42 sold', icon: Coffee },
-];
-
-const QUICK_ACTIONS = [
-    { label: 'Add Dish to Menu', icon: Plus, href: '/menu' },
-    { label: 'Print Table QRs', icon: Printer, href: '/tables-reservations?section=tables' },
-    { label: 'View Kitchen Board', icon: ChefHat, href: '/orders' },
-];
+// Фіксовані слоти метрик (мітка + іконка стабільні, значення — з API)
+const METRIC_SLOTS = [
+    { key: 'revenue', label: "Today's revenue", icon: DollarSign },
+    { key: 'active', label: 'Active orders', icon: ClipboardList },
+    { key: 'reservations', label: "Today's Reservations", icon: CalendarDays },
+    { key: 'topDish', label: 'Top dish today', icon: Coffee },
+] as const;
 
 const container = {
     hidden: {},
@@ -51,7 +41,29 @@ const item = {
 
 export default function DashboardOverview() {
     const { slug } = useParams<{ slug: string }>();
-    const { data, isLoading } = useGetTenantBySlug(slug ?? '');
+    const { data: tenant, isLoading: isTenantLoading } = useGetTenantBySlug(slug ?? '');
+    const tenantId = tenant?.data?.id;
+
+    const { data: today, isLoading: isTodayLoading } = useDashboardToday(tenantId);
+    const isLoading = isTodayLoading || !today;
+
+    // Швидкі дії дня. "New Reservation" веде на публічну сторінку бронювання /[slug]/book
+    const QUICK_ACTIONS = [
+        { label: 'Live Orders', icon: Bell, href: '/orders' },
+        { label: 'Kitchen Board', icon: ChefHat, href: '/settings?section=kds' },
+        { label: 'New Reservation', icon: CalendarPlus, href: `/${slug}/book`, absolute: true },
+    ];
+
+    // Значення метрик із відповіді API (або плейсхолдери під час завантаження)
+    const metricValues: Record<(typeof METRIC_SLOTS)[number]['key'], { value: string; sub?: string }> = {
+        revenue: { value: today ? formatPrice(today.revenueToday) : '' },
+        active: { value: today ? String(today.activeOrders) : '' },
+        reservations: { value: today ? String(today.todayReservations) : '' },
+        topDish: {
+            value: today?.topDish?.name ?? '—',
+            sub: today?.topDish ? `${today.topDish.sold} sold` : undefined,
+        },
+    };
 
     return (
         <div className="mx-auto max-w-6xl">
@@ -73,7 +85,7 @@ export default function DashboardOverview() {
                 </div>
                 <h1
                     className={`${display.className} mt-4 text-[32px] font-bold tracking-tight sm:text-[42px]`}>
-                    {isLoading ? 'Welcome back…' : `Welcome back to ${data?.data.name ?? ''}`}
+                    {isTenantLoading ? 'Welcome back…' : `Welcome back to ${tenant?.data.name ?? ''}`}
                 </h1>
             </motion.div>
 
@@ -83,10 +95,11 @@ export default function DashboardOverview() {
                 initial="hidden"
                 animate="show"
                 className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {METRICS.map((metric) => {
+                {METRIC_SLOTS.map((metric) => {
                     const Icon = metric.icon;
+                    const values = metricValues[metric.key];
                     return (
-                        <motion.div key={metric.label} variants={item}>
+                        <motion.div key={metric.key} variants={item}>
                             <GlowCard className="p-5">
                                 <div className="flex items-center justify-between">
                                     <span className="text-[13px] text-[#6B6A65] dark:text-[#94938D]">
@@ -100,20 +113,11 @@ export default function DashboardOverview() {
                                     {isLoading ? (
                                         <span className="inline-block h-7 w-24 animate-pulse rounded-md bg-black/[0.06] dark:bg-white/10" />
                                     ) : (
-                                        metric.value
+                                        values.value
                                     )}
                                 </p>
-                                {metric.trend && (
-                                    <span
-                                        className={`mt-1 inline-flex items-center gap-1 text-[12px] font-medium ${
-                                            metric.positive ? 'text-[#04916C] dark:text-[#10B981]' : 'text-red-500'
-                                        }`}>
-                                        <TrendingUp size={12} />
-                                        {metric.trend}
-                                    </span>
-                                )}
-                                {metric.sub && (
-                                    <p className="mt-1 text-[12px] text-[#6B6A65] dark:text-[#94938D]">{metric.sub}</p>
+                                {!isLoading && values.sub && (
+                                    <p className="mt-1 text-[12px] text-[#6B6A65] dark:text-[#94938D]">{values.sub}</p>
                                 )}
                             </GlowCard>
                         </motion.div>
@@ -136,7 +140,7 @@ export default function DashboardOverview() {
                         return (
                             <motion.div key={action.label} variants={item}>
                                 <Link
-                                    href={`/dashboard/${slug}${action.href}`}
+                                    href={action.absolute ? action.href : `/dashboard/${slug}${action.href}`}
                                     className="group flex items-center gap-3 rounded-2xl border border-[#E7E5E0]/80 bg-white/60 px-5 py-4 text-[14px] font-medium text-[#0A0A0C] transition-all hover:-translate-y-0.5 hover:border-[#3B82F6]/40 dark:border-white/10 dark:bg-white/5 dark:text-[#F5F4F2]">
                                     <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] text-white">
                                         <Icon size={16} strokeWidth={2} />

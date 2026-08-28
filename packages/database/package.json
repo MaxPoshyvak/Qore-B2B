@@ -12,14 +12,14 @@
     },
     "dependencies": {
         "@prisma/adapter-pg": "latest",
-        "@prisma/client": "latest",
+        "@prisma/client": "7.10.0",
         "@prisma/client-runtime-utils": "latest",
         "@types/node": "^26.2.0",
         "dotenv": "^17.4.2",
         "pg": "latest"
     },
     "devDependencies": {
-        "prisma": "latest",
+        "prisma": "7.10.0",
         "typescript": "^6.0.0"
     }
 }

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { CreateOrderDto, OrderResponse, SuccessResponse, UpdateOrderStatusDto } from '@my-app/types';
+import { CreateOrderDto, OrderResponse, PublicOrderResponse, SuccessResponse, UpdateOrderStatusDto } from '@my-app/types';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { TenantGuard } from 'src/common/guards/tenant.guard';
 import { Public } from 'src/common/decorators/public.decorator';
@@ -23,6 +23,16 @@ export class OrdersController {
     async getKdsOrders(@Param('token') token: string): Promise<SuccessResponse<OrderResponse[]>> {
         const tenantId = await this.ordersService.resolveKdsToken(token);
         const data = await this.ordersService.getActiveOrders(tenantId);
+        return { success: true, data };
+    }
+
+    // Публічний трекінг замовлення гостем (без автентифікації)
+    @Public()
+    @Get('public/:orderId')
+    async getPublicOrder(
+        @Param('orderId') orderId: string,
+    ): Promise<SuccessResponse<PublicOrderResponse>> {
+        const data = await this.ordersService.getPublicOrderById(orderId);
         return { success: true, data };
     }
 

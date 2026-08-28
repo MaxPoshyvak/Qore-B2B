@@ -7,6 +7,9 @@ import { TablesModule } from './modules/tables/tables.module';
 import { CartModule } from './modules/cart/cart.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { ReservationsModule } from './modules/reservations/reservations.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { FeedbackModule } from './modules/feedback/feedback.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
     imports: [
@@ -18,6 +21,9 @@ import { ReservationsModule } from './modules/reservations/reservations.module';
         CartModule,
         OrdersModule,
         ReservationsModule,
+        AnalyticsModule,
+        FeedbackModule,
+        DashboardModule,
     ],
     controllers: [],
     providers: [],

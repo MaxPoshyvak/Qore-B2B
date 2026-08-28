@@ -13,7 +13,7 @@ import { useSharedCart } from '../hooks/useSharedCart';
 import { useCreatePublicOrder } from '@/features/dashboard-orders/hooks/useOrders';
 
 type TakeawayCheckoutModalProps = {
-    onComplete?: () => void;
+    onComplete?: (orderId: string) => void;
 };
 
 const PICKUP_OPTIONS = [
@@ -80,14 +80,14 @@ export function TakeawayCheckoutModal({ onComplete }: TakeawayCheckoutModalProps
                 pickupTime: pickupMode === 'scheduled' ? (pickupTime ?? undefined) : undefined,
             },
             {
-                onSuccess: () => {
+                onSuccess: (data) => {
                     // Drop the (now closed) session id locally so the cart query stops
                     // pointing at it; the page-level success overlay takes over.
                     setTakeawaySessionId(null);
                     setCartDrawerOpen(false);
                     setOpen(false);
                     setSubmitted(true);
-                    onComplete?.();
+                    onComplete?.(data.id);
                 },
                 onError: (err) => {
                     setError(err.message || 'Something went wrong placing your order.');
@@ -99,7 +99,6 @@ export function TakeawayCheckoutModal({ onComplete }: TakeawayCheckoutModalProps
     function handleDone() {
         setCartDrawerOpen(false);
         setOpen(false);
-        onComplete?.();
     }
 
     return (

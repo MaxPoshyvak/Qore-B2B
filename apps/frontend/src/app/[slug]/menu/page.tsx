@@ -1,10 +1,11 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 
 import { useGetPublicMenu } from '@/entities/menu/hooks/useGetPublicMenu';
+import { AnalyticsApi } from '@/features/analytics';
 import { useTableSessionStore } from '@/shared/store/useTableSessionStore';
 import { AmbientBackground } from '@/shared/ui/AmbientBackground';
 import { BaseHeader } from '@/shared/ui/BaseHeader';
@@ -28,6 +29,18 @@ import {
     useStartNewCartSession,
 } from '@/features/public-menu/hooks/useSharedCart';
 import { useCartStore } from '@/features/public-menu/store/useCartStore';
+
+// Відстеження перегляду публічного меню: гарантуємо рівно один виклик на slug
+// за сесію перегляду (захист від StrictMode-подвійного виклику та ре-рендерів).
+const trackedMenuViews = new Set<string>();
+
+function trackMenuViewOnce(slug: string, tableId?: string) {
+    if (trackedMenuViews.has(slug)) return;
+    trackedMenuViews.add(slug);
+    void AnalyticsApi.trackMenuView(slug, tableId).catch(() => {
+        // Помилка трекінгу не повинна ламати досвід перегляду меню
+    });
+}
 
 /**
  * Bootstraps the dine-in session from the QR deep-link (`/[slug]/menu?table=<tableId>`).
@@ -95,8 +108,14 @@ function SharedCartCoordinator({
 export default function PublicMenuPage() {
     const { slug } = useParams<{ slug: string }>();
     const resolvedSlug = slug ?? '';
+    const router = useRouter();
     const { theme, toggle, mounted } = useTheme();
     const { data, isLoading } = useGetPublicMenu(resolvedSlug);
+
+    // Реальний трекінг перегляду меню: спрацьовує рівно один раз при відкритті
+    useEffect(() => {
+        trackMenuViewOnce(resolvedSlug, tableId ?? undefined);
+    }, [resolvedSlug]);
 
     const tableId = useTableSessionStore((s) => s.tableId);
     const guestSessionId = useTableSessionStore((s) => s.guestSessionId);
@@ -107,8 +126,6 @@ export default function PublicMenuPage() {
     const setOrderTypeModalOpen = useCartStore((s) => s.setOrderTypeModalOpen);
     const setTakeawayCheckoutOpen = useCartStore((s) => s.setTakeawayCheckoutOpen);
     const setPendingMenuItem = useCartStore((s) => s.setPendingMenuItem);
-    const [takeawayPlaced, setTakeawayPlaced] = useState(false);
-
     const cartQuery = useSharedCart(tableId, takeawaySessionId);
     const cart = cartQuery.data;
     const startNewSession = useStartNewCartSession(tableId);
@@ -136,7 +153,6 @@ export default function PublicMenuPage() {
     );
 
     const showDineInSuccess = Boolean(tableId && !takeawaySessionId && isMyCompletedOrder);
-    const showTakeawaySuccess = Boolean(takeawayPlaced);
 
     // A closed session is read-only history: never render its rows as editable steppers.
     const cartItems = cart && cart.isActive ? cart.items : [];
@@ -148,13 +164,6 @@ export default function PublicMenuPage() {
         setTakeawayCheckoutOpen(false);
         setOrderTypeModalOpen(false);
         setPendingMenuItem(null);
-
-        if (showTakeawaySuccess) {
-            // A takeaway session is single-use: drop it so the next order starts clean.
-            setTakeawayPlaced(false);
-            setTakeawaySessionId(null);
-            return;
-        }
 
         // Dine-in: keep the table, ask the API for a fresh ACTIVE cart and re-sync.
         if (tableId && !startNewSession.isPending) startNewSession.mutate();
@@ -203,10 +212,12 @@ export default function PublicMenuPage() {
             />
             <GuestNameModal />
             <OrderTypeModal />
-            <TakeawayCheckoutModal onComplete={() => setTakeawayPlaced(true)} />
+            <TakeawayCheckoutModal
+                onComplete={(orderId) => router.push(`/${resolvedSlug}/order/${orderId}`)}
+            />
 
             <AnimatePresence>
-                {showDineInSuccess || showTakeawaySuccess ? (
+                {showDineInSuccess ? (
                     <OrderSuccessOverlay
                         onRestart={handleRestart}
                         isRestarting={startNewSession.isPending}

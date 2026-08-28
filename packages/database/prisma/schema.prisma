@@ -33,6 +33,11 @@ enum PaymentStatus {
   failed
 }
 
+enum FeedbackStatus {
+  published // Видно всім
+  flagged // Містить підозрілі слова, чекає модерації власника
+}
+
 model User {
   id       String  @id @default(uuid())
   email    String  @unique
@@ -240,8 +245,9 @@ model Order {
 
   items OrderItem[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  feedbacks Feedback[]
 }
 
 model OrderItem {
@@ -279,12 +285,15 @@ model HappyHourRule {
 }
 
 model Feedback {
-  id             String   @id @default(cuid())
-  tenant         Tenant   @relation(fields: [tenantId], references: [id])
+  id             String         @id @default(cuid())
+  tenant         Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   tenantId       String
+  order          Order?         @relation(fields: [orderId], references: [id], onDelete: SetNull)
   orderId        String?
   rating         Int // 1-5
-  comment        String?
+  comment        String?        @db.Text
+  guestName      String?
   aiSummaryBatch String? // ID нічного AI-резюме (Pro)
-  createdAt      DateTime @default(now())
+  status         FeedbackStatus @default(published)
+  createdAt      DateTime       @default(now())
 }

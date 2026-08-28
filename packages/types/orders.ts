@@ -52,6 +52,27 @@ export interface OrderTableResponse {
     capacity: number;
 }
 
+/* ------------------------------------------------------------------ */
+/*  Public order tracking (guest-facing, minimal payload)             */
+/* ------------------------------------------------------------------ */
+
+export interface PublicOrderItemResponse {
+    id: string;
+    menuItemName: string;
+    quantity: number;
+    /** Persisted unit price (Decimal → number for the tracking view). */
+    priceAtOrder: number;
+}
+
+export interface PublicOrderResponse {
+    id: string;
+    status: OrderStatusType;
+    /** Decimal → number. */
+    totalAmount: number;
+    items: PublicOrderItemResponse[];
+    createdAt: string;
+}
+
 export interface OrderResponse {
     id: string;
     tenantId: string;

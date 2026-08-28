@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { createContext, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, ChefHat, CheckCircle2, Clock, ShoppingBag, ArrowLeft } from 'lucide-react';
+import { AlertTriangle, ChefHat, Check, CheckCircle2, Clock, ShoppingBag, ArrowLeft } from 'lucide-react';
 
 import { type OrderResponse, type OrderStatusType } from '@my-app/types';
 import { display, mono } from '@/shared/lib/fonts';
@@ -35,6 +35,13 @@ const ACTION_LABEL: Record<ColumnKey, string | undefined> = {
     new: 'Start Preparing',
     preparing: 'Mark as Ready',
     ready: undefined,
+};
+
+// Термінальна дія для колонки "Ready" — переведення замовлення у фінальний статус "delivered"
+const DELIVER_LABEL: Record<ColumnKey, string | undefined> = {
+    new: undefined,
+    preparing: undefined,
+    ready: 'Mark as Delivered',
 };
 
 const KdsTokenContext = createContext<string>('');
@@ -73,6 +80,7 @@ function OrderCardView({
     const next = NEXT_STATUS[column];
     const prev = PREV_STATUS[column];
     const actionLabel = ACTION_LABEL[column];
+    const deliverLabel = DELIVER_LABEL[column];
 
     const guestName = order.items.find((i) => i.guestName)?.guestName ?? null;
     const tableLabel = order.table?.name ? `Table: ${order.table.name}` : null;
@@ -83,7 +91,7 @@ function OrderCardView({
             layoutId={order.id}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.97 }}
+            exit={{ opacity: 0, scale: 0.96, y: 8 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
             className="group rounded-2xl border border-white/60 bg-white/80 p-4 shadow-xl backdrop-blur-2xl transition-colors hover:border-[#3B82F6]/40 dark:border-white/10 dark:bg-white/[0.04] dark:shadow-2xl dark:hover:border-white/20">
             <div className="flex items-start justify-between gap-2">
@@ -132,7 +140,7 @@ function OrderCardView({
                 ))}
             </ul>
 
-            {(actionLabel && next) || prev ? (
+            {(actionLabel && next) || prev || deliverLabel ? (
                 <div className="mt-4 flex items-center gap-2">
                     {actionLabel && next && (
                         <button
@@ -146,6 +154,17 @@ function OrderCardView({
                             )}>
                             {column === 'new' ? <ChefHat size={16} /> : <CheckCircle2 size={16} />}
                             <span className="whitespace-nowrap">{actionLabel}</span>
+                        </button>
+                    )}
+
+                    {deliverLabel && (
+                        <button
+                            type="button"
+                            onClick={() => onUpdate({ orderId: order.id, status: 'delivered' })}
+                            disabled={isUpdating}
+                            className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#10B981] px-3 text-[14px] font-semibold text-white shadow-sm transition-all hover:bg-[#059669] disabled:cursor-not-allowed disabled:opacity-60">
+                            <Check size={16} />
+                            <span className="whitespace-nowrap">{deliverLabel}</span>
                         </button>
                     )}
 

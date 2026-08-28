@@ -1,4 +1,5 @@
 export * from './api';
+export * from './analytics';
 export * from './auth';
 export * from './common';
 export * from './helpers';
@@ -9,3 +10,5 @@ export * from './tenant';
 export * from './tenant-settings';
 export * from './orders';
 export * from './reservations';
+export * from './feedback';
+export * from './dashboard';
