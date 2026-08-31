@@ -38,6 +38,11 @@ enum FeedbackStatus {
   flagged // Містить підозрілі слова, чекає модерації власника
 }
 
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
 model User {
   id       String  @id @default(uuid())
   email    String  @unique
@@ -134,6 +139,8 @@ model MenuCategory {
   sortOrder Int        @default(0)
   isActive  Boolean    @default(true)
   items     MenuItem[]
+
+  happyHourRules HappyHourRule[]
 }
 
 model MenuItem {
@@ -152,8 +159,9 @@ model MenuItem {
   isActive       Boolean      @default(true) // ручний "86 list" тумблер
   sortOrder      Int          @default(0)
 
-  orderItems OrderItem[]
-  cartItems  CartItem[]
+  orderItems     OrderItem[]
+  cartItems      CartItem[]
+  happyHourRules HappyHourRule[]
 }
 
 model Reservation {
@@ -272,16 +280,23 @@ model OrderItem {
 }
 
 model HappyHourRule {
-  id          String  @id @default(cuid())
-  tenant      Tenant  @relation(fields: [tenantId], references: [id])
-  tenantId    String
-  daysOfWeek  Json // ["mon","tue",...]
-  startTime   String // "16:00"
-  endTime     String // "18:00"
-  discountPct Int?
-  categoryIds Json?
-  itemIds     Json?
-  isActive    Boolean @default(true)
+  id            String       @id @default(cuid())
+  tenant        Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenantId      String
+  name          String // Наприклад: "Friday Cocktails"
+  daysOfWeek    Int[] // [1, 2, 3, 4, 5] (0 = Неділя, 6 = Субота)
+  startTime     String // "16:00"
+  endTime       String // "18:00"
+  discountType  DiscountType @default(PERCENTAGE)
+  discountValue Float // 20 (для 20%) або 50 (для $50 фіксованої знижки)
+  isActive      Boolean      @default(true)
+
+  // Нативні зв'язки Prisma (many-to-many)
+  categories MenuCategory[]
+  items      MenuItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Feedback {

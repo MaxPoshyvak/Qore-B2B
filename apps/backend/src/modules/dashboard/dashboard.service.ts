@@ -33,14 +33,13 @@ export class DashboardService {
             },
             _sum: { totalAmount: true },
         });
-        const revenueToday = revenueAggregate._sum.totalAmount
-            ? Number(revenueAggregate._sum.totalAmount)
-            : 0;
+        const revenueToday = revenueAggregate._sum.totalAmount ? Number(revenueAggregate._sum.totalAmount) : 0;
 
         // 2. Активні замовлення: лише pending + preparing (без ready/delivered/cancelled)
         const activeOrders = await this.prisma.order.count({
             where: {
                 tenantId,
+                createdAt: dateFilter,
                 status: { in: [OrderStatus.new, OrderStatus.preparing] },
             },
         });

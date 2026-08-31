@@ -20,8 +20,6 @@ import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { useUpdateTenantSettings } from '../hooks/use-update-settings';
 import { Toaster } from './Toaster';
 import { GeneralTab } from './GeneralTab';
-import { ContactsTab } from './ContactsTab';
-import { GuestServicesTab } from './GuestServicesTab';
 import { WorkingHoursTab } from './WorkingHoursTab';
 import { StaffKdsTab } from './StaffKdsTab';
 import { BillingTab } from './BillingTab';
@@ -39,8 +37,6 @@ function emptyWorkingHours(): WorkingHours {
 
 const TABS = [
     { value: 'general', label: 'General' },
-    { value: 'contacts', label: 'Contacts' },
-    { value: 'guest', label: 'Guest Services' },
     { value: 'hours', label: 'Working Hours' },
     { value: 'kds', label: 'Staff & KDS' },
     { value: 'billing', label: 'Billing & Plan' },
@@ -154,12 +150,6 @@ export function SettingsForm({ slug, initialData }: SettingsFormProps) {
                             <div className="rounded-2xl border border-black/5 bg-card/50 p-6 shadow-sm backdrop-blur-sm dark:border-white/10">
                                 <TabsContent value="general">
                                     <GeneralTab />
-                                </TabsContent>
-                                <TabsContent value="contacts">
-                                    <ContactsTab />
-                                </TabsContent>
-                                <TabsContent value="guest">
-                                    <GuestServicesTab />
                                 </TabsContent>
                                 <TabsContent value="hours">
                                     <WorkingHoursTab />

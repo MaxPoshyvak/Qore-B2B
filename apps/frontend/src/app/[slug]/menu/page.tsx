@@ -22,6 +22,7 @@ import { OrderSuccessOverlay } from '@/features/public-menu/components/OrderSucc
 import { OrderTypeModal } from '@/features/public-menu/components/OrderTypeModal';
 import { TakeawayCheckoutModal } from '@/features/public-menu/components/TakeawayCheckoutModal';
 import { GuestNameModal } from '@/features/public-menu/components/GuestNameModal';
+import { usePublicHappyHour } from '@/features/public-menu/hooks/usePublicHappyHour';
 import { ReservationAlert } from '@/features/reservations/components/ReservationAlert';
 import {
     useSharedCart,
@@ -112,6 +113,11 @@ export default function PublicMenuPage() {
     const { theme, toggle, mounted } = useTheme();
     const { data, isLoading } = useGetPublicMenu(resolvedSlug);
 
+    // === HAPPY HOUR (STEP 4) ===
+    // Тянемо правила по slug і обчислюємо ті, що активні зараз
+    // (з урахуванням локального часу гостя та daysOfWeek).
+    const { activeRules: activeHappyHourRules } = usePublicHappyHour({ slug: resolvedSlug });
+
     // Реальний трекінг перегляду меню: спрацьовує рівно один раз при відкритті
     useEffect(() => {
         trackMenuViewOnce(resolvedSlug, tableId ?? undefined);
@@ -173,7 +179,9 @@ export default function PublicMenuPage() {
         <main className="relative min-h-screen bg-transparent text-[#0A0A0C] antialiased dark:bg-transparent dark:text-[#F5F4F2]">
             <AmbientBackground />
 
-            <BaseHeader>{mounted && <ThemeToggle theme={theme} toggle={toggle} />}</BaseHeader>
+            <BaseHeader activeRules={activeHappyHourRules}>
+                {mounted && <ThemeToggle theme={theme} toggle={toggle} />}
+            </BaseHeader>
 
             <Suspense fallback={null}>
                 <TableSessionInitializer tenantSlug={resolvedSlug} />
@@ -195,6 +203,7 @@ export default function PublicMenuPage() {
                             tableId={tableId}
                             takeawaySessionId={takeawaySessionId}
                             cartItems={cartItems}
+                            activeHappyHourRules={activeHappyHourRules}
                         />
                     </>
                 )}
@@ -202,13 +211,14 @@ export default function PublicMenuPage() {
 
             <SharedCartCoordinator tableId={tableId} takeawaySessionId={takeawaySessionId} />
             <AnimatePresence>
-                <CartBanner cart={cart} />
+                <CartBanner cart={cart} activeHappyHourRules={activeHappyHourRules} />
             </AnimatePresence>
             <CartDrawer
                 cart={cart}
                 tableId={tableId}
                 takeawaySessionId={takeawaySessionId}
                 isLoading={cartQuery.isLoading}
+                activeHappyHourRules={activeHappyHourRules}
             />
             <GuestNameModal />
             <OrderTypeModal />

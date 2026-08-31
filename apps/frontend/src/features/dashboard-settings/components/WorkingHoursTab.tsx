@@ -4,6 +4,7 @@ import { Controller, useFormContext, type Path } from 'react-hook-form';
 import { z } from 'zod';
 import type { UpdateTenantSettingsDto } from '@my-app/types';
 import { workingHoursSchema } from '@my-app/types';
+import { ToggleSwitch } from '@/shared/ui/ToggleSwitch';
 
 type WorkingHours = z.infer<typeof workingHoursSchema>;
 
@@ -69,15 +70,11 @@ function DayRow({
                 return (
                     <div className={`mb-3 flex flex-col gap-4 rounded-2xl border p-4 transition-colors sm:flex-row sm:items-center sm:justify-between ${isOpen ? 'border-[#3B82F6]/20 bg-[#3B82F6]/[0.04] dark:border-[#3B82F6]/30 dark:bg-[#3B82F6]/[0.08]' : 'border-black/5 bg-card/50 opacity-80 dark:border-white/10'}`}>
                         <div className="flex items-center gap-4 sm:w-40">
-                            <button
-                                type="button"
-                                role="switch"
-                                aria-checked={!!isOpen}
+                            <ToggleSwitch
+                                checked={!!isOpen}
+                                onChange={(next) => openField.onChange(next)}
                                 aria-label={`${label} open`}
-                                onClick={() => openField.onChange(!isOpen)}
-                                className={`relative h-6 w-11 shrink-0 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6]/30 ${isOpen ? 'bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6]' : 'bg-black/15 dark:bg-white/15'}`}>
-                                <span className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${isOpen ? 'translate-x-5' : ''}`} />
-                            </button>
+                            />
                             <span className="text-sm font-medium text-[#0A0A0C] dark:text-[#F5F4F2]">
                                 {label}
                             </span>

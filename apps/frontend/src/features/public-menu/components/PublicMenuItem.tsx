@@ -6,7 +6,7 @@ import Image from 'next/image';
 import type { MenuItemResponse, CartItemResponse } from '@my-app/types';
 
 import { formatPrice } from '@/shared/lib/utils';
-import { display, mono } from '@/shared/lib/fonts';
+import { display } from '@/shared/lib/fonts';
 import { useCartStore } from '../store/useCartStore';
 import { useTableSessionStore } from '@/shared/store/useTableSessionStore';
 import { useUpdateCartItem } from '../hooks/useSharedCart';
@@ -21,9 +21,24 @@ type PublicMenuItemProps = {
     takeawaySessionId: string | null;
     cartItems: CartItemResponse[];
     variants?: Variants;
+    /**
+     * Якщо передано — показуємо оригінальну ціну перекресленою
+     * та нову ціну у фірмовому бурштиновому кольорі.
+     */
+    discountedPrice?: number;
+    /** Текст бейджа знижки ("20% off", "$5 off"). */
+    discountBadge?: string;
 };
 
-export function PublicMenuItem({ item, tableId, takeawaySessionId, cartItems, variants }: PublicMenuItemProps) {
+export function PublicMenuItem({
+    item,
+    tableId,
+    takeawaySessionId,
+    cartItems,
+    variants,
+    discountedPrice,
+    discountBadge,
+}: PublicMenuItemProps) {
     const guestName = useCartStore((s) => s.guestName);
     const setPendingMenuItem = useCartStore((s) => s.setPendingMenuItem);
     const setOrderTypeModalOpen = useCartStore((s) => s.setOrderTypeModalOpen);
@@ -90,56 +105,84 @@ export function PublicMenuItem({ item, tableId, takeawaySessionId, cartItems, va
                                 </p>
                             )}
 
-                            <div className="mt-auto flex items-center justify-between pt-5">
-                                <span
-                                    className={`${mono.className} rounded-full bg-black/5 px-3 py-1 text-[12px] font-medium tabular-nums text-[#0A0A0C] dark:bg-white/10 dark:text-[#F5F4F2]`}>
-                                    {formatPrice(item.price)}
-                                </span>
-
-                                <motion.div layout className="flex items-center">
-                                    {myQuantity === 0 ? (
-                                        <motion.button
-                                            key="add"
-                                            type="button"
-                                            layout
-                                            initial={{ opacity: 0, scale: 0.8 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            exit={{ opacity: 0, scale: 0.8 }}
-                                            transition={{ duration: 0.2 }}
-                                            aria-label={`Add ${item.name} to your order`}
-                                            onClick={handleAdd}
-                                            className="flex h-9 w-9 items-center justify-center rounded-full border border-[#3B82F6]/30 bg-[#3B82F6]/10 text-[#2563EB] transition-colors hover:border-[#3B82F6]/60 hover:bg-[#3B82F6]/20 disabled:cursor-not-allowed disabled:opacity-40 dark:text-[#60A5FA]">
-                                            <Plus size={16} strokeWidth={2.5} />
-                                        </motion.button>
-                                    ) : (
-                                        <motion.div
-                                            key="stepper"
-                                            layout
-                                            initial={{ opacity: 0, scale: 0.8 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            exit={{ opacity: 0, scale: 0.8 }}
-                                            transition={{ duration: 0.2 }}
-                                            className="flex items-center gap-1.5 rounded-full border border-[#3B82F6]/30 bg-[#3B82F6]/5 px-1.5 py-1 dark:border-[#3B82F6]/30">
-                                            <button
-                                                type="button"
-                                                onClick={decrement}
-                                                aria-label={`Decrease ${item.name}`}
-                                                className="flex h-7 w-7 items-center justify-center rounded-full text-[#2563EB] transition-colors hover:bg-[#3B82F6]/10 dark:text-[#60A5FA]">
-                                                <Minus size={14} strokeWidth={2.5} />
-                                            </button>
-                                            <span className="w-4 text-center text-sm font-semibold tabular-nums text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                                {myQuantity}
+                            {/*
+                              STEP 2 fix: ціна та кнопки "кошика" рознесені у два
+                              СТРОГІ контейнери. Ціна — `flex-1 min-w-0` (може
+                              скорочуватись/переноситись), кнопки — `shrink-0 ml-auto`
+                              (не стискаються і не перекриваються з ціною). Без
+                              absolute-позиціонування, тож pointer events не блокуються.
+                            */}
+                            <div className="mt-auto flex items-center justify-between gap-3 pt-5">
+                            <div className="min-w-0 flex-1">
+                                {discountedPrice !== undefined ? (
+                                    <div className="flex flex-wrap items-center gap-2">
+                                        <span className="text-sm font-medium text-white/40 line-through">
+                                            {formatPrice(item.price)}
+                                        </span>
+                                        <span className="text-lg font-bold text-[#F59E0B]">
+                                            {formatPrice(discountedPrice)}
+                                        </span>
+                                        {discountBadge && (
+                                            <span className="rounded-full bg-[#F59E0B] px-1.5 py-0.5 text-[10px] font-bold text-white">
+                                                {discountBadge}
                                             </span>
-                                            <button
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-lg font-bold text-[#0A0A0C] dark:text-[#F5F4F2]">
+                                            {formatPrice(item.price)}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+
+                                <div className="ml-auto flex shrink-0 items-center">
+                                    <motion.div layout className="flex items-center">
+                                        {myQuantity === 0 ? (
+                                            <motion.button
+                                                key="add"
                                                 type="button"
-                                                onClick={increment}
-                                                aria-label={`Increase ${item.name}`}
-                                                className="flex h-7 w-7 items-center justify-center rounded-full text-[#2563EB] transition-colors hover:bg-[#3B82F6]/10 dark:text-[#60A5FA]">
-                                                <Plus size={14} strokeWidth={2.5} />
-                                            </button>
-                                        </motion.div>
-                                    )}
-                                </motion.div>
+                                                layout
+                                                initial={{ opacity: 0, scale: 0.8 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                exit={{ opacity: 0, scale: 0.8 }}
+                                                transition={{ duration: 0.2 }}
+                                                aria-label={`Add ${item.name} to your order`}
+                                                onClick={handleAdd}
+                                                className="flex h-9 w-9 items-center justify-center rounded-full border border-[#3B82F6]/30 bg-[#3B82F6]/10 text-[#2563EB] transition-colors hover:border-[#3B82F6]/60 hover:bg-[#3B82F6]/20 disabled:cursor-not-allowed disabled:opacity-40 dark:text-[#60A5FA]">
+                                                <Plus size={16} strokeWidth={2.5} />
+                                            </motion.button>
+                                        ) : (
+                                            <motion.div
+                                                key="stepper"
+                                                layout
+                                                initial={{ opacity: 0, scale: 0.8 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                exit={{ opacity: 0, scale: 0.8 }}
+                                                transition={{ duration: 0.2 }}
+                                                className="flex items-center gap-1.5 rounded-full border border-[#3B82F6]/30 bg-[#3B82F6]/5 px-1.5 py-1 dark:border-[#3B82F6]/30">
+                                                <button
+                                                    type="button"
+                                                    onClick={decrement}
+                                                    aria-label={`Decrease ${item.name}`}
+                                                    className="flex h-7 w-7 items-center justify-center rounded-full text-[#2563EB] transition-colors hover:bg-[#3B82F6]/10 dark:text-[#60A5FA]">
+                                                    <Minus size={14} strokeWidth={2.5} />
+                                                </button>
+                                                <span className="w-4 text-center text-sm font-semibold tabular-nums text-[#0A0A0C] dark:text-[#F5F4F2]">
+                                                    {myQuantity}
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    onClick={increment}
+                                                    aria-label={`Increase ${item.name}`}
+                                                    className="flex h-7 w-7 items-center justify-center rounded-full text-[#2563EB] transition-colors hover:bg-[#3B82F6]/10 dark:text-[#60A5FA]">
+                                                    <Plus size={14} strokeWidth={2.5} />
+                                                </button>
+                                            </motion.div>
+                                        )}
+                                    </motion.div>
+                                </div>
                             </div>
                         </div>
 

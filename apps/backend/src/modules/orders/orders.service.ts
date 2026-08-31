@@ -1,11 +1,21 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { OrderStatus, PaymentStatus, Prisma } from '@my-app/database';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { CreateOrderDto, OrderResponse, PublicOrderResponse, UpdateOrderStatusDto } from '@my-app/types';
+import {
+    CreateOrderDto,
+    HappyHourRuleResponse,
+    OrderResponse,
+    PublicOrderResponse,
+    UpdateOrderStatusDto,
+} from '@my-app/types';
+import { HappyHourService } from 'src/modules/happy-hour/happy-hour.service';
 
 @Injectable()
 export class OrdersService {
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly happyHour: HappyHourService,
+    ) {}
 
     async resolveKdsToken(token: string): Promise<string> {
         const tenantSettings = await this.prisma.tenantSettings.findUnique({
@@ -45,7 +55,17 @@ export class OrdersService {
             throw new BadRequestException('Could not resolve a tenant for this cart session');
         }
 
-        const totalAmount = session.items.reduce((sum, item) => sum + item.quantity * Number(item.menuItem.price), 0);
+        // Динамічно застосовуємо активні знижки Happy Hour до кожної позиції.
+        // Ціни зберігаються як `priceAtOrder`, а підсумок — з урахуванням знижки.
+        const activeRules = await this.happyHour.getActiveRulesForTenant(tenantId);
+
+        const totalAmount = session.items.reduce((sum, item) => {
+            const price = item.menuItem
+                ? this.resolveDiscountedPrice(item.menuItem, activeRules)
+                : 0;
+            return sum + item.quantity * price;
+        }, 0);
+
         const pickupAt = dto.pickupTime ? this.toPickupDateTime(dto.pickupTime) : null;
 
         const order = await this.prisma.$transaction(async (tx) => {
@@ -63,7 +83,9 @@ export class OrdersService {
                         create: session.items.map((item) => ({
                             menuItemId: item.menuItemId,
                             quantity: item.quantity,
-                            priceAtOrder: item.menuItem.price,
+                            priceAtOrder: item.menuItem
+                                ? this.resolveDiscountedPrice(item.menuItem, activeRules).toString()
+                                : '0',
                             guestSessionId: item.guestSessionId,
                             guestName: item.guestName,
                         })),
@@ -92,6 +114,34 @@ export class OrdersService {
             return at;
         }
         return new Date(value);
+    }
+
+    /**
+     * Обчислює найкращу (найменшу) ціну позиції з урахуванням активних правил
+     * Happy Hour. Якщо жодне правило не застосовується — повертає базову ціну.
+     */
+    private resolveDiscountedPrice(
+        menuItem: { id: string; categoryId: string; price: Prisma.Decimal | number | string },
+        rules: HappyHourRuleResponse[],
+    ): number {
+        const base = Number(menuItem.price);
+        let best = base;
+
+        for (const rule of rules) {
+            const matchesItem = rule.items.some((i) => i.id === menuItem.id);
+            const matchesCategory = rule.categories.some((c) => c.id === menuItem.categoryId);
+            const appliesToAll = rule.items.length === 0 && rule.categories.length === 0;
+            if (!matchesItem && !matchesCategory && !appliesToAll) continue;
+
+            const discounted =
+                rule.discountType === 'PERCENTAGE'
+                    ? Math.max(0, base * (1 - Math.min(100, Math.max(0, rule.discountValue)) / 100))
+                    : Math.max(0, base - rule.discountValue);
+
+            if (discounted < best) best = discounted;
+        }
+
+        return best;
     }
 
     async getActiveOrders(tenantId: string): Promise<OrderResponse[]> {

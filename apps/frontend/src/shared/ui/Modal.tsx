@@ -6,6 +6,7 @@ import { X } from 'lucide-react';
 
 import { EASE } from '@/shared/config/animations';
 import { display } from '@/shared/lib/fonts';
+import { cn } from '@/shared/lib/utils';
 
 type ModalProps = {
     open: boolean;
@@ -13,10 +14,28 @@ type ModalProps = {
     title: string;
     description?: string;
     children: React.ReactNode;
+    /** Дозволяє внутрішній прокрутці тіла модального вікна (та ховає скролбар). */
+    scrollable?: boolean;
+    /**
+     * Клас розміру/позиціювання для ВНУТРІШНЬОЇ панелі діалогу.
+     * За замовчуванням `max-w-md`.
+     */
+    className?: string;
+    /** Кастомна максимальна висота (Tailwind class без квадратних дужок). */
+    maxHeightClass?: string;
 };
 
 /** Generic animated dialog: blurred backdrop, escape-to-close, scroll lock. */
-export function Modal({ open, onClose, title, description, children }: ModalProps) {
+export function Modal({
+    open,
+    onClose,
+    title,
+    description,
+    children,
+    scrollable = false,
+    className = 'max-w-md',
+    maxHeightClass = 'max-h-[85vh]',
+}: ModalProps) {
     useEffect(() => {
         if (!open) return;
 
@@ -37,16 +56,21 @@ export function Modal({ open, onClose, title, description, children }: ModalProp
     return (
         <AnimatePresence>
             {open && (
-                <div key="modal-root" className="fixed inset-0 z-50 flex items-end justify-center p-4 sm:items-center">
+                // 1. Оверлей: фіксований, блокує фон. Центрує модалку і дає
+                //    падінг, щоб вона не прилягала до країв екрана.
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 sm:p-6">
+                    {/* 2. Клік по фону закриває модалку */}
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.2 }}
                         onClick={onClose}
-                        className="absolute inset-0 bg-[#08080A]/60 backdrop-blur-sm"
+                        className="absolute inset-0"
                     />
 
+                    {/* 3. Головний контейнер: контролює ширину й макс. висоту.
+                        flex-col + overflow-hidden дозволяє тілу окремо скролитись. */}
                     <motion.div
                         role="dialog"
                         aria-modal="true"
@@ -55,29 +79,42 @@ export function Modal({ open, onClose, title, description, children }: ModalProp
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 16, scale: 0.98 }}
                         transition={{ duration: 0.28, ease: EASE }}
-                        className="relative w-full max-w-md overflow-hidden rounded-3xl border border-black/10 bg-white/90 p-6 shadow-2xl backdrop-blur-2xl dark:border-white/10 dark:bg-[#121215]/95">
-                        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#3B82F6]/40 to-transparent" />
-
-                        <div className="flex items-start justify-between gap-4">
-                            <div>
-                                <h2
-                                    className={`${display.className} text-lg font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                                    {title}
-                                </h2>
-                                {description && (
-                                    <p className="mt-1 text-sm text-[#6B6A65] dark:text-[#94938D]">{description}</p>
-                                )}
+                        className={cn(
+                            'relative flex flex-col overflow-y-scroll rounded-3xl bg-white/80 backdrop-blur-2xl shadow-xl dark:bg-[#121215]/95 border border-black/10 dark:border-white/10',
+                            className || 'max-w-md',
+                            scrollable ? maxHeightClass : 'max-h-[85vh]',
+                        )}>
+                        {/* 4. Шапка: липка зверху, не скролиться разом з тілом */}
+                        <div className="shrink-0 p-6 pb-4 border-b border-white/10">
+                            <div className="flex items-start justify-between gap-4">
+                                <div>
+                                    <h2
+                                        className={`${display.className} text-lg font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
+                                        {title}
+                                    </h2>
+                                    {description && (
+                                        <p className="mt-1 text-sm text-[#6B6A65] dark:text-[#94938D]">{description}</p>
+                                    )}
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={onClose}
+                                    aria-label="Close dialog"
+                                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-black/10 text-[#6B6A65] transition-colors hover:border-black/20 hover:text-[#0A0A0C] dark:border-white/10 dark:text-[#94938D] dark:hover:border-white/20 dark:hover:text-[#F5F4F2]">
+                                    <X size={16} />
+                                </button>
                             </div>
-                            <button
-                                type="button"
-                                onClick={onClose}
-                                aria-label="Close dialog"
-                                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-black/10 text-[#6B6A65] transition-colors hover:border-black/20 hover:text-[#0A0A0C] dark:border-white/10 dark:text-[#94938D] dark:hover:border-white/20 dark:hover:text-[#F5F4F2]">
-                                <X size={16} />
-                            </button>
                         </div>
 
-                        <div className="mt-5">{children}</div>
+                        {/* 5. Тіло: власний скрол (тачпад), гнучка висота.
+                            flex-1 + overflow-y-auto виправляє баг прокрутки. */}
+                        <div
+                            className={cn(
+                                'flex-1 overflow-y-auto p-6',
+                                scrollable && '[&::-webkit-scrollbar]:hidden [scrollbar-width:none]',
+                            )}>
+                            {children}
+                        </div>
                     </motion.div>
                 </div>
             )}

@@ -10,6 +10,7 @@ import { ReservationsModule } from './modules/reservations/reservations.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { FeedbackModule } from './modules/feedback/feedback.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { HappyHourModule } from './modules/happy-hour/happy-hour.module';
 
 @Module({
     imports: [
@@ -24,6 +25,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
         AnalyticsModule,
         FeedbackModule,
         DashboardModule,
+        HappyHourModule,
     ],
     controllers: [],
     providers: [],

@@ -1,5 +1,6 @@
 'use client';
 
+import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Check, Clock, Loader2, ShoppingBag } from 'lucide-react';
@@ -10,6 +11,7 @@ import { display, mono } from '@/shared/lib/fonts';
 import { formatPrice } from '@/shared/lib/utils';
 import { useCartStore } from '../store/useCartStore';
 import { useSharedCart } from '../hooks/useSharedCart';
+import { usePublicHappyHour, pickBestDiscount, type ActiveHappyHourRule } from '../hooks/usePublicHappyHour';
 import { useCreatePublicOrder } from '@/features/dashboard-orders/hooks/useOrders';
 
 type TakeawayCheckoutModalProps = {
@@ -37,6 +39,10 @@ export function TakeawayCheckoutModal({ onComplete }: TakeawayCheckoutModalProps
     const { data: cart } = useSharedCart(null, takeawaySessionId);
     const placeOrder = useCreatePublicOrder();
 
+    // Активні правила Happy Hour для динамічного перерахунку знижок у чеку.
+    const { slug } = useParams<{ slug: string }>();
+    const { activeRules: activeHappyHourRules } = usePublicHappyHour({ slug: slug ?? '' });
+
     const [name, setName] = useState(guestName ?? '');
     const [error, setError] = useState<string | null>(null);
     const [submitted, setSubmitted] = useState(false);
@@ -50,7 +56,14 @@ export function TakeawayCheckoutModal({ onComplete }: TakeawayCheckoutModalProps
     }, [isOpen, guestName]);
 
     const items = cart?.items ?? [];
-    const total = items.reduce((sum, item) => sum + item.quantity * Number(item.menuItem?.price ?? 0), 0);
+    // Підсумок із урахуванням знижок Happy Hour (як у CartDrawer/CartBanner).
+    const total = items.reduce((sum, item) => {
+        const menuItem = item.menuItem;
+        if (!menuItem) return sum;
+        const best = pickBestDiscount(menuItem, activeHappyHourRules);
+        const price = best ? best.finalPrice : Number(menuItem.price);
+        return sum + item.quantity * price;
+    }, 0);
 
     function close() {
         setOpen(false);
@@ -213,15 +226,44 @@ export function TakeawayCheckoutModal({ onComplete }: TakeawayCheckoutModalProps
 
                     {error && <p className="text-[12.5px] text-red-500">{error}</p>}
 
-                    {/* Summary */}
-                    <div className="flex items-center justify-between rounded-2xl border border-black/5 bg-black/[0.03] px-4 py-3 dark:border-white/10 dark:bg-white/[0.03]">
-                        <span className="text-sm text-[#6B6A65] dark:text-[#94938D]">
-                            {items.length} {items.length === 1 ? 'item' : 'items'}
-                        </span>
-                        <span
-                            className={`${display.className} text-[15px] font-bold tabular-nums text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                            {formatPrice(total)}
-                        </span>
+                    {/* Summary — динамічні знижки Happy Hour */}
+                    <div className="rounded-2xl border border-black/5 bg-black/[0.03] px-4 py-3 dark:border-white/10 dark:bg-white/[0.03]">
+                        <ul className="flex flex-col gap-1.5">
+                            {items.map((item) => {
+                                const menuItem = item.menuItem;
+                                const base = menuItem ? Number(menuItem.price) : 0;
+                                const best = menuItem
+                                    ? pickBestDiscount(menuItem, activeHappyHourRules)
+                                    : null;
+                                const price = best ? best.finalPrice : base;
+                                return (
+                                    <li
+                                        key={item.id}
+                                        className="flex items-center justify-between gap-3 text-sm">
+                                        <span className="min-w-0 truncate text-[#6B6A65] dark:text-[#94938D]">
+                                            {item.quantity}× {menuItem?.name ?? 'Item'}
+                                        </span>
+                                        <span className="flex shrink-0 items-center gap-1.5 tabular-nums">
+                                            {best && (
+                                                <span className="text-[11px] text-white/40 line-through">
+                                                    {formatPrice(base)}
+                                                </span>
+                                            )}
+                                            <span className="font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
+                                                {formatPrice(price)}
+                                            </span>
+                                        </span>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                        <div className="mt-2 flex items-center justify-between border-t border-black/5 pt-2 dark:border-white/10">
+                            <span className="text-sm text-[#6B6A65] dark:text-[#94938D]">Total</span>
+                            <span
+                                className={`${display.className} text-[15px] font-bold tabular-nums text-[#0A0A0C] dark:text-[#F5F4F2]`}>
+                                {formatPrice(total)}
+                            </span>
+                        </div>
                     </div>
 
                     <button

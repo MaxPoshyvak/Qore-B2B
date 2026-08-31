@@ -14,6 +14,7 @@ import { ThemeToggle } from '@/shared/ui/ThemeToggle';
 import { body } from '@/shared/lib/fonts';
 import { useTheme } from '@/shared/hooks/useTheme';
 import { MenuNotFound } from '@/features/public-menu/components/MenuNotFound';
+import { usePublicHappyHour } from '@/features/public-menu/hooks/usePublicHappyHour';
 import { VenueActionGrid, VenueFooter, VenueHero } from '@/features/public-venue/components';
 
 export default function PublicVenuePage() {
@@ -21,6 +22,9 @@ export default function PublicVenuePage() {
     const resolvedSlug = slug ?? '';
     const { theme, toggle, mounted } = useTheme();
     const { data: tenant, isLoading, isError } = useGetPublicTenant(resolvedSlug);
+
+    // Активні правила Happy Hour для банера у шапці (підрахунок знижок у меню/кошику).
+    const { activeRules: activeHappyHourRules } = usePublicHappyHour({ slug: resolvedSlug });
 
     const mapsUrl =
         tenant?.settings?.googleMapsUrl ??
@@ -31,6 +35,7 @@ export default function PublicVenuePage() {
             <AmbientBackground />
 
             <BaseHeader
+                activeRules={activeHappyHourRules}
                 centerContent={
                     tenant?.name ? (
                         <span className="text-sm font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">{tenant.name}</span>

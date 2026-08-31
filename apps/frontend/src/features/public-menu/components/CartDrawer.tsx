@@ -12,6 +12,7 @@ import { useCartStore } from '../store/useCartStore';
 import { useTableSessionStore } from '@/shared/store/useTableSessionStore';
 import { useUpdateCartItem, useRemoveCartItem, useToggleCartReady } from '../hooks/useSharedCart';
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop';
+import { pickBestDiscount, type ActiveHappyHourRule } from '../hooks/usePublicHappyHour';
 import { type CartItemResponse, type CartSessionResponse } from '@my-app/types';
 
 type CartGroup = {
@@ -26,6 +27,8 @@ type CartDrawerProps = {
     takeawaySessionId: string | null;
     /** True while the very first shared-cart fetch is still in flight. */
     isLoading?: boolean;
+    /** Активні правила Happy Hour — щоб підсумок кошика враховував знижки. */
+    activeHappyHourRules?: ActiveHappyHourRule[];
 };
 
 function groupByGuest(
@@ -54,7 +57,48 @@ function groupByGuest(
     });
 }
 
-export function CartDrawer({ cart, tableId, takeawaySessionId, isLoading = false }: CartDrawerProps) {
+/**
+ * Ціна позиції в кошику з урахуванням Happy Hour:
+ * базова перекреслена + знижена (якщо діє правило), інакше — лише базова.
+ */
+function PriceTag({
+    item,
+    activeHappyHourRules,
+}: {
+    item: CartItemResponse;
+    activeHappyHourRules: ActiveHappyHourRule[];
+}) {
+    const menuItem = item.menuItem;
+    if (!menuItem) return null;
+
+    const best = pickBestDiscount(menuItem, activeHappyHourRules);
+    if (!best) {
+        return (
+            <p className="mt-0.5 text-xs tabular-nums text-[#6B6A65] dark:text-[#94938D]">
+                {formatPrice(menuItem.price)}
+            </p>
+        );
+    }
+
+    return (
+        <p className="mt-0.5 flex items-center gap-1.5 text-xs tabular-nums">
+            <span className="text-[#A8A6A0] line-through dark:text-[#5A5A56]">
+                {formatPrice(menuItem.price)}
+            </span>
+            <span className="font-semibold text-[#B45309] dark:text-[#F59E0B]">
+                {formatPrice(best.finalPrice)}
+            </span>
+        </p>
+    );
+}
+
+export function CartDrawer({
+    cart,
+    tableId,
+    takeawaySessionId,
+    isLoading = false,
+    activeHappyHourRules = [],
+}: CartDrawerProps) {
     const isOpen = useCartStore((s) => s.isCartDrawerOpen);
     const setCartDrawerOpen = useCartStore((s) => s.setCartDrawerOpen);
     const setNameModalOpen = useCartStore((s) => s.setNameModalOpen);
@@ -78,10 +122,15 @@ export function CartDrawer({ cart, tableId, takeawaySessionId, isLoading = false
     const isMineConfirmed = !isTakeaway && confirmedGuests.includes(localSessionId);
     const confirmedCount = confirmedGuests.length;
 
-    const total = items.reduce(
-        (sum, item) => sum + item.quantity * Number(item.menuItem?.price ?? 0),
-        0,
-    );
+    // Підсумок кошика враховує активні знижки Happy Hour: для кожної позиції
+    // беремо кращу знижку (pickBestDiscount), інакше — базову ціну.
+    const total = items.reduce((sum, item) => {
+        const menuItem = item.menuItem;
+        if (!menuItem) return sum;
+        const best = pickBestDiscount(menuItem, activeHappyHourRules);
+        const price = best ? best.finalPrice : Number(menuItem.price);
+        return sum + item.quantity * price;
+    }, 0);
     const groups = useMemo(
         () => groupByGuest(items, localSessionId),
         [items, localSessionId],
@@ -221,14 +270,12 @@ export function CartDrawer({ cart, tableId, takeawaySessionId, isLoading = false
                                                                 )}
                                                             </div>
 
-                                                            <div className="min-w-0 flex-1">
-                                                                <p className="truncate text-sm font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                                                    {item.menuItem?.name ?? 'Removed item'}
-                                                                </p>
-                                                                <p className="mt-0.5 text-xs tabular-nums text-[#6B6A65] dark:text-[#94938D]">
-                                                                    {formatPrice(item.menuItem?.price ?? 0)}
-                                                                </p>
-                                                                {!isMine && (
+                                                                <div className="min-w-0 flex-1">
+                                                                    <p className="truncate text-sm font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
+                                                                        {item.menuItem?.name ?? 'Removed item'}
+                                                                    </p>
+                                                                    <PriceTag item={item} activeHappyHourRules={activeHappyHourRules} />
+                                                                    {!isMine && (
                                                                     <p className="mt-1 text-[11px] text-[#9C9B95] dark:text-[#6E6D68]">
                                                                         Added by {item.guestName}
                                                                     </p>

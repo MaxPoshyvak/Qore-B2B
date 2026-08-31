@@ -6,6 +6,7 @@ import { ImageIcon } from 'lucide-react';
 import type { UpdateTenantSettingsDto } from '@my-app/types';
 import { AuthInput } from '@/shared/ui/AuthInput';
 import { FormTextarea } from '@/shared/ui/FormControls';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/shadcn/Card';
 
 export function GeneralTab() {
     const {
@@ -20,51 +21,139 @@ export function GeneralTab() {
     return (
         <div className="space-y-6">
             <div>
-                <h2 className="text-lg font-semibold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]">
-                    General
-                </h2>
+                <h2 className="text-lg font-semibold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]">General</h2>
                 <p className="mt-1 text-sm text-[#6B6A65] dark:text-[#94938D]">
                     Basic information about your venue that guests will see.
                 </p>
             </div>
 
-                <div className="max-w-xl space-y-5">
-                    <AuthInput
-                        id="venue-name"
-                        label="Venue name"
-                        placeholder="Your venue name"
-                        error={errors.name?.message}
-                        {...register('name')}
-                    />
-                    <FormTextarea
-                        id="venue-description"
-                        label="Description"
-                        rows={3}
-                        placeholder="Tell guests what makes your venue special"
-                        error={errors.description?.message}
-                        {...register('description')}
-                    />
+            <div className="max-w-xl space-y-5">
+                <AuthInput
+                    id="venue-name"
+                    label="Venue name"
+                    placeholder="Your venue name"
+                    error={errors.name?.message}
+                    {...register('name')}
+                />
+                <FormTextarea
+                    id="venue-description"
+                    label="Description"
+                    rows={3}
+                    placeholder="Tell guests what makes your venue special"
+                    error={errors.description?.message}
+                    {...register('description')}
+                />
 
-                    <div className="rounded-2xl border border-black/5 bg-card/50 p-4 backdrop-blur-sm dark:border-white/10">
-                        <div className="mb-1 text-sm font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">Logo</div>
-                        <p className="mb-3 text-xs text-[#6B6A65] dark:text-[#94938D]">Upload or enter image URL</p>
-                        <div className="flex items-center gap-5">
-                            <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#E7E5E0] bg-black/[0.04] dark:border-white/10 dark:bg-white/[0.06]">
-                                {logoUrl ? <Image src={logoUrl} alt="Logo preview" fill sizes="80px" className="object-cover" unoptimized /> : <ImageIcon className="h-7 w-7 text-[#94938D]" />}
-                            </div>
-                            <div className="flex-1"><AuthInput id="logo-url" label="Image URL" type="url" placeholder="https://…/logo.png" error={errors.logoUrl?.message} {...register('logoUrl')} /></div>
+                <div className="rounded-2xl border border-black/5 bg-card/50 p-4 backdrop-blur-sm dark:border-white/10">
+                    <div className="mb-1 text-sm font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">Logo</div>
+                    <p className="mb-3 text-xs text-[#6B6A65] dark:text-[#94938D]">Upload or enter image URL</p>
+                    <div className="flex items-center gap-5">
+                        <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#E7E5E0] bg-black/[0.04] dark:border-white/10 dark:bg-white/[0.06]">
+                            {logoUrl ? (
+                                <Image src={logoUrl} alt="Logo preview" fill sizes="80px" className="object-cover" unoptimized />
+                            ) : (
+                                <ImageIcon className="h-7 w-7 text-[#94938D]" />
+                            )}
                         </div>
-                    </div>
-
-                    <div className="rounded-2xl border border-black/5 bg-card/50 p-4 backdrop-blur-sm dark:border-white/10">
-                        <div className="mb-1 text-sm font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">Cover image</div>
-                        <p className="mb-3 text-xs text-[#6B6A65] dark:text-[#94938D]">Upload or enter image URL</p>
-                        <div className="relative mb-3 flex h-32 w-full items-center justify-center overflow-hidden rounded-2xl border border-[#E7E5E0] bg-black/[0.04] dark:border-white/10 dark:bg-white/[0.06]">
-                            {coverUrl ? <Image src={coverUrl} alt="Cover preview" fill sizes="(max-width: 768px) 100vw, 576px" className="object-cover" unoptimized /> : <ImageIcon className="h-7 w-7 text-[#94938D]" />}
+                        <div className="flex-1">
+                            <AuthInput
+                                id="logo-url"
+                                label="Image URL"
+                                type="url"
+                                placeholder="https://…/logo.png"
+                                error={errors.logoUrl?.message}
+                                {...register('logoUrl')}
+                            />
                         </div>
-                        <AuthInput id="cover-url" label="Image URL" type="url" placeholder="https://…/cover.jpg" error={errors.coverUrl?.message} {...register('coverUrl')} />
                     </div>
                 </div>
+
+                <div className="rounded-2xl border border-black/5 bg-card/50 p-4 backdrop-blur-sm dark:border-white/10">
+                    <div className="mb-1 text-sm font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">Cover image</div>
+                    <p className="mb-3 text-xs text-[#6B6A65] dark:text-[#94938D]">Upload or enter image URL</p>
+                    <div className="relative mb-3 flex h-32 w-full items-center justify-center overflow-hidden rounded-2xl border border-[#E7E5E0] bg-black/[0.04] dark:border-white/10 dark:bg-white/[0.06]">
+                        {coverUrl ? (
+                            <Image src={coverUrl} alt="Cover preview" fill sizes="(max-width: 768px) 100vw, 576px" className="object-cover" unoptimized />
+                        ) : (
+                            <ImageIcon className="h-7 w-7 text-[#94938D]" />
+                        )}
+                    </div>
+                    <AuthInput
+                        id="cover-url"
+                        label="Image URL"
+                        type="url"
+                        placeholder="https://…/cover.jpg"
+                        error={errors.coverUrl?.message}
+                        {...register('coverUrl')}
+                    />
+                </div>
             </div>
+
+            {/* Contacts */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Contacts</CardTitle>
+                    <CardDescription>How guests and suppliers can reach your venue.</CardDescription>
+                </CardHeader>
+                <CardContent className="flex max-w-xl flex-col gap-4">
+                    <AuthInput
+                        id="phone"
+                        label="Phone"
+                        type="tel"
+                        placeholder="+1 (555) 012-3456"
+                        error={errors.phone?.message}
+                        {...register('phone')}
+                    />
+                    <AuthInput
+                        id="address"
+                        label="Address"
+                        placeholder="123 Market Street, Downtown"
+                        error={errors.address?.message}
+                        {...register('address')}
+                    />
+                    <AuthInput
+                        id="instagramUrl"
+                        label="Instagram URL"
+                        type="url"
+                        placeholder="https://instagram.com/yourvenue"
+                        error={errors.instagramUrl?.message}
+                        {...register('instagramUrl')}
+                    />
+                    <AuthInput
+                        id="googleMapsUrl"
+                        label="Google Maps URL"
+                        type="url"
+                        placeholder="https://maps.app.goo.gl/…"
+                        error={errors.googleMapsUrl?.message}
+                        {...register('googleMapsUrl')}
+                    />
+                </CardContent>
+            </Card>
+
+            {/* Guest Services (Wi-Fi) */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Guest Services</CardTitle>
+                    <CardDescription>Details your guests can use during their visit.</CardDescription>
+                </CardHeader>
+                <CardContent className="flex max-w-xl flex-col gap-4">
+                    <AuthInput
+                        id="wifiSsid"
+                        label="Wi-Fi name (SSID)"
+                        placeholder="CafeBoard-Guest"
+                        error={errors.wifiSsid?.message}
+                        {...register('wifiSsid')}
+                    />
+                    <AuthInput
+                        id="wifiPassword"
+                        label="Wi-Fi password"
+                        type="password"
+                        placeholder="••••••••"
+                        error={errors.wifiPassword?.message}
+                        {...register('wifiPassword')}
+                    />
+                </CardContent>
+            </Card>
+        </div>
     );
 }

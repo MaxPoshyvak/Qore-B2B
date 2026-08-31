@@ -11,4 +11,5 @@ export * from './tenant-settings';
 export * from './orders';
 export * from './reservations';
 export * from './feedback';
+export * from './happy-hour';
 export * from './dashboard';

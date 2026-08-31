@@ -7,12 +7,15 @@ import { display } from '@/shared/lib/fonts';
 import { EASE } from '@/shared/config/animations';
 import { Reveal } from '@/shared/ui/Reveal';
 import { PublicMenuItem } from './PublicMenuItem';
+import { pickBestDiscount, type ActiveHappyHourRule } from '../hooks/usePublicHappyHour';
 
 type PublicMenuListProps = {
     categories: PublicMenuResponseDTO['categories'];
     tableId: string | null;
     takeawaySessionId: string | null;
     cartItems: CartItemResponse[];
+    /** Поточні активні правила Happy Hour (з дисконт-калькуляцією). */
+    activeHappyHourRules?: ActiveHappyHourRule[];
 };
 
 // Staggered fade-up: each item rises into place after the previous one.
@@ -26,7 +29,13 @@ const listItem = {
     show: { y: 0, opacity: 1, transition: { duration: 0.4, ease: EASE } },
 };
 
-export function PublicMenuList({ categories, tableId, takeawaySessionId, cartItems }: PublicMenuListProps) {
+export function PublicMenuList({
+    categories,
+    tableId,
+    takeawaySessionId,
+    cartItems,
+    activeHappyHourRules = [],
+}: PublicMenuListProps) {
     return (
         <div className="mt-10 flex flex-col gap-12">
             {categories.map((category: PublicMenuCategoryResponse) => (
@@ -44,16 +53,27 @@ export function PublicMenuList({ categories, tableId, takeawaySessionId, cartIte
                             whileInView="show"
                             viewport={{ once: true, margin: '-60px' }}
                             className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                            {category.items.map((item) => (
-                                <PublicMenuItem
-                                    key={item.id}
-                                    item={item}
-                                    tableId={tableId}
-                                    takeawaySessionId={takeawaySessionId}
-                                    cartItems={cartItems}
-                                    variants={listItem}
-                                />
-                            ))}
+                            {category.items.map((item) => {
+                                const discount = pickBestDiscount(item, activeHappyHourRules);
+                                return (
+                                    <PublicMenuItem
+                                        key={item.id}
+                                        item={item}
+                                        tableId={tableId}
+                                        takeawaySessionId={takeawaySessionId}
+                                        cartItems={cartItems}
+                                        variants={listItem}
+                                        discountedPrice={discount?.finalPrice}
+                                        discountBadge={
+                                            discount
+                                                ? discount.rule.discountType === 'PERCENTAGE'
+                                                    ? `-${discount.rule.discountValue}%`
+                                                    : `-$${discount.rule.discountValue}`
+                                                : undefined
+                                        }
+                                    />
+                                );
+                            })}
                         </motion.div>
                     </section>
                 </Reveal>
