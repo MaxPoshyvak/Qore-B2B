@@ -84,17 +84,51 @@ function computeEndsAtMs(rule: HappyHourRuleResponse, now: Date): number {
 }
 
 /**
- * Застосовує правило до конкретної позиції меню.
- * Повертає нову ціну (число) або `null`, якщо знижка не застосовується.
+ * Чи діє правило на цю позицію меню (без урахування ціни).
  *
  * Логіка матчингу:
  *  - Якщо у правила немає ні `categories`, ні `items` — діє на ВСЕ меню.
  *  - Якщо `itemId` позиції збігається з одним з itemIds правила — діє.
  *  - Якщо `categoryId` позиції збігається з одним з categoryIds правила — діє.
+ */
+export function ruleAppliesToItem(item: MenuItemResponse, rule: ActiveHappyHourRule): boolean {
+    const matchesItem = rule.items.some((i) => i.id === item.id);
+    const matchesCategory = rule.categories.some((c) => c.id === item.categoryId);
+    const appliesToEverything = rule.items.length === 0 && rule.categories.length === 0;
+
+    return matchesItem || matchesCategory || appliesToEverything;
+}
+
+/**
+ * Застосовує правило до вже порахованої суми `subtotal`
+ * (базова ціна + сума надбавок за обрані модифікатори).
  *
- * УВАГА: якщо у правила є І категорії, І позиції — пріоритет у позицій
- * (специфічне завжди виграє у загального), але зараз API повертає їх
- * як дві різні сутності й семантика однозначна.
+ * ВАЖЛИВО: знижка вважається від ПОВНОЇ конфігурації страви, а не від базової
+ * ціни. Інакше гість, що додав платні топінги, отримував меншу знижку, ніж та,
+ * що обіцяна правилом.
+ *
+ * Повертає нову ціну або `null`, якщо правило не застосовується.
+ */
+export function calculateDiscountedSubtotal(
+    item: MenuItemResponse,
+    rule: ActiveHappyHourRule,
+    subtotal: number,
+): number | null {
+    if (!Number.isFinite(subtotal)) return null;
+    if (!ruleAppliesToItem(item, rule)) return null;
+
+    if (rule.discountType === 'PERCENTAGE') {
+        const pct = Math.min(100, Math.max(0, rule.discountValue));
+        return Math.max(0, subtotal * (1 - pct / 100));
+    }
+
+    // FIXED: віднімаємо фіксовану суму, не нижче 0.
+    return Math.max(0, subtotal - rule.discountValue);
+}
+
+/**
+ * Застосовує правило до базової ціни позиції (без модифікаторів).
+ * Використовується картками меню, де конфігурації ще немає.
  */
 export function calculateDiscountedPrice(
     item: MenuItemResponse,
@@ -103,30 +137,22 @@ export function calculateDiscountedPrice(
     const basePrice = Number.parseFloat(item.price);
     if (!Number.isFinite(basePrice)) return null;
 
-    const matchesItem = rule.items.some((i) => i.id === item.id);
-    const matchesCategory = rule.categories.some((c) => c.id === item.categoryId);
-    const appliesToEverything = rule.items.length === 0 && rule.categories.length === 0;
-
-    if (!matchesItem && !matchesCategory && !appliesToEverything) return null;
-
-    if (rule.discountType === 'PERCENTAGE') {
-        const pct = Math.min(100, Math.max(0, rule.discountValue));
-        return Math.max(0, basePrice * (1 - pct / 100));
-    }
-
-    // FIXED: віднімаємо фіксовану суму, не нижче 0.
-    return Math.max(0, basePrice - rule.discountValue);
+    return calculateDiscountedSubtotal(item, rule, basePrice);
 }
 
-/** Повертає найкращу знижку для позиції (якщо їх декілька — найбільшу). */
-export function pickBestDiscount(
+/**
+ * Найкраща (найвигідніша) знижка для конкретного `subtotal`.
+ * Це основна функція для кошика та модалки кастомізації.
+ */
+export function pickBestDiscountForSubtotal(
     item: MenuItemResponse,
     rules: ActiveHappyHourRule[],
+    subtotal: number,
 ): { rule: ActiveHappyHourRule; finalPrice: number } | null {
     let best: { rule: ActiveHappyHourRule; finalPrice: number } | null = null;
 
     for (const rule of rules) {
-        const candidate = calculateDiscountedPrice(item, rule);
+        const candidate = calculateDiscountedSubtotal(item, rule, subtotal);
         if (candidate === null) continue;
         if (best === null || candidate < best.finalPrice) {
             best = { rule, finalPrice: candidate };
@@ -134,6 +160,17 @@ export function pickBestDiscount(
     }
 
     return best;
+}
+
+/** Повертає найкращу знижку для базової ціни позиції (для карток меню). */
+export function pickBestDiscount(
+    item: MenuItemResponse,
+    rules: ActiveHappyHourRule[],
+): { rule: ActiveHappyHourRule; finalPrice: number } | null {
+    const basePrice = Number.parseFloat(item.price);
+    if (!Number.isFinite(basePrice)) return null;
+
+    return pickBestDiscountForSubtotal(item, rules, basePrice);
 }
 
 /** Форматує `endsAtMs - now` у вигляді "12m 34s" / "1h 05m". */

@@ -71,7 +71,12 @@ function TableSessionInitializer({ tenantSlug }: { tenantSlug: string }) {
     return null;
 }
 
-/** Flushes the dish a guest tapped before naming themselves, once they have a name. */
+/**
+ * Flushes the dish a guest configured before naming themselves, once they have a name.
+ *
+ * Конфігурація (кількість + обрані модифікатори) зберігається у стору цілком,
+ * тому після діалогу імені гість отримує саме те, що зібрав, а не «1 шт. без опцій».
+ */
 function SharedCartCoordinator({
     tableId,
     takeawaySessionId,
@@ -79,15 +84,15 @@ function SharedCartCoordinator({
     tableId: string | null;
     takeawaySessionId: string | null;
 }) {
-    const pendingMenuItemId = useCartStore((s) => s.pendingMenuItemId);
+    const pendingCartItem = useCartStore((s) => s.pendingCartItem);
     const guestName = useCartStore((s) => s.guestName);
-    const setPendingMenuItem = useCartStore((s) => s.setPendingMenuItem);
+    const setPendingCartItem = useCartStore((s) => s.setPendingCartItem);
     const setNameModalOpen = useCartStore((s) => s.setNameModalOpen);
     const guestSessionId = useTableSessionStore((s) => s.guestSessionId);
     const addItem = useAddCartItem(tableId, takeawaySessionId);
 
     useEffect(() => {
-        if (!pendingMenuItemId) return;
+        if (!pendingCartItem) return;
         if (!tableId && !takeawaySessionId) return;
         if (!guestSessionId) return;
         if (!guestName) {
@@ -95,13 +100,14 @@ function SharedCartCoordinator({
             return;
         }
         addItem.mutate({
-            menuItemId: pendingMenuItemId,
-            quantity: 1,
+            menuItemId: pendingCartItem.menuItemId,
+            quantity: pendingCartItem.quantity,
             guestSessionId,
             guestName,
+            selectedOptionIds: pendingCartItem.selectedOptionIds,
         });
-        setPendingMenuItem(null);
-    }, [pendingMenuItemId, guestName, guestSessionId, tableId, takeawaySessionId, addItem, setPendingMenuItem, setNameModalOpen]);
+        setPendingCartItem(null);
+    }, [pendingCartItem, guestName, guestSessionId, tableId, takeawaySessionId, addItem, setPendingCartItem, setNameModalOpen]);
 
     return null;
 }
@@ -131,7 +137,7 @@ export default function PublicMenuPage() {
     const setNameModalOpen = useCartStore((s) => s.setNameModalOpen);
     const setOrderTypeModalOpen = useCartStore((s) => s.setOrderTypeModalOpen);
     const setTakeawayCheckoutOpen = useCartStore((s) => s.setTakeawayCheckoutOpen);
-    const setPendingMenuItem = useCartStore((s) => s.setPendingMenuItem);
+    const setPendingCartItem = useCartStore((s) => s.setPendingCartItem);
     const cartQuery = useSharedCart(tableId, takeawaySessionId);
     const cart = cartQuery.data;
     const startNewSession = useStartNewCartSession(tableId);
@@ -160,16 +166,13 @@ export default function PublicMenuPage() {
 
     const showDineInSuccess = Boolean(tableId && !takeawaySessionId && isMyCompletedOrder);
 
-    // A closed session is read-only history: never render its rows as editable steppers.
-    const cartItems = cart && cart.isActive ? cart.items : [];
-
     function handleRestart() {
         // Local UI state only — the guest's identity (table, session, name) must survive.
         setCartDrawerOpen(false);
         setNameModalOpen(false);
         setTakeawayCheckoutOpen(false);
         setOrderTypeModalOpen(false);
-        setPendingMenuItem(null);
+        setPendingCartItem(null);
 
         // Dine-in: keep the table, ask the API for a fresh ACTIVE cart and re-sync.
         if (tableId && !startNewSession.isPending) startNewSession.mutate();
@@ -202,7 +205,6 @@ export default function PublicMenuPage() {
                             categories={data.categories}
                             tableId={tableId}
                             takeawaySessionId={takeawaySessionId}
-                            cartItems={cartItems}
                             activeHappyHourRules={activeHappyHourRules}
                         />
                     </>
@@ -219,11 +221,17 @@ export default function PublicMenuPage() {
                 takeawaySessionId={takeawaySessionId}
                 isLoading={cartQuery.isLoading}
                 activeHappyHourRules={activeHappyHourRules}
+                onOrderCreated={(orderId) => {
+                    // Той самий seamless-redirect, що й у takeaway: одразу на
+                    // сторінку трекінгу замовлення. `router.push` повертає
+                    // Promise, але чекати його не треба — навігація AsyncRoute-safe.
+                    void router.push(`/${resolvedSlug}/order/${orderId}`);
+                }}
             />
             <GuestNameModal />
             <OrderTypeModal />
             <TakeawayCheckoutModal
-                onComplete={(orderId) => router.push(`/${resolvedSlug}/order/${orderId}`)}
+                onComplete={(orderId) => void router.push(`/${resolvedSlug}/order/${orderId}`)}
             />
 
             <AnimatePresence>

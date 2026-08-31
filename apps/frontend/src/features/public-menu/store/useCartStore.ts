@@ -3,13 +3,25 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
+/**
+ * Страва, яку гість сконфігурував у `GuestItemModal`, але ще не додав у кошик
+ * (бо не має сесії або не назвався). Раніше тут лежав лише `menuItemId`, тож
+ * після діалогу з іменем губилися і кількість, і вибрані модифікатори.
+ */
+export type PendingCartItem = {
+    menuItemId: string;
+    quantity: number;
+    /** Обрані `ModifierOption.id` — порядок не важливий. */
+    selectedOptionIds: string[];
+};
+
 type CartState = {
     /** Guest display name — the only piece of guest identity kept in this store. */
     guestName: string | null;
     isNameModalOpen: boolean;
     isCartDrawerOpen: boolean;
-    /** Internal: a menu item the guest tapped before naming themselves; flushed once named. */
-    pendingMenuItemId: string | null;
+    /** Internal: a dish the guest configured before naming themselves; flushed once named. */
+    pendingCartItem: PendingCartItem | null;
     /** Takeaway (single-player) cart session id, when the guest opted for order-ahead. */
     takeawaySessionId: string | null;
     /** Drives the Dine-in vs Takeaway interception modal. */
@@ -23,7 +35,7 @@ type CartState = {
     setGuestName: (name: string) => void;
     setCartDrawerOpen: (isOpen: boolean) => void;
     setNameModalOpen: (isOpen: boolean) => void;
-    setPendingMenuItem: (menuItemId: string | null) => void;
+    setPendingCartItem: (item: PendingCartItem | null) => void;
     setTakeawaySessionId: (sessionId: string | null) => void;
     setOrderTypeModalOpen: (isOpen: boolean) => void;
     setTakeawayCheckoutOpen: (isOpen: boolean) => void;
@@ -44,7 +56,7 @@ export const useCartStore = create<CartState>()(
             guestName: null,
             isNameModalOpen: false,
             isCartDrawerOpen: false,
-            pendingMenuItemId: null,
+            pendingCartItem: null,
             takeawaySessionId: null,
             isOrderTypeModalOpen: false,
             isTakeawayCheckoutOpen: false,
@@ -54,7 +66,7 @@ export const useCartStore = create<CartState>()(
             setGuestName: (name) => set({ guestName: name.trim(), isNameModalOpen: false }),
             setCartDrawerOpen: (isOpen) => set({ isCartDrawerOpen: isOpen }),
             setNameModalOpen: (isOpen) => set({ isNameModalOpen: isOpen }),
-            setPendingMenuItem: (menuItemId) => set({ pendingMenuItemId: menuItemId }),
+            setPendingCartItem: (item) => set({ pendingCartItem: item }),
             setTakeawaySessionId: (sessionId) => set({ takeawaySessionId: sessionId }),
             setOrderTypeModalOpen: (isOpen) => set({ isOrderTypeModalOpen: isOpen }),
             setTakeawayCheckoutOpen: (isOpen) => set({ isTakeawayCheckoutOpen: isOpen }),

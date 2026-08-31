@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import { Check, Loader2, Lock, Minus, Plus, Trash2, UtensilsCrossed, X } from 'lucide-react';
+import { Check, Loader2, Lock, Minus, Plus, Sparkles, Trash2, UtensilsCrossed, X } from 'lucide-react';
 
 import { formatPrice } from '@/shared/lib/utils';
 import { EASE } from '@/shared/config/animations';
@@ -12,8 +12,9 @@ import { useCartStore } from '../store/useCartStore';
 import { useTableSessionStore } from '@/shared/store/useTableSessionStore';
 import { useUpdateCartItem, useRemoveCartItem, useToggleCartReady } from '../hooks/useSharedCart';
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop';
-import { pickBestDiscount, type ActiveHappyHourRule } from '../hooks/usePublicHappyHour';
-import { type CartItemResponse, type CartSessionResponse } from '@my-app/types';
+import { type ActiveHappyHourRule } from '../hooks/usePublicHappyHour';
+import { calculateCartTotal, priceCartLine } from '../lib/cart-pricing';
+import { type CartItemResponse, type CartSessionResponse, parseSelectedModifiers } from '@my-app/types';
 
 type CartGroup = {
     id: string;
@@ -29,6 +30,12 @@ type CartDrawerProps = {
     isLoading?: boolean;
     /** Активні правила Happy Hour — щоб підсумок кошика враховував знижки. */
     activeHappyHourRules?: ActiveHappyHourRule[];
+    /**
+     * Викликається, коли гість (локальний) підтвердив замовлення і сервер
+     * створив чек. Сторінка використовує `orderId`, щоб зробити `router.push`
+     * на сторінку трекінгу `/[slug]/order/[id]`.
+     */
+    onOrderCreated?: (orderId: string) => void;
 };
 
 function groupByGuest(
@@ -58,8 +65,9 @@ function groupByGuest(
 }
 
 /**
- * Ціна позиції в кошику з урахуванням Happy Hour:
- * базова перекреслена + знижена (якщо діє правило), інакше — лише базова.
+ * Ціна рядка кошика: `unitPrice × quantity` з урахуванням модифікаторів
+ * і Happy Hour. Коли знижка діє — показуємо перекреслений subtotal, бейдж
+ * і фінальну суму бурштиновим.
  */
 function PriceTag({
     item,
@@ -68,27 +76,32 @@ function PriceTag({
     item: CartItemResponse;
     activeHappyHourRules: ActiveHappyHourRule[];
 }) {
-    const menuItem = item.menuItem;
-    if (!menuItem) return null;
+    if (!item.menuItem) return null;
 
-    const best = pickBestDiscount(menuItem, activeHappyHourRules);
-    if (!best) {
+    const { subtotal, lineTotal, discountRule } = priceCartLine(item, activeHappyHourRules);
+    const subtotalLine = subtotal * item.quantity;
+
+    if (!discountRule) {
         return (
             <p className="mt-0.5 text-xs tabular-nums text-[#6B6A65] dark:text-[#94938D]">
-                {formatPrice(menuItem.price)}
+                {formatPrice(lineTotal)}
             </p>
         );
     }
 
     return (
-        <p className="mt-0.5 flex items-center gap-1.5 text-xs tabular-nums">
-            <span className="text-[#A8A6A0] line-through dark:text-[#5A5A56]">
-                {formatPrice(menuItem.price)}
+        <div className="mt-1 flex flex-wrap items-center gap-1.5">
+            <span className="flex items-center gap-1 rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold uppercase text-[#F59E0B]">
+                <Sparkles size={9} strokeWidth={2.5} />
+                Happy Hour
             </span>
-            <span className="font-semibold text-[#B45309] dark:text-[#F59E0B]">
-                {formatPrice(best.finalPrice)}
+            <span className="text-xs tabular-nums text-[#A8A6A0] line-through dark:text-[#5A5A56]">
+                {formatPrice(subtotalLine)}
             </span>
-        </p>
+            <span className="text-xs font-semibold tabular-nums text-[#B45309] dark:text-[#F59E0B]">
+                {formatPrice(lineTotal)}
+            </span>
+        </div>
     );
 }
 
@@ -98,6 +111,7 @@ export function CartDrawer({
     takeawaySessionId,
     isLoading = false,
     activeHappyHourRules = [],
+    onOrderCreated,
 }: CartDrawerProps) {
     const isOpen = useCartStore((s) => s.isCartDrawerOpen);
     const setCartDrawerOpen = useCartStore((s) => s.setCartDrawerOpen);
@@ -122,15 +136,9 @@ export function CartDrawer({
     const isMineConfirmed = !isTakeaway && confirmedGuests.includes(localSessionId);
     const confirmedCount = confirmedGuests.length;
 
-    // Підсумок кошика враховує активні знижки Happy Hour: для кожної позиції
-    // беремо кращу знижку (pickBestDiscount), інакше — базову ціну.
-    const total = items.reduce((sum, item) => {
-        const menuItem = item.menuItem;
-        if (!menuItem) return sum;
-        const best = pickBestDiscount(menuItem, activeHappyHourRules);
-        const price = best ? best.finalPrice : Number(menuItem.price);
-        return sum + item.quantity * price;
-    }, 0);
+    // Підсумок кошика: модифікатори + Happy Hour. Використовуємо ту саму
+    // функцію, що й рядки, щоб рядки й загальна сума ніколи не розходились.
+    const total = calculateCartTotal(items, activeHappyHourRules);
     const groups = useMemo(
         () => groupByGuest(items, localSessionId),
         [items, localSessionId],
@@ -274,6 +282,20 @@ export function CartDrawer({
                                                                     <p className="truncate text-sm font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
                                                                         {item.menuItem?.name ?? 'Removed item'}
                                                                     </p>
+                                                                    {/* Обрані модифікатори — приглушений перелік */}
+                                                                    {(() => {
+                                                                        const modifiers = parseSelectedModifiers(
+                                                                            item.selectedModifiers,
+                                                                        );
+                                                                        if (modifiers.length === 0) return null;
+                                                                        return (
+                                                                            <p className="mt-0.5 text-xs leading-snug text-[#9C9B95] dark:text-white/50">
+                                                                                {modifiers
+                                                                                    .map((option) => option.name)
+                                                                                    .join(', ')}
+                                                                            </p>
+                                                                        );
+                                                                    })()}
                                                                     <PriceTag item={item} activeHappyHourRules={activeHappyHourRules} />
                                                                     {!isMine && (
                                                                     <p className="mt-1 text-[11px] text-[#9C9B95] dark:text-[#6E6D68]">
@@ -383,7 +405,16 @@ export function CartDrawer({
 
                                         <button
                                             type="button"
-                                            onClick={() => toggleReady.mutate(localSessionId)}
+                                                onClick={() =>
+                                                    toggleReady.mutate(localSessionId, {
+                                                        onSuccess: (data) => {
+                                                            // Лише той гість, що натиснув «Confirm», має потрапити
+                                                            // на трекінг: сервер кладе `createdOrderId` саме у відповідь
+                                                            // на останній підтверджений тап.
+                                                            if (data.createdOrderId) onOrderCreated?.(data.createdOrderId);
+                                                        },
+                                                    })
+                                                }
                                             disabled={items.length === 0 || isLoading || toggleReady.isPending}
                                             className={
                                                 isMineConfirmed

@@ -43,4 +43,12 @@ export class MenuItemsController {
     ): Promise<SuccessResponse<MenuItem>> {
         return this.menuItemsService.deleteMenuItem(id, userId);
     }
+
+    @Patch(':id/toggle')
+    toggleItem(
+        @CurrentUser('id') userId: string,
+        @Param('id') id: string,
+    ): Promise<SuccessResponse<MenuItem>> {
+        return this.menuItemsService.toggleItem(id, userId);
+    }
 }

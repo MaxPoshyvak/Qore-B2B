@@ -6,7 +6,8 @@ import { ShoppingBag } from 'lucide-react';
 import { formatPrice } from '@/shared/lib/utils';
 import { EASE } from '@/shared/config/animations';
 import { useCartStore } from '../store/useCartStore';
-import { pickBestDiscount, type ActiveHappyHourRule } from '../hooks/usePublicHappyHour';
+import { type ActiveHappyHourRule } from '../hooks/usePublicHappyHour';
+import { calculateCartTotal } from '../lib/cart-pricing';
 import { type CartSessionResponse } from '@my-app/types';
 
 type CartBannerProps = {
@@ -21,14 +22,8 @@ export function CartBanner({ cart, activeHappyHourRules = [] }: CartBannerProps)
 
     const items = cart?.items ?? [];
     const itemCount = items.reduce((total, item) => total + item.quantity, 0);
-    // Підсумок з урахуванням знижок Happy Hour — як у CartDrawer.
-    const total = items.reduce((sum, item) => {
-        const menuItem = item.menuItem;
-        if (!menuItem) return sum;
-        const best = pickBestDiscount(menuItem, activeHappyHourRules);
-        const price = best ? best.finalPrice : Number(menuItem.price);
-        return sum + item.quantity * price;
-    }, 0);
+    // Той самий розрахунок, що й у CartDrawer (модифікатори + Happy Hour).
+    const total = calculateCartTotal(items, activeHappyHourRules);
 
     if (itemCount === 0 || isCartDrawerOpen || cart?.isActive === false) return null;
 

@@ -1,11 +1,17 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import type { CartItemResponse, PublicMenuCategoryResponse, PublicMenuResponseDTO } from '@my-app/types';
+import type {
+    MenuItemResponse,
+    PublicMenuCategoryResponse,
+    PublicMenuResponseDTO,
+} from '@my-app/types';
 
 import { display } from '@/shared/lib/fonts';
 import { EASE } from '@/shared/config/animations';
 import { Reveal } from '@/shared/ui/Reveal';
+import { GuestItemModal } from './GuestItemModal';
 import { PublicMenuItem } from './PublicMenuItem';
 import { pickBestDiscount, type ActiveHappyHourRule } from '../hooks/usePublicHappyHour';
 
@@ -13,7 +19,6 @@ type PublicMenuListProps = {
     categories: PublicMenuResponseDTO['categories'];
     tableId: string | null;
     takeawaySessionId: string | null;
-    cartItems: CartItemResponse[];
     /** Поточні активні правила Happy Hour (з дисконт-калькуляцією). */
     activeHappyHourRules?: ActiveHappyHourRule[];
 };
@@ -29,13 +34,23 @@ const listItem = {
     show: { y: 0, opacity: 1, transition: { duration: 0.4, ease: EASE } },
 };
 
+/** Форматує бейдж знижки Happy Hour у людський вигляд. */
+function formatDiscountBadge(discount: ReturnType<typeof pickBestDiscount>): string | undefined {
+    if (!discount) return undefined;
+    return discount.rule.discountType === 'PERCENTAGE'
+        ? `-${discount.rule.discountValue}%`
+        : `-$${discount.rule.discountValue}`;
+}
+
 export function PublicMenuList({
     categories,
     tableId,
     takeawaySessionId,
-    cartItems,
     activeHappyHourRules = [],
 }: PublicMenuListProps) {
+    // Одна модалка на все меню: тримаємо лише обрану страву, а не N інстансів.
+    const [selectedItem, setSelectedItem] = useState<MenuItemResponse | null>(null);
+
     return (
         <div className="mt-10 flex flex-col gap-12">
             {categories.map((category: PublicMenuCategoryResponse) => (
@@ -59,18 +74,10 @@ export function PublicMenuList({
                                     <PublicMenuItem
                                         key={item.id}
                                         item={item}
-                                        tableId={tableId}
-                                        takeawaySessionId={takeawaySessionId}
-                                        cartItems={cartItems}
                                         variants={listItem}
+                                        onSelect={setSelectedItem}
                                         discountedPrice={discount?.finalPrice}
-                                        discountBadge={
-                                            discount
-                                                ? discount.rule.discountType === 'PERCENTAGE'
-                                                    ? `-${discount.rule.discountValue}%`
-                                                    : `-$${discount.rule.discountValue}`
-                                                : undefined
-                                        }
+                                        discountBadge={formatDiscountBadge(discount)}
                                     />
                                 );
                             })}
@@ -78,6 +85,14 @@ export function PublicMenuList({
                     </section>
                 </Reveal>
             ))}
+
+            <GuestItemModal
+                item={selectedItem}
+                tableId={tableId}
+                takeawaySessionId={takeawaySessionId}
+                onClose={() => setSelectedItem(null)}
+                activeHappyHourRules={activeHappyHourRules}
+            />
         </div>
     );
 }

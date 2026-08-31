@@ -6,7 +6,10 @@ import type { MenuItemResponse } from '@my-app/types';
 
 import { EASE } from '@/shared/config/animations';
 import { display } from '@/shared/lib/fonts';
+import { cn } from '@/shared/lib/utils';
 import { formatPrice } from '@/shared/lib/utils';
+import { ToggleSwitch } from '@/shared/ui/ToggleSwitch';
+import { useToggleMenuItem } from '@/entities/menu/hooks/useMenuItems';
 
 type MenuItemCardProps = {
     item: MenuItemResponse;
@@ -15,6 +18,8 @@ type MenuItemCardProps = {
 };
 
 export function MenuItemCard({ item, onEdit, onDelete }: MenuItemCardProps) {
+    const toggleItem = useToggleMenuItem();
+
     return (
         <motion.article
             layout
@@ -23,14 +28,33 @@ export function MenuItemCard({ item, onEdit, onDelete }: MenuItemCardProps) {
             exit={{ opacity: 0, y: -10, scale: 0.96 }}
             transition={{ duration: 0.3, ease: EASE }}
             className="group relative flex flex-col overflow-hidden rounded-2xl border border-black/10 bg-white/60 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-[#3B82F6]/40 hover:shadow-xl hover:shadow-[#3B82F6]/10 dark:border-white/10 dark:bg-white/5 dark:hover:border-[#3B82F6]/40 dark:hover:shadow-[#3B82F6]/20">
-            {/* Placeholder image area */}
+            {/* Фото страви (з фолбеком на градієнтний плейсхолдер) */}
             <div className="relative flex h-28 items-center justify-center overflow-hidden bg-gradient-to-br from-[#3B82F6]/20 via-[#8B5CF6]/12 to-transparent">
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_120%,rgba(139,92,246,0.18),transparent_70%)]" />
-                <UtensilsCrossed
-                    size={26}
-                    strokeWidth={1.5}
-                    className="relative text-[#3B82F6]/50 transition-transform duration-300 group-hover:scale-110 dark:text-[#8B5CF6]/60"
-                />
+                {/* Декоративний шар (фон + іконка): грейскейл/приглушення
+                    для неактивних страв. Тумблер і кнопки лишаються яскравими. */}
+                <div
+                    className={cn(
+                        'pointer-events-none absolute inset-0 transition-all duration-300',
+                        !item.isActive && 'opacity-50 grayscale',
+                    )}>
+                    {item.imageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                            src={item.imageUrl}
+                            alt={item.name}
+                            className="absolute inset-0 h-full w-full object-cover"
+                        />
+                    ) : (
+                        <>
+                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_120%,rgba(139,92,246,0.18),transparent_70%)]" />
+                            <UtensilsCrossed
+                                size={26}
+                                strokeWidth={1.5}
+                                className="absolute inset-0 m-auto text-[#3B82F6]/50 dark:text-[#8B5CF6]/60"
+                            />
+                        </>
+                    )}
+                </div>
 
                 {!item.isActive && (
                     <span className="absolute left-3 top-3 rounded-full border border-black/10 bg-white/80 px-2 py-0.5 text-xs font-medium text-[#6B6A65] backdrop-blur-sm dark:border-white/10 dark:bg-[#0A0A0C]/70 dark:text-[#94938D]">
@@ -38,8 +62,18 @@ export function MenuItemCard({ item, onEdit, onDelete }: MenuItemCardProps) {
                     </span>
                 )}
 
+                {/* Тумблер доступності ("86 list"): завжди 100% непрозорий
+                    і клікабельний, незалежно від статусу страви. */}
+                <div className="absolute right-2 top-2">
+                    <ToggleSwitch
+                        checked={item.isActive}
+                        onChange={() => toggleItem.mutate(item.id)}
+                        aria-label={`Toggle availability for ${item.name}`}
+                    />
+                </div>
+
                 {/* Quick actions — revealed on hover / keyboard focus */}
-                <div className="absolute right-2 top-2 flex gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
+                <div className="absolute bottom-2 right-2 flex gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
                     <button
                         type="button"
                         onClick={() => onEdit(item)}

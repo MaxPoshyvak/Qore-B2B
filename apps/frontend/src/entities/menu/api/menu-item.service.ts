@@ -32,4 +32,10 @@ export class MenuItemService {
         const res = await apiClient<MenuItemResponse>(`${ITEMS_URL}/${id}`, { method: 'DELETE' });
         return res.data;
     }
+
+    /** "86 list" тумблер: інвертує `isActive` страви на боці менеджера меню. */
+    static async toggle(id: string): Promise<MenuItemResponse> {
+        const res = await apiClient<MenuItemResponse>(`${ITEMS_URL}/${id}/toggle`, { method: 'PATCH' });
+        return res.data;
+    }
 }

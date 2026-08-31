@@ -3,9 +3,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
+    buildCartItemConfigKey,
+    parseSelectedModifiers,
     type AddCartItemDto,
     type CartItemResponse,
     type CartSessionResponse,
+    type MenuItemResponse,
+    type ModifierOptionResponse,
     type UpdateCartItemDto,
 } from '@my-app/types';
 import { CartApi } from '../api/cart.api';
@@ -13,6 +17,18 @@ import { useCartStore } from '../store/useCartStore';
 import { useTableSessionStore } from '@/shared/store/useTableSessionStore';
 
 type CartMutationContext = { previousCart?: CartSessionResponse };
+
+/** Страва, сконфігурована гостем у `GuestItemModal`, готова до відправки. */
+export type ConfiguredCartAddition = {
+    item: MenuItemResponse;
+    /** Повний перелік обраних опцій модифікаторів. */
+    selectedOptions: ModifierOptionResponse[];
+    /** Ціна однієї одиниці: база + сума `priceAdjustment` обраних опцій. */
+    unitPrice: number;
+    quantity: number;
+    guestSessionId: string;
+    guestName: string;
+};
 
 /** Resolves the cache key shared by the query and its mutations for a given cart. */
 const cartKey = (tableId: string | null, sessionId: string | null) => sessionId ?? tableId;
@@ -50,8 +66,20 @@ export const useAddCartItem = (tableId: string | null, sessionId: string | null 
                 if (!old) return old;
 
                 const items = [...old.items];
+                /*
+                 * Оптимістичне злиття мусить повторювати серверну логіку:
+                 * позиції зливаються лише за ІДЕНТИЧНОЮ конфігурацією опцій,
+                 * інакше UI на мить показав би «×2» там, де насправді два
+                 * різні рядки, і блимнув би після рефетчу.
+                 */
+                const incomingKey = buildCartItemConfigKey(dto.menuItemId, dto.selectedOptionIds);
                 const existing = items.find(
-                    (i) => i.menuItemId === dto.menuItemId && i.guestSessionId === dto.guestSessionId,
+                    (i) =>
+                        i.guestSessionId === dto.guestSessionId &&
+                        buildCartItemConfigKey(
+                            i.menuItemId,
+                            parseSelectedModifiers(i.selectedModifiers).map((m) => m.id),
+                        ) === incomingKey,
                 );
 
                 if (existing) {
@@ -64,11 +92,16 @@ export const useAddCartItem = (tableId: string | null, sessionId: string | null 
                 }
 
                 const mockItem: CartItemResponse = {
-                    id: `temp-${dto.menuItemId}-${dto.guestSessionId}`,
+                    id: `temp-${incomingKey}-${dto.guestSessionId}`,
                     cartSessionId: old.id,
                     menuItemId: dto.menuItemId,
                     menuItem: null,
                     quantity: dto.quantity,
+                    /*
+                     * Назви й надбавки знає лише сервер, тому тут `null`:
+                     * рядок домалюється точними даними після `onSettled`.
+                     */
+                    selectedModifiers: null,
                     guestSessionId: dto.guestSessionId,
                     guestName: dto.guestName,
                     createdAt: new Date().toISOString(),
@@ -91,8 +124,30 @@ export const useAddCartItem = (tableId: string | null, sessionId: string | null 
     });
 };
 
-export const useUpdateCartItem = (tableId: string | null, sessionId: string | null = null) => {
-    const queryClient = useQueryClient();
+/**
+ * Додає у кошик страву, сконфігурувану в `GuestItemModal`.
+ *
+ * На сервер летять ЛИШЕ `selectedOptionIds`: назви та надбавки бекенд читає з
+ * `ModifierOption` і сам збирає знімок, тому підмінити ціну з клієнта не вийде.
+ * `unitPrice` тут — суто для оптимістичного UI та аналітики.
+ */
+export const useAddConfiguredCartItem = (tableId: string | null, sessionId: string | null = null) => {
+    const addItem = useAddCartItem(tableId, sessionId);
+
+    return {
+        ...addItem,
+        addConfigured: (addition: ConfiguredCartAddition) =>
+            addItem.mutate({
+                menuItemId: addition.item.id,
+                quantity: addition.quantity,
+                guestSessionId: addition.guestSessionId,
+                guestName: addition.guestName,
+                selectedOptionIds: addition.selectedOptions.map((option) => option.id),
+            }),
+    };
+};
+
+export const useUpdateCartItem = (tableId: string | null, sessionId: string | null = null) => {    const queryClient = useQueryClient();
     const key = cartKey(tableId, sessionId);
 
     return useMutation<CartItemResponse | null, Error, { itemId: string; dto: UpdateCartItemDto }, CartMutationContext>({
@@ -167,6 +222,13 @@ export const useToggleCartReady = (tableId: string) => {
 
     return useMutation<CartSessionResponse, Error, string, CartMutationContext>({
         mutationFn: (guestSessionId: string) => CartApi.toggleCartReady(tableId, guestSessionId),
+        // Повертаємо й `createdOrderId`, щоб сторінка могла перенаправити гостя
+        // на трекінг замовлення (лише той гість, що «закрив» замовлення).
+        onSuccess: (data) => {
+            if (data.createdOrderId) {
+                queryClient.setQueryData<string>(['last-created-order', tableId], data.createdOrderId);
+            }
+        },
         onMutate: async (guestSessionId) => {
             await queryClient.cancelQueries({ queryKey: ['shared-cart', tableId] });
 

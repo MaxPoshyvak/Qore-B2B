@@ -35,7 +35,19 @@ export class CategoriesService {
         const result = await this.prisma.menuCategory.findMany({
             where: { tenantId },
             orderBy: { sortOrder: 'asc' },
-            include: { items: { orderBy: { sortOrder: 'asc' } } },
+            include: {
+                items: {
+                    orderBy: { sortOrder: 'asc' },
+                    // Модифікатори потрібні дашборду, щоб форма редагування
+                    // страви була одразу заповнена наявними групами.
+                    include: {
+                        modifiers: {
+                            orderBy: { sortOrder: 'asc' },
+                            include: { options: { orderBy: { sortOrder: 'asc' } } },
+                        },
+                    },
+                },
+            },
         });
 
         return { success: true, data: result };
@@ -73,10 +85,10 @@ export class CategoriesService {
     /**
      * Read-only, auth-free menu for venue guests, resolved by `slug`.
      *
-     * Differs from `getCategoriesByTenant` in three ways: no owner check, only
-     * in-stock items are returned (Prisma `isActive` ← write contract
-     * `isAvailable`), and empty categories are dropped so guests never see
-     * headers with no dishes.
+     * Differs from `getCategoriesByTenant` in two ways: no owner check, and
+     * NOT-available items are still returned (Prisma `isActive` ← write contract
+     * `isAvailable`) so the guest UI can grey them out as "Sold out" rather than
+     * hiding them. Empty categories are kept too — фронтенд сам вирішує, що рендерити.
      */
     async getPublicMenuBySlug(slug: string): Promise<SuccessResponse<PublicMenuResponseDTO>> {
         if (!slug || typeof slug !== 'string') {
@@ -90,17 +102,22 @@ export class CategoriesService {
 
         if (!tenant) throw new NotFoundException('Venue not found');
 
+        // Усі категорії та позиції повертаються гостю незалежно від `isActive`:
+        // неактивні страви фронтенд покаже як "Sold out", а не сховає.
         const categories = await this.prisma.menuCategory.findMany({
-            where: {
-                tenantId: tenant.id,
-                isActive: true,
-                items: { some: { isActive: true } },
-            },
+            where: { tenantId: tenant.id },
             orderBy: { sortOrder: 'asc' },
             include: {
                 items: {
-                    where: { isActive: true },
                     orderBy: { sortOrder: 'asc' },
+                    // Модифікатори потрібні гостю, щоб зібрати страву у
+                    // GuestItemModal (розмір, топінги тощо) перед додаванням.
+                    include: {
+                        modifiers: {
+                            orderBy: { sortOrder: 'asc' },
+                            include: { options: { orderBy: { sortOrder: 'asc' } } },
+                        },
+                    },
                 },
             },
         });
@@ -121,6 +138,13 @@ export class CategoriesService {
                     ...item,
                     price: item.price.toString(),
                     happyHourPrice: item.happyHourPrice?.toString() ?? null,
+                    modifiers: item.modifiers.map((group) => ({
+                        ...group,
+                        options: group.options.map((option) => ({
+                            ...option,
+                            priceAdjustment: option.priceAdjustment.toString(),
+                        })),
+                    })),
                 })),
             })),
         };

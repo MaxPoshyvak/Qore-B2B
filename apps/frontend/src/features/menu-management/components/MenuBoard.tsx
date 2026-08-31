@@ -12,11 +12,10 @@ import { EASE } from '@/shared/config/animations';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { CategorySection } from './CategorySection';
 import { CreateCategoryForm } from './CreateCategoryForm';
-import { CreateMenuItemForm } from './CreateMenuItemForm';
 import { EditCategoryForm } from './EditCategoryForm';
-import { EditMenuItemForm } from './EditMenuItemForm';
 import { MenuBoardSkeleton } from './MenuBoardSkeleton';
 import { MenuEmptyState } from './MenuEmptyState';
+import { MenuItemForm } from './MenuItemForm';
 
 type MenuBoardProps = {
     slug: string;
@@ -136,13 +135,21 @@ export function MenuBoard({ slug, createCategoryOpen, onCreateCategoryOpenChange
 
             <EditCategoryForm category={editingCategory} onClose={() => setEditingCategory(null)} />
 
-            <CreateMenuItemForm
+            {/* Створення і редагування страви — один і той самий розширений
+                білдер. Тримаємо два інстанси, щоб стан форм не перетікав. */}
+            <MenuItemForm
+                open={!!addItemCategory}
                 category={addItemCategory}
                 tenantId={tenantId}
                 onClose={() => setAddItemCategory(null)}
             />
 
-            <EditMenuItemForm item={editingItem} onClose={() => setEditingItem(null)} />
+            <MenuItemForm
+                open={!!editingItem}
+                initialData={editingItem}
+                tenantId={tenantId}
+                onClose={() => setEditingItem(null)}
+            />
 
             <ConfirmDialog
                 open={!!deletingItem}

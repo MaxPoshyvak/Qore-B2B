@@ -1,14 +1,20 @@
 import { z } from 'zod';
-import type { MenuItemResponse } from './menu';
+import type { MenuItemResponse, SelectedModifier } from './menu';
 
 export const addCartItemSchema = z.object({
     menuItemId: z.string().min(1, 'Menu item is required'),
     quantity: z.number().int('Quantity must be a whole number').min(1, 'Quantity must be at least 1').default(1),
     guestSessionId: z.string().min(1, 'Guest session is required'),
     guestName: z.string().min(1, 'Guest name is required'),
+    /**
+     * Обрані `ModifierOption.id`. Приймаємо лише ідентифікатори — назви й
+     * надбавки сервер бере з БД, щоб клієнт не міг підсунути свою ціну.
+     */
+    selectedOptionIds: z.array(z.string().min(1)).default([]),
 });
 
 export type AddCartItemDto = z.infer<typeof addCartItemSchema>;
+export type AddCartItemInput = z.input<typeof addCartItemSchema>;
 
 export const updateCartItemSchema = z.object({
     quantity: z.number().int('Quantity must be a whole number').min(0, 'Quantity cannot be negative'),
@@ -34,6 +40,11 @@ export interface CartItemResponse {
     menuItemId: string;
     menuItem: MenuItemResponse | null;
     quantity: number;
+    /**
+     * Знімок обраних модифікаторів цього рядка. `null` — для позицій,
+     * доданих до появи модифікаторів (історичні дані лишаються валідними).
+     */
+    selectedModifiers: SelectedModifier[] | null;
     guestSessionId: string;
     guestName: string;
     createdAt: string;
@@ -49,6 +60,8 @@ export interface CartSessionResponse {
     items: CartItemResponse[];
     /** Guest session ids that have marked their items as ready to submit. */
     confirmedGuests?: string[];
+    /** `id` замовлення, створеного цим тапом «Confirm» (інакше `null`). */
+    createdOrderId: string | null;
     createdAt: string;
     updatedAt: string;
 }

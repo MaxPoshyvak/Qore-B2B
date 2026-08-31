@@ -11,7 +11,8 @@ import { display, mono } from '@/shared/lib/fonts';
 import { formatPrice } from '@/shared/lib/utils';
 import { useCartStore } from '../store/useCartStore';
 import { useSharedCart } from '../hooks/useSharedCart';
-import { usePublicHappyHour, pickBestDiscount, type ActiveHappyHourRule } from '../hooks/usePublicHappyHour';
+import { usePublicHappyHour, type ActiveHappyHourRule } from '../hooks/usePublicHappyHour';
+import { calculateCartTotal, priceCartLine } from '../lib/cart-pricing';
 import { useCreatePublicOrder } from '@/features/dashboard-orders/hooks/useOrders';
 
 type TakeawayCheckoutModalProps = {
@@ -56,14 +57,10 @@ export function TakeawayCheckoutModal({ onComplete }: TakeawayCheckoutModalProps
     }, [isOpen, guestName]);
 
     const items = cart?.items ?? [];
-    // Підсумок із урахуванням знижок Happy Hour (як у CartDrawer/CartBanner).
-    const total = items.reduce((sum, item) => {
-        const menuItem = item.menuItem;
-        if (!menuItem) return sum;
-        const best = pickBestDiscount(menuItem, activeHappyHourRules);
-        const price = best ? best.finalPrice : Number(menuItem.price);
-        return sum + item.quantity * price;
-    }, 0);
+    // ТОЙ САМИЙ підсумок, що й у CartDrawer/CartBanner: база + модифікатори,
+    // зі знижкою Happy Hour, порахованою від повної конфігурації. Локальна
+    // формула на голій базовій ціні тут більше не використовується.
+    const total = calculateCartTotal(items, activeHappyHourRules);
 
     function close() {
         setOpen(false);
@@ -230,27 +227,22 @@ export function TakeawayCheckoutModal({ onComplete }: TakeawayCheckoutModalProps
                     <div className="rounded-2xl border border-black/5 bg-black/[0.03] px-4 py-3 dark:border-white/10 dark:bg-white/[0.03]">
                         <ul className="flex flex-col gap-1.5">
                             {items.map((item) => {
-                                const menuItem = item.menuItem;
-                                const base = menuItem ? Number(menuItem.price) : 0;
-                                const best = menuItem
-                                    ? pickBestDiscount(menuItem, activeHappyHourRules)
-                                    : null;
-                                const price = best ? best.finalPrice : base;
+                                const { subtotal, lineTotal, discountRule } = priceCartLine(item, activeHappyHourRules);
                                 return (
                                     <li
                                         key={item.id}
                                         className="flex items-center justify-between gap-3 text-sm">
                                         <span className="min-w-0 truncate text-[#6B6A65] dark:text-[#94938D]">
-                                            {item.quantity}× {menuItem?.name ?? 'Item'}
+                                            {item.quantity}× {item.menuItem?.name ?? 'Item'}
                                         </span>
                                         <span className="flex shrink-0 items-center gap-1.5 tabular-nums">
-                                            {best && (
+                                            {discountRule && (
                                                 <span className="text-[11px] text-white/40 line-through">
-                                                    {formatPrice(base)}
+                                                    {formatPrice(subtotal * item.quantity)}
                                                 </span>
                                             )}
                                             <span className="font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                                {formatPrice(price)}
+                                                {formatPrice(lineTotal)}
                                             </span>
                                         </span>
                                     </li>

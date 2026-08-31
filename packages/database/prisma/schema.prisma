@@ -162,6 +162,38 @@ model MenuItem {
   orderItems     OrderItem[]
   cartItems      CartItem[]
   happyHourRules HappyHourRule[]
+  modifiers      ModifierGroup[]
+}
+
+/// Група модифікаторів страви (напр. "Choice of Milk", "Extra Toppings").
+/// `minSelections`/`maxSelections` описують правила вибору для гостя:
+/// min=0 — група необов'язкова, max=1 — радіо-вибір, max>1 — мультивибір.
+model ModifierGroup {
+  id            String @id @default(cuid())
+  menuItem      MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  menuItemId    String
+  name          String
+  minSelections Int    @default(0)
+  maxSelections Int    @default(1)
+  sortOrder     Int    @default(0)
+
+  options ModifierOption[]
+
+  @@index([menuItemId])
+}
+
+/// Конкретна опція всередині групи модифікаторів.
+/// `priceAdjustment` — дельта до базової ціни страви (може бути від'ємною,
+/// напр. -0.50 за відмову від інгредієнта), тому Decimal без обмеження знаку.
+model ModifierOption {
+  id              String @id @default(cuid())
+  group           ModifierGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId         String
+  name            String
+  priceAdjustment Decimal @default(0)
+  sortOrder       Int     @default(0)
+
+  @@index([groupId])
 }
 
 model Reservation {
@@ -230,6 +262,12 @@ model CartItem {
 
   quantity Int @default(1)
 
+  /// Знімок обраних модифікаторів цієї конкретної конфігурації:
+  /// `[{ id, name, priceAdjustment }]`. Дві однакові страви з різними
+  /// модифікаторами мусять лишатися РІЗНИМИ рядками кошика, тому саме це
+  /// поле (а не лише `menuItemId`) визначає, чи можна злити позиції.
+  selectedModifiers Json?
+
   // Ідентифікація того, хто додав страву
   guestSessionId String // Унікальний ID браузера гостя (з Zustand)
   guestName      String // Наприклад: "Максим"
@@ -268,6 +306,11 @@ model OrderItem {
 
   quantity     Int     @default(1)
   priceAtOrder Decimal // Фіксуємо ціну на момент замовлення (якщо ціна в меню зміниться)
+
+  /// Історичний знімок модифікаторів рядка: `[{ id, name, priceAdjustment }]`.
+  /// Зберігаємо копію, а не лише зв'язок, щоб старі чеки не «поїхали», якщо
+  /// власник згодом перейменує, переоцінить або видалить опцію з меню.
+  selectedModifiers Json?
 
   // Переносимо дані про гостя з CartItem, щоб знати, хто замовив страву у фінальному чеку
   guestSessionId String?

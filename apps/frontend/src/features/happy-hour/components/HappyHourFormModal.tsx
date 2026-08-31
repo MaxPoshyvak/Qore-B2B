@@ -38,8 +38,8 @@ const DAY_OPTIONS = [
 ] as const;
 
 const DISCOUNT_OPTIONS = [
-    { value: 'PERCENTAGE' as const, label: '% Off', icon: Percent },
-    { value: 'FIXED' as const, label: '$ Off', icon: DollarSign },
+    { value: 'PERCENTAGE' as const, label: 'Off', icon: Percent },
+    { value: 'FIXED' as const, label: 'Off', icon: DollarSign },
 ];
 
 const EMPTY_FORM: CreateHappyHourDto = {

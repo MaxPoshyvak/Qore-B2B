@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { MenuItemResponse } from './menu';
+import type { MenuItemResponse, SelectedModifier } from './menu';
 
 /* ------------------------------------------------------------------ */
 /*  Enums                                                              */
@@ -39,6 +39,8 @@ export interface OrderItemResponse {
     quantity: number;
     /** Persisted unit price (Decimal serialized to string over HTTP). */
     priceAtOrder: string;
+    /** Історичний знімок модифікаторів цього рядка чека. */
+    selectedModifiers: SelectedModifier[] | null;
     guestSessionId: string | null;
     guestName: string | null;
     paidByGuestId: string | null;
@@ -62,6 +64,8 @@ export interface PublicOrderItemResponse {
     quantity: number;
     /** Persisted unit price (Decimal → number for the tracking view). */
     priceAtOrder: number;
+    /** Обрані модифікатори — щоб гість бачив, що саме він замовив. */
+    selectedModifiers: SelectedModifier[];
 }
 
 export interface PublicOrderResponse {

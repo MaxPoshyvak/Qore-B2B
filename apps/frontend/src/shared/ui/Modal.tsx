@@ -14,18 +14,11 @@ type ModalProps = {
     title: string;
     description?: string;
     children: React.ReactNode;
-    /** Дозволяє внутрішній прокрутці тіла модального вікна (та ховає скролбар). */
     scrollable?: boolean;
-    /**
-     * Клас розміру/позиціювання для ВНУТРІШНЬОЇ панелі діалогу.
-     * За замовчуванням `max-w-md`.
-     */
     className?: string;
-    /** Кастомна максимальна висота (Tailwind class без квадратних дужок). */
     maxHeightClass?: string;
 };
 
-/** Generic animated dialog: blurred backdrop, escape-to-close, scroll lock. */
 export function Modal({
     open,
     onClose,
@@ -56,10 +49,7 @@ export function Modal({
     return (
         <AnimatePresence>
             {open && (
-                // 1. Оверлей: фіксований, блокує фон. Центрує модалку і дає
-                //    падінг, щоб вона не прилягала до країв екрана.
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 sm:p-6">
-                    {/* 2. Клік по фону закриває модалку */}
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -69,23 +59,27 @@ export function Modal({
                         className="absolute inset-0"
                     />
 
-                    {/* 3. Головний контейнер: контролює ширину й макс. висоту.
-                        flex-col + overflow-hidden дозволяє тілу окремо скролитись. */}
                     <motion.div
                         role="dialog"
                         aria-modal="true"
                         aria-label={title}
+                        layout
                         initial={{ opacity: 0, y: 24, scale: 0.97 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 16, scale: 0.98 }}
-                        transition={{ duration: 0.28, ease: EASE }}
+                        // Розділяємо анімації: поява/зникнення (opacity) і плавна зміна розміру (layout spring)
+                        transition={{
+                            layout: { type: 'spring', bounce: 0, duration: 0.4 },
+                            default: { duration: 0.2, ease: EASE },
+                        }}
                         className={cn(
+                            // ВИДАЛЕНО: transition-transform duration-75 та overflow-y-scroll
                             'relative flex flex-col overflow-y-scroll rounded-3xl bg-white/80 backdrop-blur-2xl shadow-xl dark:bg-[#121215]/95 border border-black/10 dark:border-white/10',
                             className || 'max-w-md',
                             scrollable ? maxHeightClass : 'max-h-[85vh]',
                         )}>
-                        {/* 4. Шапка: липка зверху, не скролиться разом з тілом */}
-                        <div className="shrink-0 p-6 pb-4 border-b border-white/10">
+                        {/* layout="position" гарантує, що контент шапки лише зміщується, але не розтягується (scale) */}
+                        <motion.div layout="position" className="shrink-0 p-6 pb-4 border-b border-white/10">
                             <div className="flex items-start justify-between gap-4">
                                 <div>
                                     <h2
@@ -104,17 +98,17 @@ export function Modal({
                                     <X size={16} />
                                 </button>
                             </div>
-                        </div>
+                        </motion.div>
 
-                        {/* 5. Тіло: власний скрол (тачпад), гнучка висота.
-                            flex-1 + overflow-y-auto виправляє баг прокрутки. */}
-                        <div
+                        {/* Аналогічно layout="position" для тіла модалки */}
+                        <motion.div
+                            layout="position"
                             className={cn(
-                                'flex-1 overflow-y-auto p-6',
+                                'flex-1 min-h-0 overflow-y-auto p-6',
                                 scrollable && '[&::-webkit-scrollbar]:hidden [scrollbar-width:none]',
                             )}>
                             {children}
-                        </div>
+                        </motion.div>
                     </motion.div>
                 </div>
             )}

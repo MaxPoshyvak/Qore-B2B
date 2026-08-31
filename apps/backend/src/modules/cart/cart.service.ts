@@ -1,7 +1,14 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma, CartItem, CartSession } from '@my-app/database';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { AddCartItemDto, SuccessResponse, UpdateCartItemDto } from '@my-app/types';
+import {
+    AddCartItemDto,
+    SuccessResponse,
+    UpdateCartItemDto,
+    buildCartItemConfigKey,
+    parseSelectedModifiers,
+    type SelectedModifier,
+} from '@my-app/types';
 import { OrdersService } from 'src/modules/orders/orders.service';
 
 export type CartSessionWithItems = Prisma.CartSessionGetPayload<{
@@ -93,14 +100,105 @@ export class CartService {
         return { success: true, data: session };
     }
 
+    /**
+     * Збирає довірений знімок модифікаторів з БД за переданими ID.
+     *
+     * Клієнт надсилає ЛИШЕ ідентифікатори: назви та надбавки читаємо з
+     * `ModifierOption`, тож підмінити ціну з фронтенду неможливо. Опція, що не
+     * належить цій страві, — привід відхилити запит, а не тихо її проігнорувати.
+     */
+    private async buildModifierSnapshot(
+        menuItemId: string,
+        optionIds: string[],
+    ): Promise<SelectedModifier[]> {
+        if (optionIds.length === 0) return [];
+
+        // Дедуплікація: подвійний тап по опції не має подвоювати надбавку.
+        const uniqueIds = Array.from(new Set(optionIds));
+
+        try {
+            const options = await this.prisma.modifierOption.findMany({
+                where: { id: { in: uniqueIds }, group: { menuItemId } },
+                include: { group: { select: { sortOrder: true } } },
+            });
+
+            if (options.length !== uniqueIds.length) {
+                throw new BadRequestException('One or more selected options are not available for this item');
+            }
+
+            // Стабільний порядок (група → опція), щоб знімок був детермінованим.
+            return options
+                .sort((a, b) => a.group.sortOrder - b.group.sortOrder || a.sortOrder - b.sortOrder)
+                .map((option) => ({
+                    id: option.id,
+                    name: option.name,
+                    priceAdjustment: Number(option.priceAdjustment),
+                }));
+        } catch (error) {
+            /*
+             * Таблиці `ModifierOption` ще немає в БД (міграцію не накатано), але
+             * опцій гість не обирав — тому силуємося з порожнім знімком, не
+             * ламаючи весь додаток у кошик. Якщо ж опції СПРАВДІ були вибрані,
+             * а таблиці немає, то це помилка інфраструктури — кидаємо далі.
+             */
+            if (optionIds.length > 0 && this.isMissingModifierTable(error)) {
+                throw new BadRequestException('Modifiers are temporarily unavailable, please try again later');
+            }
+            throw error;
+        }
+    }
+
+    /**
+     * Розпізнає помилку «таблиця ModifierOption не існує» (Prisma P2021),
+     * щоб не плутати її з реальною помилкою запиту.
+     */
+    private isMissingModifierTable(error: unknown): boolean {
+        const code = (error as { code?: string })?.code;
+        const message = (error as { message?: string })?.message ?? '';
+        return code === 'P2021' || /relation "modifieroption"/i.test(message) || /table ".*modifieroption"/i.test(message);
+    }
+
     /** Shared add-to-cart logic used by both table and takeaway sessions. */
     private async applyAddItem(session: CartSessionWithItems, dto: AddCartItemDto): Promise<CartSessionWithItems> {
-        const existingItem = await this.prisma.cartItem.findFirst({
+        // "86 list" захист: не можна додати страву, вимкнену власником.
+        const menuItem = await this.prisma.menuItem.findUnique({
+            where: { id: dto.menuItemId },
+            select: { isActive: true },
+        });
+        if (!menuItem) {
+            throw new NotFoundException('Menu item not found');
+        }
+        if (!menuItem.isActive) {
+            throw new BadRequestException('This item is currently sold out');
+        }
+
+        const selectedModifiers = await this.buildModifierSnapshot(dto.menuItemId, dto.selectedOptionIds);
+        const configKey = buildCartItemConfigKey(
+            dto.menuItemId,
+            selectedModifiers.map((modifier) => modifier.id),
+        );
+
+        /*
+         * Пошук по `menuItemId` більше НЕ достатній: латте з мигдалевим молоком
+         * і латте без нього — різні позиції. Тому кандидатів фільтруємо в пам'яті
+         * за ключем конфігурації (Json-колонку не можна надійно порівняти у SQL).
+         */
+        const candidates = await this.prisma.cartItem.findMany({
             where: {
                 cartSessionId: session.id,
                 menuItemId: dto.menuItemId,
                 guestSessionId: dto.guestSessionId,
             },
+        });
+
+        const existingItem = candidates.find((candidate) => {
+            const candidateModifiers = parseSelectedModifiers(candidate.selectedModifiers);
+            return (
+                buildCartItemConfigKey(
+                    candidate.menuItemId,
+                    candidateModifiers.map((modifier) => modifier.id),
+                ) === configKey
+            );
         });
 
         if (existingItem) {
@@ -114,6 +212,7 @@ export class CartService {
                     cartSessionId: session.id,
                     menuItemId: dto.menuItemId,
                     quantity: dto.quantity,
+                    selectedModifiers,
                     guestSessionId: dto.guestSessionId,
                     guestName: dto.guestName,
                 },
@@ -211,6 +310,9 @@ export class CartService {
 
         // Completion check only when a guest *adds* their confirmation.
         let isActive = true;
+        // `id` створеного замовлення — щоб фронтенд міг перенаправити гостя
+        // на `/[slug]/order/[id]`. `null`, якщо цей тап ще не «закрив» замовлення.
+        let createdOrderId: string | null = null;
         if (isNowConfirmed) {
             const distinctGuests = Array.from(new Set(session.items.map((i) => i.guestSessionId)));
             const everyoneReady = distinctGuests.length > 0 && distinctGuests.every((g) => confirmedGuests.includes(g));
@@ -224,9 +326,10 @@ export class CartService {
                 if (!table) {
                     throw new NotFoundException('Table not found');
                 }
-                await this.orderService.createOrderFromCart({
+                const createdOrder = await this.orderService.createOrderFromCart({
                     cartSessionId: session.id,
                 });
+                createdOrderId = createdOrder.id;
             }
         }
 
@@ -236,6 +339,11 @@ export class CartService {
             include: { items: { include: { menuItem: true } } },
         });
 
-        return { success: true, data: updated };
+        // Повертаємо `createdOrderId` окремо — це єдиний надійний момент, коли
+        // фронтенд дізнається `id` замовлення (сам `CartSession` його не зберігає).
+        return {
+            success: true,
+            data: { ...updated, createdOrderId } as CartSessionWithItems & { createdOrderId: string | null },
+        };
     }
 }

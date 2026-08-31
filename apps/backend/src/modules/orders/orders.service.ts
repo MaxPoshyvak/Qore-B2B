@@ -7,6 +7,9 @@ import {
     OrderResponse,
     PublicOrderResponse,
     UpdateOrderStatusDto,
+    parseSelectedModifiers,
+    sumModifierAdjustments,
+    type SelectedModifier,
 } from '@my-app/types';
 import { HappyHourService } from 'src/modules/happy-hour/happy-hour.service';
 
@@ -50,6 +53,13 @@ export class OrdersService {
             throw new BadRequestException('Cannot create an order from an empty cart');
         }
 
+        // "86 list" захист на етапі оформлення: якщо хоч одна позиція в кошику
+        // стала неактивною після додавання — замовлення відхиляємо.
+        const soldOutItem = session.items.find((item) => item.menuItem && item.menuItem.isActive === false);
+        if (soldOutItem) {
+            throw new BadRequestException('This item is currently sold out');
+        }
+
         const tenantId = session.table?.tenantId ?? session.items[0]?.menuItem?.tenantId;
         if (!tenantId) {
             throw new BadRequestException('Could not resolve a tenant for this cart session');
@@ -59,12 +69,39 @@ export class OrdersService {
         // Ціни зберігаються як `priceAtOrder`, а підсумок — з урахуванням знижки.
         const activeRules = await this.happyHour.getActiveRulesForTenant(tenantId);
 
-        const totalAmount = session.items.reduce((sum, item) => {
-            const price = item.menuItem
-                ? this.resolveDiscountedPrice(item.menuItem, activeRules)
-                : 0;
-            return sum + item.quantity * price;
-        }, 0);
+        /*
+         * Ціноутворення виконується ВИКЛЮЧНО на сервері.
+         *
+         * Для кожного рядка кошика:
+         *   1) читаємо базову ціну страви з БД;
+         *   2) перечитуємо надбавки обраних опцій з `ModifierOption` за їх ID
+         *      (знімок у кошику — лише кеш; джерело істини завжди БД);
+         *   3) Subtotal = base + Σ adjustments;
+         *   4) Happy Hour застосовуємо до SUBTOTAL, а не до базової ціни.
+         */
+        const pricedItems = await Promise.all(
+            session.items.map(async (item) => {
+                const snapshot = parseSelectedModifiers(item.selectedModifiers);
+                const modifiers = await this.resolveTrustedModifiers(item.menuItemId, snapshot);
+
+                const basePrice = item.menuItem ? Number(item.menuItem.price) : 0;
+                const subtotal = (Number.isFinite(basePrice) ? basePrice : 0) + sumModifierAdjustments(modifiers);
+                const unitPrice = item.menuItem
+                    ? this.applyHappyHourToSubtotal(item.menuItem, subtotal, activeRules)
+                    : 0;
+
+                return {
+                    menuItemId: item.menuItemId,
+                    quantity: item.quantity,
+                    unitPrice,
+                    modifiers,
+                    guestSessionId: item.guestSessionId,
+                    guestName: item.guestName,
+                };
+            }),
+        );
+
+        const totalAmount = pricedItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
 
         const pickupAt = dto.pickupTime ? this.toPickupDateTime(dto.pickupTime) : null;
 
@@ -80,12 +117,12 @@ export class OrdersService {
                     status: OrderStatus.new,
                     paymentStatus: PaymentStatus.pending,
                     items: {
-                        create: session.items.map((item) => ({
+                        create: pricedItems.map((item) => ({
                             menuItemId: item.menuItemId,
                             quantity: item.quantity,
-                            priceAtOrder: item.menuItem
-                                ? this.resolveDiscountedPrice(item.menuItem, activeRules).toString()
-                                : '0',
+                            priceAtOrder: new Prisma.Decimal(item.unitPrice),
+                            // Історичний знімок: чек не «поїде» після правок меню.
+                            selectedModifiers: item.modifiers,
                             guestSessionId: item.guestSessionId,
                             guestName: item.guestName,
                         })),
@@ -105,6 +142,42 @@ export class OrdersService {
         return order as unknown as OrderResponse;
     }
 
+    /**
+     * Перечитує обрані опції з БД, щоб ціна не залежала від клієнтського знімка.
+     *
+     * Якщо опцію вже видалили з меню — лишаємо історичний запис зі знімка, бо
+     * гість справді її замовив і вона мусить залишитись у чеку. А якщо таблиці
+     * модифікаторів ще немає в БД (міграцію не накатано) — повертаємо знімок
+     * як є, щоб чек все одно сформувався за збереженою ціною.
+     */
+    private async resolveTrustedModifiers(
+        menuItemId: string,
+        snapshot: SelectedModifier[],
+    ): Promise<SelectedModifier[]> {
+        if (snapshot.length === 0) return [];
+
+        try {
+            const options = await this.prisma.modifierOption.findMany({
+                where: { id: { in: snapshot.map((modifier) => modifier.id) }, group: { menuItemId } },
+            });
+
+            const byId = new Map(options.map((option) => [option.id, option]));
+
+            return snapshot.map((modifier) => {
+                const fresh = byId.get(modifier.id);
+                if (!fresh) return modifier;
+
+                return {
+                    id: fresh.id,
+                    name: fresh.name,
+                    priceAdjustment: Number(fresh.priceAdjustment),
+                };
+            });
+        } catch {
+            return snapshot;
+        }
+    }
+
     private toPickupDateTime(value: string): Date {
         const asTime = /^([01]?\d|2[0-3]):[0-5]\d$/.test(value.trim());
         if (asTime) {
@@ -117,15 +190,19 @@ export class OrdersService {
     }
 
     /**
-     * Обчислює найкращу (найменшу) ціну позиції з урахуванням активних правил
-     * Happy Hour. Якщо жодне правило не застосовується — повертає базову ціну.
+     * Застосовує найкращу (найвигіднішу) активну знижку Happy Hour до вже
+     * порахованого `subtotal` (база + модифікатори).
+     *
+     * Знижка ЗАВЖДИ вважається від повної конфігурації: гість, який узяв каву
+     * з подвійним сиропом, отримує -20% і на сироп теж. Якщо жодне правило не
+     * підходить — повертаємо `subtotal` без змін.
      */
-    private resolveDiscountedPrice(
-        menuItem: { id: string; categoryId: string; price: Prisma.Decimal | number | string },
+    private applyHappyHourToSubtotal(
+        menuItem: { id: string; categoryId: string },
+        subtotal: number,
         rules: HappyHourRuleResponse[],
     ): number {
-        const base = Number(menuItem.price);
-        let best = base;
+        let best = subtotal;
 
         for (const rule of rules) {
             const matchesItem = rule.items.some((i) => i.id === menuItem.id);
@@ -135,8 +212,8 @@ export class OrdersService {
 
             const discounted =
                 rule.discountType === 'PERCENTAGE'
-                    ? Math.max(0, base * (1 - Math.min(100, Math.max(0, rule.discountValue)) / 100))
-                    : Math.max(0, base - rule.discountValue);
+                    ? Math.max(0, subtotal * (1 - Math.min(100, Math.max(0, rule.discountValue)) / 100))
+                    : Math.max(0, subtotal - rule.discountValue);
 
             if (discounted < best) best = discounted;
         }
@@ -184,6 +261,7 @@ export class OrdersService {
                 menuItemName: item.menuItem?.name ?? 'Item',
                 quantity: item.quantity,
                 priceAtOrder: Number(item.priceAtOrder),
+                selectedModifiers: parseSelectedModifiers(item.selectedModifiers),
             })),
             createdAt: order.createdAt.toISOString(),
         };
