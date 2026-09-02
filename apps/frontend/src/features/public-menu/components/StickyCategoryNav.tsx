@@ -4,66 +4,111 @@ import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { body } from '@/shared/lib/fonts';
 
-// Висота BaseHeader (шапки сайту). Якщо у BaseHeader зміниться висота — поправ тут.
+// Висота BaseHeader (шапки сайту)
 const HEADER_HEIGHT = 64;
-// Відступ, щоб панель категорій "дихала" під хедером, а не прилипала впритул.
+// Відступ, щоб панель категорій "дихала" під хедером
 const GAP_UNDER_HEADER = 25;
 const STICKY_TOP = HEADER_HEIGHT + GAP_UNDER_HEADER;
 
 export function StickyCategoryNav({ categories }: { categories: any[] }) {
     const [activeId, setActiveId] = useState<string>('');
+    const activeIdRef = useRef<string>(''); // Зберігаємо для уникнення зайвих рендерів
     const navRef = useRef<HTMLDivElement>(null);
     const wrapperRef = useRef<HTMLDivElement>(null);
 
-    // Логіка відстеження скролу для активної категорії.
-    // ВАЖЛИВО: id секцій у PublicMenuList — `cat-${category.id}`, тож слухаємо саме їх
-    // (раніше тут був `category-${cat.id}`, який ніколи не існував у DOM — через це
-    // scroll-spy і клік по категорії фактично не працювали).
+    // Блокуємо ScrollSpy під час плавного автоскролу по кліку
+    const isClickScrolling = useRef<boolean>(false);
+
     useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        setActiveId(entry.target.id);
+        const handleScrollSpy = () => {
+            // Якщо зараз відбувається автоскрол після кліку — ігноруємо
+            if (isClickScrolling.current || !categories || categories.length === 0) return;
 
-                        // Центрування активного елемента в скролбарі
-                        const navElement = navRef.current;
-                        const activeLink = navElement?.querySelector(`[data-category="${entry.target.id}"]`);
-                        if (navElement && activeLink) {
-                            activeLink.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-                        }
+            const navBarHeight = wrapperRef.current?.offsetHeight ?? 64;
+            // Лінія тригера: трохи нижче самої липкої панелі
+            const triggerLine = STICKY_TOP + navBarHeight + 15;
+
+            let currentActiveId = '';
+
+            // Вимірюємо реальні координати в реальному часі
+            for (let i = 0; i < categories.length; i++) {
+                const el = document.getElementById(`cat-${categories[i].id}`);
+                if (el) {
+                    const rect = el.getBoundingClientRect();
+                    // Оскільки ми йдемо зверху вниз, остання секція, верх
+                    // якої перетнув тригерну лінію, стає активною
+                    if (rect.top <= triggerLine) {
+                        currentActiveId = `cat-${categories[i].id}`;
                     }
-                });
-            },
-            { rootMargin: `-${STICKY_TOP + 64}px 0px -60% 0px` }, // враховуємо хедер + саму панель
-        );
+                }
+            }
 
-        categories.forEach((cat) => {
-            const el = document.getElementById(`cat-${cat.id}`);
-            if (el) observer.observe(el);
-        });
+            // Fallback 1: Якщо ми на самому верху сторінки
+            if (!currentActiveId && categories.length > 0) {
+                currentActiveId = `cat-${categories[0].id}`;
+            }
 
-        return () => observer.disconnect();
+            // Fallback 2: Якщо доскролили до самого низу екрану
+            // (вирішує проблему, коли остання категорія надто коротка)
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 10) {
+                currentActiveId = `cat-${categories[categories.length - 1].id}`;
+            }
+
+            // Оновлюємо стан, якщо активна категорія змінилася
+            if (currentActiveId && currentActiveId !== activeIdRef.current) {
+                activeIdRef.current = currentActiveId;
+                setActiveId(currentActiveId);
+
+                // Плавно центруємо активну кнопку в горизонтальному меню
+                const navElement = navRef.current;
+                const activeLink = navElement?.querySelector(`[data-category="${currentActiveId}"]`);
+                if (navElement && activeLink) {
+                    activeLink.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                }
+            }
+        };
+
+        window.addEventListener('scroll', handleScrollSpy, { passive: true });
+        handleScrollSpy(); // Ініціалізуємо при завантаженні
+
+        return () => window.removeEventListener('scroll', handleScrollSpy);
     }, [categories]);
 
-    const handleScroll = (id: string, e: React.MouseEvent) => {
+    const handleCategoryClick = (id: string, e: React.MouseEvent) => {
         e.preventDefault();
         const element = document.getElementById(`cat-${id}`);
         if (!element) return;
 
-        // Динамічно міряємо висоту самої панелі, замість хардкоду "на око".
+        // Вмикаємо блокування ScrollSpy
+        isClickScrolling.current = true;
+
+        // Оновлюємо UI миттєво після кліку
+        const sectionId = `cat-${id}`;
+        activeIdRef.current = sectionId;
+        setActiveId(sectionId);
+
+        const navElement = navRef.current;
+        const activeLink = navElement?.querySelector(`[data-category="${sectionId}"]`);
+        if (navElement && activeLink) {
+            activeLink.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+
+        // Розраховуємо правильний відступ і скролимо
         const navBarHeight = wrapperRef.current?.offsetHeight ?? 64;
         const offset = STICKY_TOP + navBarHeight + GAP_UNDER_HEADER;
         const y = element.getBoundingClientRect().top + window.scrollY - offset;
+
         window.scrollTo({ top: y, behavior: 'smooth' });
+
+        // Вимикаємо блокування, коли скрол гарантовано завершився (~800мс)
+        setTimeout(() => {
+            isClickScrolling.current = false;
+        }, 800);
     };
 
     if (!categories || categories.length === 0) return null;
 
     return (
-        // Sticky-панель тепер живе в тому самому mx-auto max-w-6xl px-6 контейнері,
-        // що й хедер і весь контент — без "-mx" full-bleed, ширина 1:1 з хедером.
-        // top = висота хедера + зазор, тому вона більше на нього не налазить.
         <div
             ref={wrapperRef}
             style={{ top: STICKY_TOP }}
@@ -73,13 +118,14 @@ export function StickyCategoryNav({ categories }: { categories: any[] }) {
                 className="flex items-center gap-2 overflow-x-auto px-1 scrollbar-hide"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 {categories.map((category) => {
-                    const isActive = activeId === `cat-${category.id}`;
+                    const sectionId = `cat-${category.id}`;
+                    const isActive = activeId === sectionId;
 
                     return (
                         <button
                             key={category.id}
-                            data-category={`cat-${category.id}`}
-                            onClick={(e) => handleScroll(category.id, e)}
+                            data-category={sectionId}
+                            onClick={(e) => handleCategoryClick(category.id, e)}
                             className={`${body.className} relative flex-shrink-0 rounded-full px-4 py-2 text-[14px] font-medium transition-colors ${
                                 isActive
                                     ? 'text-white'
