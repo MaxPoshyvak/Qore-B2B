@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ArrowRight, CalendarDays, Star, UtensilsCrossed } from 'lucide-react';
+import { CalendarDays, Star, UtensilsCrossed } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 import { useGetPublicTenant } from '@/entities/tenant/hooks/useGetPublicTenant';
@@ -44,60 +44,77 @@ export default function PublicVenuePage() {
                 {mounted && <ThemeToggle theme={theme} toggle={toggle} />}
             </BaseHeader>
 
-            <div className="mx-auto max-w-2xl px-4 pb-20 sm:px-6">
+            {/* Використовуємо max-w-3xl: на мобільному буде на весь екран, 
+                а на ПК збереться в акуратну, сфокусовану колонку по центру */}
+            <div className="mx-auto max-w-3xl px-4 pb-20 sm:px-6">
                 {isLoading ? (
                     <div className="mt-6 h-52 animate-pulse rounded-[2rem] bg-white/40 dark:bg-white/5" />
                 ) : isError || !tenant ? (
                     <MenuNotFound slug={resolvedSlug} />
                 ) : (
-                    <>
+                    <div className="flex flex-col gap-6 md:gap-8 mt-6">
                         <Reveal>
                             <VenueHero venue={tenant} />
                         </Reveal>
 
-                        {/* Primary hook + secondary action */}
+                        {/* Блок з основними кнопками */}
                         <Reveal delay={0.1}>
-                            <div className="mt-6 flex flex-col gap-3">
+                            <div className="flex flex-col gap-3">
+                                {/* Головна дія (100% ширини). 
+                                    Додано duration-150 ease-out для швидкої реакції CSS. */}
                                 <MagneticButton
                                     href={`/${resolvedSlug}/menu`}
                                     showSparks
-                                    className="w-full rounded-full bg-[#0A0A0C] px-6 py-4 text-[15px] font-medium text-white shadow-lg shadow-[#0A0A0C]/15 transition-colors hover:bg-[#232327] dark:bg-[#F5F4F2] dark:text-[#0A0A0C] dark:shadow-white/10 dark:hover:bg-white">
-                                    <span className={`${body.className} flex w-full items-center justify-center gap-2`}>
-                                        <UtensilsCrossed size={18} strokeWidth={2} />
+                                    className="w-full rounded-[1.25rem] bg-[#3B82F6] px-6 py-4 text-[16px] font-semibold text-white shadow-[0_8px_24px_-8px_rgba(59,130,246,0.5)] transition-all duration-150 ease-out hover:scale-[1.01] hover:bg-[#2563EB] hover:shadow-[0_12px_28px_-8px_rgba(59,130,246,0.6)] active:scale-[0.98]">
+                                    <span
+                                        className={`${body.className} flex w-full items-center justify-center gap-2.5`}>
+                                        <UtensilsCrossed size={20} strokeWidth={2.5} />
                                         View Menu
-                                        <ArrowRight size={18} strokeWidth={2} />
                                     </span>
                                 </MagneticButton>
 
-                                <Link
-                                    href={`/${resolvedSlug}/book`}
-                                    className={`${body.className} flex w-full items-center justify-center gap-2 rounded-full border border-[#E7E5E0] px-6 py-4 text-[15px] font-medium text-[#0A0A0C] transition-colors hover:border-[#3B82F6]/40 dark:border-[#232327] dark:text-[#F5F4F2]`}>
-                                    <CalendarDays size={18} strokeWidth={2} />
-                                    Book a Table
-                                </Link>
+                                {/* Другорядні дії (50% / 50% в одному ряду) */}
+                                <div className="flex w-full gap-3">
+                                    <Link
+                                        href={`/${resolvedSlug}/book`}
+                                        className={`${body.className} group flex w-1/2 flex-col items-center justify-center gap-2 rounded-[1.25rem] border border-black/5 bg-white/60 py-3.5 backdrop-blur-xl transition-all duration-150 ease-out hover:-translate-y-1 hover:border-[#3B82F6]/40 hover:bg-white/90 hover:shadow-lg dark:border-white/10 dark:bg-[#121215]/60 dark:hover:border-[#3B82F6]/40 dark:hover:bg-[#121215]/90 active:scale-95`}>
+                                        <CalendarDays
+                                            size={20}
+                                            className="text-[#3B82F6] transition-transform duration-150 group-hover:scale-110 dark:text-[#60A5FA]"
+                                        />
+                                        <span className="text-[13.5px] font-medium text-[#0A0A0C] dark:text-[#F5F4F2]">
+                                            Book Table
+                                        </span>
+                                    </Link>
 
-                                <Link
-                                    href={`/${resolvedSlug}/reviews`}
-                                    className={`${body.className} flex w-full items-center justify-center gap-2 rounded-full border border-[#FBBF24]/40 bg-[#FBBF24]/5 px-6 py-4 text-[15px] font-medium text-[#0A0A0C] transition-colors hover:border-[#FBBF24]/70 dark:border-[#FBBF24]/30 dark:text-[#F5F4F2]`}>
-                                    <Star size={18} strokeWidth={2} />
-                                    View Reviews
-                                </Link>
+                                    <Link
+                                        href={`/${resolvedSlug}/reviews`}
+                                        className={`${body.className} group flex w-1/2 flex-col items-center justify-center gap-2 rounded-[1.25rem] border border-black/5 bg-white/60 py-3.5 backdrop-blur-xl transition-all duration-150 ease-out hover:-translate-y-1 hover:border-[#F59E0B]/40 hover:bg-white/90 hover:shadow-lg dark:border-white/10 dark:bg-[#121215]/60 dark:hover:border-[#F59E0B]/40 dark:hover:bg-[#121215]/90 active:scale-95`}>
+                                        <Star
+                                            size={20}
+                                            className="text-[#F59E0B] transition-transform duration-150 group-hover:scale-110 dark:text-[#FBBF24]"
+                                        />
+                                        <span className="text-[13.5px] font-medium text-[#0A0A0C] dark:text-[#F5F4F2]">
+                                            Reviews
+                                        </span>
+                                    </Link>
+                                </div>
                             </div>
                         </Reveal>
 
-                        {/* Interactive info cards */}
-                        <div className="mt-8">
+                        {/* Інформаційна сітка */}
+                        <Reveal delay={0.2}>
                             <VenueActionGrid slug={resolvedSlug} tenant={tenant} mapsUrl={mapsUrl} />
-                        </div>
+                        </Reveal>
 
                         <motion.div
                             initial={{ opacity: 0 }}
                             whileInView={{ opacity: 1 }}
                             viewport={{ once: true }}
-                            className="mt-10">
+                            className="mt-6 md:mt-10">
                             <VenueFooter />
                         </motion.div>
-                    </>
+                    </div>
                 )}
             </div>
         </main>

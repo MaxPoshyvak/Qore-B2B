@@ -24,11 +24,7 @@ import { TakeawayCheckoutModal } from '@/features/public-menu/components/Takeawa
 import { GuestNameModal } from '@/features/public-menu/components/GuestNameModal';
 import { usePublicHappyHour } from '@/features/public-menu/hooks/usePublicHappyHour';
 import { ReservationAlert } from '@/features/reservations/components/ReservationAlert';
-import {
-    useSharedCart,
-    useAddCartItem,
-    useStartNewCartSession,
-} from '@/features/public-menu/hooks/useSharedCart';
+import { useSharedCart, useAddCartItem, useStartNewCartSession } from '@/features/public-menu/hooks/useSharedCart';
 import { useCartStore } from '@/features/public-menu/store/useCartStore';
 
 // Відстеження перегляду публічного меню: гарантуємо рівно один виклик на slug
@@ -107,7 +103,16 @@ function SharedCartCoordinator({
             selectedOptionIds: pendingCartItem.selectedOptionIds,
         });
         setPendingCartItem(null);
-    }, [pendingCartItem, guestName, guestSessionId, tableId, takeawaySessionId, addItem, setPendingCartItem, setNameModalOpen]);
+    }, [
+        pendingCartItem,
+        guestName,
+        guestSessionId,
+        tableId,
+        takeawaySessionId,
+        addItem,
+        setPendingCartItem,
+        setNameModalOpen,
+    ]);
 
     return null;
 }
@@ -159,9 +164,9 @@ export default function PublicMenuPage() {
      */
     const isMyCompletedOrder = Boolean(
         completedCart &&
-            guestSessionId &&
-            ((completedCart.confirmedGuests ?? []).includes(guestSessionId) ||
-                completedCart.items.some((item) => item.guestSessionId === guestSessionId)),
+        guestSessionId &&
+        ((completedCart.confirmedGuests ?? []).includes(guestSessionId) ||
+            completedCart.items.some((item) => item.guestSessionId === guestSessionId)),
     );
 
     const showDineInSuccess = Boolean(tableId && !takeawaySessionId && isMyCompletedOrder);
@@ -230,16 +235,11 @@ export default function PublicMenuPage() {
             />
             <GuestNameModal />
             <OrderTypeModal />
-            <TakeawayCheckoutModal
-                onComplete={(orderId) => void router.push(`/${resolvedSlug}/order/${orderId}`)}
-            />
+            <TakeawayCheckoutModal onComplete={(orderId) => void router.push(`/${resolvedSlug}/order/${orderId}`)} />
 
             <AnimatePresence>
                 {showDineInSuccess ? (
-                    <OrderSuccessOverlay
-                        onRestart={handleRestart}
-                        isRestarting={startNewSession.isPending}
-                    />
+                    <OrderSuccessOverlay onRestart={handleRestart} isRestarting={startNewSession.isPending} />
                 ) : null}
             </AnimatePresence>
         </main>

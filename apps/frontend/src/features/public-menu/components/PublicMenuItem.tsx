@@ -33,13 +33,7 @@ type PublicMenuItemProps = {
  * Покрокові кнопки `+`/`−` прибрано: кількість і модифікатори тепер живуть у
  * `GuestItemModal`, а редагування вже доданого — у `CartDrawer`.
  */
-export function PublicMenuItem({
-    item,
-    variants,
-    onSelect,
-    discountedPrice,
-    discountBadge,
-}: PublicMenuItemProps) {
+export function PublicMenuItem({ item, variants, onSelect, discountedPrice, discountBadge }: PublicMenuItemProps) {
     const isDesktop = useIsDesktop();
 
     const tags = toStringArray(item.tags);
@@ -49,7 +43,7 @@ export function PublicMenuItem({
     const hasModifiers = (item.modifiers?.length ?? 0) > 0;
 
     return (
-        <motion.li variants={variants} className="h-full">
+        <motion.li variants={variants} className="h-full list-none marker:content-none">
             {/* TiltCard важкий для мобільних — вимикаємо поза десктопом. */}
             <TiltCard strength={6} disabled={!isDesktop} className="h-full">
                 <button

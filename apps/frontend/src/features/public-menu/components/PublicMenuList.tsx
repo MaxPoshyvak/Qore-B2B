@@ -2,11 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import type {
-    MenuItemResponse,
-    PublicMenuCategoryResponse,
-    PublicMenuResponseDTO,
-} from '@my-app/types';
+import type { MenuItemResponse, PublicMenuCategoryResponse, PublicMenuResponseDTO } from '@my-app/types';
 
 import { display } from '@/shared/lib/fonts';
 import { EASE } from '@/shared/config/animations';
