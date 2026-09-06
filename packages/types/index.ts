@@ -3,6 +3,7 @@ export * from './analytics';
 export * from './auth';
 export * from './common';
 export * from './helpers';
+export * from './media';
 export * from './menu';
 export * from './tables';
 export * from './cart';

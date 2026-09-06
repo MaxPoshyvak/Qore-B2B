@@ -213,6 +213,8 @@ export interface PublicMenuVenueResponse {
     slug: string;
     description: string | null;
     logoUrl: string | null;
+    coverUrl: string | null;
+    workingHours?: unknown;
 }
 
 /** Public category payload — only categories that still contain items. */

@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, useFieldArray, type DefaultValues } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Image as ImageIcon, Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import {
     CreateMenuItemSchema,
     getErrorMessage,
@@ -16,6 +16,7 @@ import {
 import { useCreateMenuItem, useUpdateMenuItem } from '@/entities/menu/hooks/useMenuItems';
 import { useGetCategories } from '@/entities/menu/hooks/useCategories';
 import { AuthInput } from '@/shared/ui/AuthInput';
+import { ImageUpload } from '@/shared/ui/ImageUpload';
 import { FormTextarea } from '@/shared/ui/FormControls';
 import { ToggleSwitch } from '@/shared/ui/ToggleSwitch';
 import { Modal } from '@/shared/ui/Modal';
@@ -196,14 +197,6 @@ export function MenuItemForm({ open, tenantId, category, initialData, onClose }:
     const tags = watch('tags') as string[];
     const imageUrl = watch('imageUrl');
 
-    // Рендеримо прев'ю лише для схожого на абсолютний URL значення, щоб
-    // напівнабраний текст не сипав помилками завантаження зображення.
-    const previewUrl = useMemo(() => {
-        if (typeof imageUrl !== 'string') return null;
-        const trimmed = imageUrl.trim();
-        return /^https?:\/\/\S+$/i.test(trimmed) ? trimmed : null;
-    }, [imageUrl]);
-
     return (
         <Modal
             open={open}
@@ -249,45 +242,25 @@ export function MenuItemForm({ open, tenantId, category, initialData, onClose }:
                             className="flex flex-col gap-5">
                             {tab === 'general' && (
                                 <>
-                                    {/* Фото: прев'ю + текстове поле URL.
-                                        Фейковий drag-and-drop прибрано — він нікуди
-                                        не зберігався; рядок URL їде прямо в БД. */}
-                                    <div className="flex items-start gap-4">
-                                        <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-black/10 bg-white/60 backdrop-blur-xl dark:border-white/10 dark:bg-white/5">
-                                            {previewUrl ? (
-                                                // eslint-disable-next-line @next/next/no-img-element
-                                                <img
-                                                    src={previewUrl}
-                                                    alt="Dish preview"
-                                                    className="h-full w-full object-cover"
-                                                />
-                                            ) : (
-                                                <ImageIcon
-                                                    size={24}
-                                                    strokeWidth={1.6}
-                                                    className="text-[#A8A6A0] dark:text-[#5A5A56]"
-                                                />
-                                            )}
-                                        </div>
-
-                                        <div className="flex-1">
-                                            <AuthInput
-                                                id="item-image-url"
-                                                label="Image URL"
-                                                placeholder="https://..."
-                                                error={errors.imageUrl?.message}
-                                                {...register('imageUrl', {
-                                                    // '' → null, щоб очищене поле не падало на .url()
-                                                    setValueAs: (value: string) =>
-                                                        typeof value === 'string' && value.trim() === ''
-                                                            ? null
-                                                            : value,
-                                                })}
-                                            />
-                                            <p className="mt-1.5 text-xs text-[#6B6A65] dark:text-[#94938D]">
-                                                Paste a direct link to the dish photo.
-                                            </p>
-                                        </div>
+                                    {/* Dish photo: drag-and-drop upload straight to Cloudinary.
+                                        The `secure_url` is written back into `imageUrl`. */}
+                                    <div>
+                                        <span className="mb-1.5 block text-sm font-medium text-[#6B6A65] dark:text-[#94938D]">
+                                            Dish photo
+                                        </span>
+                                        <ImageUpload
+                                            value={imageUrl}
+                                            folder="qore/menu-items"
+                                            onChange={(url) =>
+                                                setValue('imageUrl', url ?? null, { shouldDirty: true })
+                                            }
+                                            className="h-48 w-full"
+                                        />
+                                        {errors.imageUrl?.message && (
+                                            <span className="mt-1.5 block text-xs text-red-500">
+                                                {errors.imageUrl.message}
+                                            </span>
+                                        )}
                                     </div>
 
                                     <AuthInput

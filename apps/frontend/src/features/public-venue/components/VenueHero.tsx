@@ -30,11 +30,7 @@ export function VenueHero({ venue }: VenueHeroProps) {
             <div className="relative h-52 overflow-hidden rounded-[2rem] border border-black/5 shadow-lg dark:border-white/10 sm:h-60">
                 {hasCover ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                        src={coverUrl}
-                        alt={`${venue.name} cover`}
-                        className="h-full w-full object-cover"
-                    />
+                    <img src={coverUrl} alt={`${venue.name} cover`} className="h-full w-full object-cover" />
                 ) : (
                     <div className="h-full w-full bg-gradient-to-br from-[#3B82F6]/25 via-[#8B5CF6]/20 to-[#10B981]/15">
                         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_30%_0%,rgba(59,130,246,0.30),transparent_70%),radial-gradient(ellipse_60%_60%_at_85%_100%,rgba(139,92,246,0.28),transparent_70%)]" />
@@ -48,11 +44,7 @@ export function VenueHero({ venue }: VenueHeroProps) {
                 <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-white/20 bg-white/15 shadow-2xl backdrop-blur-xl dark:bg-white/10">
                     {hasLogo ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                            src={logoUrl}
-                            alt={venue.name}
-                            className="h-full w-full rounded-2xl object-cover"
-                        />
+                        <img src={logoUrl} alt={venue.name} className="h-full w-full rounded-2xl object-cover" />
                     ) : (
                         <span className={`${display.className} text-4xl font-bold text-white drop-shadow-sm`}>
                             {initial}

@@ -8,6 +8,9 @@ const envSchema = z.object({
     NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
     DATABASE_URL: z.string().url(),
     JWT_SECRET: z.string().min(10),
+    CLOUDINARY_API_SECRET: z.string().min(10),
+    CLOUDINARY_API_KEY: z.string().min(10),
+    CLOUDINARY_CLOUD_NAME: z.string().min(3),
 });
 
 const _env = envSchema.safeParse(process.env);

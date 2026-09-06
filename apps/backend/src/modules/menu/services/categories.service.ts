@@ -130,6 +130,8 @@ export class CategoriesService {
                 // Profile fields live on `TenantSettings` (1-to-1), not `Tenant`.
                 description: tenant.settings?.description ?? null,
                 logoUrl: tenant.settings?.logoUrl ?? null,
+                coverUrl: tenant.settings?.coverUrl ?? null,
+                workingHours: tenant.settings?.workingHours ?? undefined,
             },
             categories: categories.map((category) => ({
                 ...category,

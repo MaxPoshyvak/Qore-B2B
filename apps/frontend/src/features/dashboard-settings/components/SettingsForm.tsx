@@ -111,7 +111,7 @@ export function SettingsForm({ slug, initialData }: SettingsFormProps) {
             <Toaster />
 
             <div className="relative mx-auto max-w-6xl px-1">
-                <div className="pointer-events-none absolute -right-24 -top-20 h-72 w-72 rounded-full bg-[#3B82F6]/5 blur-3xl" />
+                <div className="pointer-events-none  absolute right-0 -top-20 h-72 w-72 rounded-full bg-[#3B82F6]/5 blur-3xl" />
                 <header className="mb-6 md:mb-8">
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-[#3B82F6]/20 bg-[#3B82F6]/10 px-3 py-1 text-xs font-medium text-[#2563EB] dark:text-[#60A5FA]">
                         Venue Settings

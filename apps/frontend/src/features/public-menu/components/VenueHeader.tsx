@@ -1,80 +1,79 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Store } from 'lucide-react';
 import type { PublicMenuVenueResponse } from '@my-app/types';
 
 import { EASE } from '@/shared/config/animations';
 import { display } from '@/shared/lib/fonts';
-import { Eyebrow } from '@/shared/ui/Eyebrow';
+
+import { getTodaySchedule } from '../lib/venue-hours';
+import { LiveStatusBadge } from './LiveStatusBadge';
 
 type VenueHeaderProps = {
     venue: PublicMenuVenueResponse;
-    /**
-     * Реальний статус "відкрито/закрито" на основі робочих годин закладу.
-     * Свідомо необов'язковий: поки бекенд не віддає ці дані, бейдж просто
-     * не рендериться — краще нічого не показати, ніж показати неправду
-     * (раніше тут був захардкоджений "Open & Accepting Orders").
-     */
-    isOpenNow?: boolean;
 };
 
-export function VenueHeader({ venue, isOpenNow }: VenueHeaderProps) {
+export function VenueHeader({ venue }: VenueHeaderProps) {
+    const workingHours = venue.workingHours;
+    const todayInfo = getTodaySchedule(workingHours);
+
+    const coverUrl = venue.coverUrl ?? undefined;
+    const hasCover = Boolean(coverUrl);
+
     return (
         <motion.header
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: EASE }}
-            className="text-center">
-            {/* Cover — soft mesh gradient */}
-            <div className="relative h-40 overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#3B82F6]/20 via-[#8B5CF6]/20 to-transparent">
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_0%,rgba(59,130,246,0.22),transparent_70%),radial-gradient(ellipse_60%_60%_at_80%_100%,rgba(139,92,246,0.20),transparent_70%)]" />
+            transition={{ duration: 0.7, ease: EASE }}
+            // Додано mt-6 sm:mt-8, щоб відштовхнути блок від верхнього BaseHeader
+            className="mt-6 text-left sm:mt-8">
+            {/* Cover banner — gradient fallback when no cover image */}
+            <div className="relative h-52 overflow-hidden rounded-[2rem] border border-black/5 shadow-lg dark:border-white/10 sm:h-60">
+                {hasCover ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={coverUrl} alt={`${venue.name} cover`} className="h-full w-full object-cover" />
+                ) : (
+                    <div className="h-full w-full bg-gradient-to-br from-[#3B82F6]/25 via-[#8B5CF6]/20 to-[#10B981]/15">
+                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_30%_0%,rgba(59,130,246,0.30),transparent_70%),radial-gradient(ellipse_60%_60%_at_85%_100%,rgba(139,92,246,0.28),transparent_70%)]" />
+                    </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
             </div>
 
-            {/* Overlapping square logo — matches the squircle mark used on the main site */}
-            <div className="relative -mt-12 flex justify-center">
-                <div className="flex h-24 w-24 items-center justify-center rounded-[22px] border-4 border-[#FAFAF9] bg-white/70 text-[#3B82F6] shadow-xl backdrop-blur-md dark:border-[#0A0A0C] dark:bg-white/10 dark:text-[#8B5CF6]">
+            {/* Overlapping glass logo */}
+            <div className="relative -mt-12 ml-5 flex">
+                <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-white/20 bg-white/15 shadow-2xl backdrop-blur-xl dark:bg-white/10">
                     {venue.logoUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                            src={venue.logoUrl}
-                            alt={venue.name}
-                            className="h-full w-full rounded-[18px] object-cover"
-                        />
+                        <img src={venue.logoUrl} alt={venue.name} className="h-full w-full rounded-2xl object-cover" />
                     ) : (
-                        <Store size={30} strokeWidth={1.6} />
+                        <span className={`${display.className} text-4xl font-bold text-white drop-shadow-sm`}>
+                            {venue.name.trim().charAt(0).toUpperCase() || '?'}
+                        </span>
                     )}
                 </div>
             </div>
 
-            <div className="mt-4">
-                <div className="flex justify-center">
-                    <Eyebrow tone="blue">Digital Menu</Eyebrow>
-                </div>
+            <div className="mt-4 px-1">
                 <h1
-                    className={`${display.className} text-[40px] font-bold leading-[1.05] tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2] sm:text-[58px]`}>
+                    className={`${display.className} text-3xl font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2] sm:text-4xl`}>
                     {venue.name}
                 </h1>
 
-                {isOpenNow !== undefined && (
-                    <span
-                        className={
-                            isOpenNow
-                                ? 'mt-3 inline-flex items-center gap-2 rounded-full border border-[#10B981]/25 bg-[#10B981]/10 px-3 py-1 text-xs font-medium text-[#04916C] dark:text-[#10B981]'
-                                : 'mt-3 inline-flex items-center gap-2 rounded-full border border-[#E7E5E0] bg-black/5 px-3 py-1 text-xs font-medium text-[#6B6A65] dark:border-[#232327] dark:bg-white/5 dark:text-[#94938D]'
-                        }>
-                        <span
-                            className={`flex h-1.5 w-1.5 rounded-full ${isOpenNow ? 'bg-[#10B981]' : 'bg-[#9C9B95]'}`}
-                        />
-                        {isOpenNow ? 'Open & Accepting Orders' : 'Currently Closed'}
-                    </span>
-                )}
-
                 {venue.description && (
-                    <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
+                    <p className="mt-2 max-w-xl text-[14.5px] leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
                         {venue.description}
                     </p>
                 )}
+
+                <div className="mt-4 flex flex-col items-start gap-2">
+                    <LiveStatusBadge workingHours={workingHours} />
+                    {todayInfo && (
+                        <span className="text-[13px] text-[#6B6A65] dark:text-[#94938D]">
+                            {todayInfo.isOpen ? 'Open' : 'Closed'} • {todayInfo.schedule}
+                        </span>
+                    )}
+                </div>
             </div>
         </motion.header>
     );

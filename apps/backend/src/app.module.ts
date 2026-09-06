@@ -11,6 +11,7 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { FeedbackModule } from './modules/feedback/feedback.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { HappyHourModule } from './modules/happy-hour/happy-hour.module';
+import { MediaModule } from './modules/media/media.module';
 
 @Module({
     imports: [
@@ -26,6 +27,7 @@ import { HappyHourModule } from './modules/happy-hour/happy-hour.module';
         FeedbackModule,
         DashboardModule,
         HappyHourModule,
+        MediaModule,
     ],
     controllers: [],
     providers: [],
