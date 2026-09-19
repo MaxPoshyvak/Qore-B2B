@@ -52,10 +52,27 @@ model User {
 
   stripeCustomerId String? @unique
 
+  isEmailVerified      Boolean   @default(false)
+  emailVerifyToken     String?   @unique
+  emailVerifyOtp       String?
+  emailVerifyExpiresAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tenants Tenant[]
+  tenants             Tenant[]
+  passwordResetTokens PasswordResetToken[]
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  token     String   @unique // Унікальний хеш токена
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime // Час, коли токен "згорить" (наприклад, через 15 хв)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model Tenant {
@@ -169,13 +186,13 @@ model MenuItem {
 /// `minSelections`/`maxSelections` описують правила вибору для гостя:
 /// min=0 — група необов'язкова, max=1 — радіо-вибір, max>1 — мультивибір.
 model ModifierGroup {
-  id            String @id @default(cuid())
+  id            String   @id @default(cuid())
   menuItem      MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
   menuItemId    String
   name          String
-  minSelections Int    @default(0)
-  maxSelections Int    @default(1)
-  sortOrder     Int    @default(0)
+  minSelections Int      @default(0)
+  maxSelections Int      @default(1)
+  sortOrder     Int      @default(0)
 
   options ModifierOption[]
 
@@ -186,12 +203,12 @@ model ModifierGroup {
 /// `priceAdjustment` — дельта до базової ціни страви (може бути від'ємною,
 /// напр. -0.50 за відмову від інгредієнта), тому Decimal без обмеження знаку.
 model ModifierOption {
-  id              String @id @default(cuid())
+  id              String        @id @default(cuid())
   group           ModifierGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
   groupId         String
   name            String
-  priceAdjustment Decimal @default(0)
-  sortOrder       Int     @default(0)
+  priceAdjustment Decimal       @default(0)
+  sortOrder       Int           @default(0)
 
   @@index([groupId])
 }

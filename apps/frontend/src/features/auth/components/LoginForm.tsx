@@ -87,7 +87,7 @@ export function LoginForm() {
                 )}
 
                 <div className="mt-1 flex items-center justify-end">
-                    <Link href="#" className="text-[13px] text-[#3B82F6] transition-colors hover:text-[#2563EB]">
+                    <Link href="/auth/forgot-password" className="text-[13px] text-[#3B82F6] transition-colors hover:text-[#2563EB]">
                         Forgot password?
                     </Link>
                 </div>

@@ -17,14 +17,32 @@ import { MenuNotFound } from '@/features/public-menu/components/MenuNotFound';
 import { usePublicHappyHour } from '@/features/public-menu/hooks/usePublicHappyHour';
 import { VenueActionGrid, VenueFooter, VenueHero } from '@/features/public-venue/components';
 
+// System / auth routes that must never be resolved as a tenant slug.
+const RESERVED_SLUGS = new Set([
+    'api',
+    'auth',
+    'login',
+    'register',
+    'onboarding',
+    'forgot-password',
+    'reset-password',
+    'verify-email',
+    'dashboard',
+    't',
+    'kds',
+]);
+
 export default function PublicVenuePage() {
     const { slug } = useParams<{ slug: string }>();
     const resolvedSlug = slug ?? '';
+    // Defensive guard: reserved paths (e.g. an auth flow) must not trigger
+    // tenant data fetching. Passing an empty slug disables the queries.
+    const safeSlug = RESERVED_SLUGS.has(resolvedSlug) ? '' : resolvedSlug;
     const { theme, toggle, mounted } = useTheme();
-    const { data: tenant, isLoading, isError } = useGetPublicTenant(resolvedSlug);
+    const { data: tenant, isLoading, isError } = useGetPublicTenant(safeSlug);
 
     // Активні правила Happy Hour для банера у шапці (підрахунок знижок у меню/кошику).
-    const { activeRules: activeHappyHourRules } = usePublicHappyHour({ slug: resolvedSlug });
+    const { activeRules: activeHappyHourRules } = usePublicHappyHour({ slug: safeSlug });
 
     const mapsUrl =
         tenant?.settings?.googleMapsUrl ??
