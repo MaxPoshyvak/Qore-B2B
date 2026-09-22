@@ -12,6 +12,7 @@ import { FeedbackModule } from './modules/feedback/feedback.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { HappyHourModule } from './modules/happy-hour/happy-hour.module';
 import { MediaModule } from './modules/media/media.module';
+import { AiModule } from './modules/ai/ai.module';
 
 @Module({
     imports: [
@@ -28,6 +29,7 @@ import { MediaModule } from './modules/media/media.module';
         DashboardModule,
         HappyHourModule,
         MediaModule,
+        AiModule,
     ],
     controllers: [],
     providers: [],

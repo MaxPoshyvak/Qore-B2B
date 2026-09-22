@@ -17,6 +17,8 @@ const envSchema = z.object({
     CLOUDINARY_API_SECRET: z.string().min(10),
     CLOUDINARY_API_KEY: z.string().min(10),
     CLOUDINARY_CLOUD_NAME: z.string().min(3),
+    OPENROUTER_API_KEY: z.string().optional().default(''),
+    OPENROUTER_MODEL: z.string().default('google/gemini-2.0-flash-001'),
 });
 
 const _env = envSchema.safeParse(process.env);

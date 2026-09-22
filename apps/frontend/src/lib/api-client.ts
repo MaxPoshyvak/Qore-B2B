@@ -6,10 +6,13 @@ import { getSession } from 'next-auth/react';
 /** Error thrown by `apiClient` that carries the originating HTTP status code. */
 export class ApiError extends Error {
     status: number;
-    constructor(status: number, message: string) {
+    /** Raw parsed error body from the API (e.g. `{ code, message }`). */
+    data?: unknown;
+    constructor(status: number, message: string, data?: unknown) {
         super(message);
         this.name = 'ApiError';
         this.status = status;
+        this.data = data;
     }
 }
 
@@ -86,6 +89,7 @@ export async function apiClient<T>(
         throw new ApiError(
             response.status,
             errorData.error || `API Error ${response.status}: ${response.statusText}`,
+            errorData,
         );
     }
 

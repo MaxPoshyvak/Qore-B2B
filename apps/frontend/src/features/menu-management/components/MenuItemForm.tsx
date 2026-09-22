@@ -10,11 +10,14 @@ import {
     getErrorMessage,
     type CreateMenuItemDTO,
     type CreateMenuItemInput,
+    type GenerateDishOutput,
     type MenuItemResponse,
 } from '@my-app/types';
 
 import { useCreateMenuItem, useUpdateMenuItem } from '@/entities/menu/hooks/useMenuItems';
 import { useGetCategories } from '@/entities/menu/hooks/useCategories';
+import { AiDishGeneratorBar } from '../ui/AiDishGeneratorBar';
+import { ALLERGENS, DIETARY_TAGS, normalizeAllergens, normalizeDietary } from '../lib/menu-constants';
 import { AuthInput } from '@/shared/ui/AuthInput';
 import { ImageUpload } from '@/shared/ui/ImageUpload';
 import { FormTextarea } from '@/shared/ui/FormControls';
@@ -28,8 +31,8 @@ import { FormRootError } from './FormRootError';
 
 // Повні довідники — критичні для майбутнього AI-консультанта, який має вміти
 // відповідати на "що у вас без глютену?" без ручного тегування кожної страви.
-const ALLERGENS = ['Dairy', 'Gluten', 'Nuts', 'Soy', 'Eggs', 'Fish', 'Shellfish'] as const;
-const DIETARY_TAGS = ['Vegan', 'Vegetarian', 'Spicy', 'Halal', 'Sugar-free', 'Bestseller', 'New'] as const;
+// Тепер живуть у `lib/menu-constants`, щоб бар AI-генератора ділився ними без
+// циклічного імпорту між компонентами.
 
 const TABS = [
     { id: 'general', label: 'General' },
@@ -103,6 +106,8 @@ type MenuItemFormProps = {
     category?: { id: string; name: string } | null;
     /** Наявна страва — якщо передана, форма працює в режимі редагування. */
     initialData?: MenuItemResponse | null;
+    /** Чи має поточний заклад PRO (або вищий) тариф — керує доступом до AI. */
+    isPro?: boolean;
     onClose: () => void;
 };
 
@@ -113,13 +118,14 @@ type MenuItemFormProps = {
  * "Edit" не давала доступу ні до модифікаторів, ні до фото. Тепер обидва
  * сценарії йдуть через цей компонент, а режим визначає `initialData`.
  */
-export function MenuItemForm({ open, tenantId, category, initialData, onClose }: MenuItemFormProps) {
+export function MenuItemForm({ open, tenantId, category, initialData, isPro, onClose }: MenuItemFormProps) {
     const { mutateAsync: createMenuItem } = useCreateMenuItem();
     const { mutateAsync: updateMenuItem } = useUpdateMenuItem();
     const { data: categories } = useGetCategories(tenantId);
 
     const isEdit = !!initialData;
     const [tab, setTab] = useState<TabId>('general');
+    const [highlight, setHighlight] = useState(false);
 
     /*
      * `CreateMenuItemSchema` оголошує поля з `.default(...)`, тому input- та
@@ -146,6 +152,7 @@ export function MenuItemForm({ open, tenantId, category, initialData, onClose }:
         fields: groups,
         append: appendGroup,
         remove: removeGroup,
+        replace: replaceGroups,
     } = useFieldArray({ control, name: 'modifiers' });
 
     /*
@@ -165,6 +172,49 @@ export function MenuItemForm({ open, tenantId, category, initialData, onClose }:
             shouldDirty: true,
         });
     }
+
+    /** Maps AI modifiers onto the form's write contract (drops `required`). */
+    function mapAiModifiers(modifiers: GenerateDishOutput['modifiers']) {
+        return modifiers.map((modifier) => ({
+            name: modifier.name,
+            minSelections: modifier.minSelections,
+            maxSelections: modifier.maxSelections,
+            options: modifier.options.map((option) => ({
+                name: option.name,
+                priceAdjustment: option.priceAdjustment,
+            })),
+        }));
+    }
+
+    /**
+     * Called by the AI bar once the backend returns a validated draft.
+     * Fills the form, highlights the touched fields, and returns to the
+     * general tab so the user immediately sees the populated name/description.
+     */
+    function handleAiDraft(output: GenerateDishOutput) {
+        setValue('name', output.name, { shouldDirty: true });
+        setValue('description', output.description ?? '', { shouldDirty: true });
+        setValue('allergens', normalizeAllergens(output.allergens), { shouldDirty: true });
+        setValue('tags', normalizeDietary(output.dietary), { shouldDirty: true });
+        replaceGroups(mapAiModifiers(output.modifiers));
+
+        const suggested = output.suggestedCategory.trim().toLowerCase();
+        const match = (categories ?? []).find(
+            (c) => c.name.toLowerCase() === suggested || c.name.toLowerCase().includes(suggested),
+        );
+        if (match) setValue('categoryId', match.id, { shouldDirty: true });
+
+        setTab('general');
+        setHighlight(true);
+        window.setTimeout(() => setHighlight(false), 1200);
+    }
+
+    /** Temporary violet glow applied to AI-populated fields. */
+    const highlightCls = (active: boolean) =>
+        cn(
+            'rounded-2xl transition-all duration-700 ease-out',
+            active && 'ring-2 ring-[#8B5CF6]/40 bg-[#8B5CF6]/5',
+        );
 
     async function onSubmit(values: CreateMenuItemDTO) {
         try {
@@ -208,6 +258,14 @@ export function MenuItemForm({ open, tenantId, category, initialData, onClose }:
             scrollable
             className="max-w-3xl">
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col" noValidate>
+                {/* AI-асистент: компактний бар над формою, доступний у всіх вкладках. */}
+                <AiDishGeneratorBar
+                    isPro={!!isPro}
+                    categories={categories ?? []}
+                    onPopulate={handleAiDraft}
+                    className="mb-6"
+                />
+
                 {/* Перемикач вкладок (піл-світч) */}
                 <div className="flex gap-1 rounded-xl bg-black/5 p-1 dark:bg-white/5">
                     {TABS.map((t) => (
@@ -230,7 +288,7 @@ export function MenuItemForm({ open, tenantId, category, initialData, onClose }:
                     `popLayout` (а не `wait`) — щоб вихідна вкладка одразу
                     випадала з потоку: інакше контейнер на мить лишався
                     порожнім і модалка "складалася" перед новою висотою. */}
-                <div className="mt-6 min-h-0">
+                <div className="mt-6 min-h-0 pb-7">
                     <AnimatePresence mode="popLayout">
                         <motion.div
                             key={tab}
@@ -263,14 +321,16 @@ export function MenuItemForm({ open, tenantId, category, initialData, onClose }:
                                         )}
                                     </div>
 
-                                    <AuthInput
-                                        id="item-name"
-                                        label="Item name"
-                                        placeholder="e.g. Flat White"
-                                        error={errors.name?.message}
-                                        autoFocus
-                                        {...register('name')}
-                                    />
+                                    <div className={highlightCls(highlight)}>
+                                        <AuthInput
+                                            id="item-name"
+                                            label="Item name"
+                                            placeholder="e.g. Flat White"
+                                            error={errors.name?.message}
+                                            autoFocus
+                                            {...register('name')}
+                                        />
+                                    </div>
 
                                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                         <AuthInput
@@ -306,14 +366,16 @@ export function MenuItemForm({ open, tenantId, category, initialData, onClose }:
                                         </div>
                                     </div>
 
-                                    <FormTextarea
-                                        id="item-description"
-                                        label="Description (optional)"
-                                        placeholder="Double shot, silky microfoam…"
-                                        rows={3}
-                                        error={errors.description?.message}
-                                        {...register('description')}
-                                    />
+                                    <div className={highlightCls(highlight)}>
+                                        <FormTextarea
+                                            id="item-description"
+                                            label="Description (optional)"
+                                            placeholder="Double shot, silky microfoam…"
+                                            rows={3}
+                                            error={errors.description?.message}
+                                            {...register('description')}
+                                        />
+                                    </div>
 
                                     <label className="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border border-black/10 bg-white/60 px-4 py-3 dark:border-white/10 dark:bg-white/5">
                                         <span>
@@ -333,6 +395,7 @@ export function MenuItemForm({ open, tenantId, category, initialData, onClose }:
                             )}
 
                             {tab === 'modifiers' && (
+                                <div className={highlightCls(highlight)}>
                                 <>
                                     {groups.length === 0 ? (
                                         <div className="rounded-2xl border border-dashed border-[#E7E5E0] bg-white/40 px-4 py-8 text-center text-sm text-[#6B6A65] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D]">
@@ -365,9 +428,11 @@ export function MenuItemForm({ open, tenantId, category, initialData, onClose }:
                                         Add modifier group
                                     </button>
                                 </>
+                                </div>
                             )}
 
                             {tab === 'attributes' && (
+                                <div className={highlightCls(highlight)}>
                                 <>
                                     <PillGroup
                                         title="Allergens"
@@ -385,6 +450,7 @@ export function MenuItemForm({ open, tenantId, category, initialData, onClose }:
                                         onToggle={(value) => togglePill('tags', value)}
                                     />
                                 </>
+                                </div>
                             )}
                         </motion.div>
                     </AnimatePresence>

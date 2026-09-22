@@ -14,3 +14,4 @@ export * from './reservations';
 export * from './feedback';
 export * from './happy-hour';
 export * from './dashboard';
+export * from './ai/generate-dish.schema';

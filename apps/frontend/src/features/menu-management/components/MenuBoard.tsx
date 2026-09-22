@@ -91,6 +91,10 @@ export function MenuBoard({ slug, createCategoryOpen, onCreateCategoryOpenChange
     if (isTenantError) return <BoardError message={getErrorMessage(tenantError)} />;
     if (isCategoriesError) return <BoardError message={getErrorMessage(categoriesError)} />;
 
+    // PRO (and higher) plans unlock the AI dish generator.
+    const plan = tenantResponse?.data.subscriptionPlan;
+    const isPro = plan === 'pro' || plan === 'business';
+
     const categoryList = categories ?? [];
     // A category can only be removed once it is empty (the API restricts deletes
     // that would orphan menu items), so surface that up front.
@@ -141,6 +145,7 @@ export function MenuBoard({ slug, createCategoryOpen, onCreateCategoryOpenChange
                 open={!!addItemCategory}
                 category={addItemCategory}
                 tenantId={tenantId}
+                isPro={isPro}
                 onClose={() => setAddItemCategory(null)}
             />
 
@@ -148,6 +153,7 @@ export function MenuBoard({ slug, createCategoryOpen, onCreateCategoryOpenChange
                 open={!!editingItem}
                 initialData={editingItem}
                 tenantId={tenantId}
+                isPro={isPro}
                 onClose={() => setEditingItem(null)}
             />
 

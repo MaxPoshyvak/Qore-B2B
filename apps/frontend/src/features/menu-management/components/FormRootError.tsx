@@ -20,7 +20,7 @@ export function FormRootError({ message }: { message?: string }) {
                     animate={{ opacity: 1, y: 0, height: 'auto' }}
                     exit={{ opacity: 0, y: -6, height: 0 }}
                     transition={{ duration: 0.25, ease: EASE }}
-                    className="flex items-center gap-2 overflow-hidden rounded-xl border border-red-400/30 bg-red-500/5 px-3.5 py-2.5 text-sm text-red-500">
+                    className="mb-4 flex items-center gap-2 overflow-hidden rounded-xl border border-red-400/30 bg-red-500/5 px-3.5 py-2.5 text-sm text-red-500">
                     <AlertCircle size={15} className="shrink-0" />
                     <span>{message}</span>
                 </motion.div>
