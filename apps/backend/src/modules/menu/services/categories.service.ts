@@ -1,12 +1,26 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
+import { UpsellCacheService } from 'src/modules/ai/services/upsell-cache.service';
 import { SuccessResponse } from '@my-app/types';
 import { MenuCategory } from '@my-app/database';
 import type { CreateCategoryDTO, PublicMenuResponseDTO, UpdateCategoryDTO } from '@my-app/types';
 
 @Injectable()
 export class CategoriesService {
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly upsellCacheService: UpsellCacheService,
+    ) {}
+
+    private async invalidateTenantUpsellCache(tenantId: string) {
+        const tenant = await this.prisma.tenant.findUnique({
+            where: { id: tenantId },
+            select: { slug: true },
+        });
+        if (tenant?.slug) {
+            this.upsellCacheService.invalidateVenue(tenant.slug);
+        }
+    }
 
     private async assertOwnsTenant(tenantId: string, userId: string) {
         const tenant = await this.prisma.tenant.findUnique({
@@ -25,6 +39,8 @@ export class CategoriesService {
         const result = await this.prisma.menuCategory.create({
             data: { name: dto.name, tenantId: dto.tenantId },
         });
+
+        await this.invalidateTenantUpsellCache(dto.tenantId);
 
         return { success: true, data: result };
     }
@@ -66,6 +82,8 @@ export class CategoriesService {
             data: { name: dto.name },
         });
 
+        await this.invalidateTenantUpsellCache(existing.tenantId);
+
         return { success: true, data: result };
     }
 
@@ -78,6 +96,8 @@ export class CategoriesService {
         await this.assertOwnsTenant(existing.tenantId, userId);
 
         const result = await this.prisma.menuCategory.delete({ where: { id } });
+
+        await this.invalidateTenantUpsellCache(existing.tenantId);
 
         return { success: true, data: result };
     }

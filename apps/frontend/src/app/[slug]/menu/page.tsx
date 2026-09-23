@@ -224,6 +224,7 @@ export default function PublicMenuPage() {
                 cart={cart}
                 tableId={tableId}
                 takeawaySessionId={takeawaySessionId}
+                venueSlug={resolvedSlug}
                 isLoading={cartQuery.isLoading}
                 activeHappyHourRules={activeHappyHourRules}
                 onOrderCreated={(orderId) => {

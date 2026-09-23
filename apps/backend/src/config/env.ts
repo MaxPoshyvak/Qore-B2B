@@ -19,6 +19,7 @@ const envSchema = z.object({
     CLOUDINARY_CLOUD_NAME: z.string().min(3),
     OPENROUTER_API_KEY: z.string().optional().default(''),
     OPENROUTER_MODEL: z.string().default('google/gemini-2.0-flash-001'),
+    OPENROUTER_UPSELL_MODEL: z.string().default('openai/gpt-4o-mini'),
 });
 
 const _env = envSchema.safeParse(process.env);

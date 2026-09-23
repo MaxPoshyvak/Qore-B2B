@@ -15,3 +15,4 @@ export * from './feedback';
 export * from './happy-hour';
 export * from './dashboard';
 export * from './ai/generate-dish.schema';
+export * from './ai/cart-upsell.schema';

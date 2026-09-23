@@ -23,13 +23,7 @@ type AiDishGeneratorBarProps = {
     className?: string;
 };
 
-export function AiDishGeneratorBar({
-    isPro,
-    categories,
-    onPopulate,
-    onUpgrade,
-    className,
-}: AiDishGeneratorBarProps) {
+export function AiDishGeneratorBar({ isPro, categories, onPopulate, onUpgrade, className }: AiDishGeneratorBarProps) {
     const [expanded, setExpanded] = useState(false);
     const [prompt, setPrompt] = useState('');
     const [upgradeOpen, setUpgradeOpen] = useState(false);
@@ -151,7 +145,7 @@ export function AiDishGeneratorBar({
                             exit={{ height: 0, opacity: 0 }}
                             transition={{ duration: 0.3, ease: EASE }}
                             className="overflow-hidden">
-                            <div className="mt-3.5 flex flex-col gap-3 border-t border-[#8B5CF6]/15 pt-3.5">
+                            <div className="mt-3.5 flex flex-col gap-3 border-t text-sm border-[#8B5CF6]/15 pt-3.5">
                                 <textarea
                                     value={prompt}
                                     onChange={(e) => setPrompt(e.target.value)}
@@ -168,8 +162,8 @@ export function AiDishGeneratorBar({
                                     )}
                                 />
 
-                                <div className="flex items-center justify-between gap-3">
-                                    <div className="flex items-center gap-1.5 text-xs text-[#6B6A65] dark:text-[#94938D]">
+                                <div className="flex items-center justify-end md:justify-between gap-3">
+                                    <div className="hidden md:flex items-center gap-1.5 text-xs text-[#6B6A65] dark:text-[#94938D]">
                                         <kbd className="rounded border border-black/10 bg-black/[0.04] px-1.5 py-0.5 text-[10px] font-medium text-[#6B6A65] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D]">
                                             ⌘ / Ctrl
                                         </kbd>

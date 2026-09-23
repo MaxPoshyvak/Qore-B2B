@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { useParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { Check, Loader2, Lock, Minus, Plus, Sparkles, Trash2, UtensilsCrossed, X } from 'lucide-react';
@@ -14,7 +15,9 @@ import { useUpdateCartItem, useRemoveCartItem, useToggleCartReady } from '../hoo
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop';
 import { type ActiveHappyHourRule } from '../hooks/usePublicHappyHour';
 import { calculateCartTotal, priceCartLine } from '../lib/cart-pricing';
-import { type CartItemResponse, type CartSessionResponse, parseSelectedModifiers } from '@my-app/types';
+import { type CartItemResponse, type CartSessionResponse, type MenuItemResponse, parseSelectedModifiers } from '@my-app/types';
+import { CartUpsellSection } from './CartUpsellSection';
+import { GuestItemModal } from './GuestItemModal';
 
 type CartGroup = {
     id: string;
@@ -26,6 +29,7 @@ type CartDrawerProps = {
     cart: CartSessionResponse | undefined;
     tableId: string | null;
     takeawaySessionId: string | null;
+    venueSlug?: string;
     /** True while the very first shared-cart fetch is still in flight. */
     isLoading?: boolean;
     /** Активні правила Happy Hour — щоб підсумок кошика враховував знижки. */
@@ -109,10 +113,15 @@ export function CartDrawer({
     cart,
     tableId,
     takeawaySessionId,
+    venueSlug,
     isLoading = false,
     activeHappyHourRules = [],
     onOrderCreated,
 }: CartDrawerProps) {
+    const params = useParams<{ slug: string }>();
+    const resolvedVenueSlug = venueSlug || params?.slug || '';
+    const [upsellModalItem, setUpsellModalItem] = useState<MenuItemResponse | null>(null);
+
     const isOpen = useCartStore((s) => s.isCartDrawerOpen);
     const setCartDrawerOpen = useCartStore((s) => s.setCartDrawerOpen);
     const setNameModalOpen = useCartStore((s) => s.setNameModalOpen);
@@ -129,6 +138,10 @@ export function CartDrawer({
     const isDesktop = useIsDesktop();
 
     const items = cart?.items ?? [];
+    const cartItemIds = useMemo(() => {
+        return items.map((i) => i.menuItemId).filter(Boolean);
+    }, [items]);
+
     const confirmedGuests = cart?.confirmedGuests ?? [];
     // Only a settled payload may flip the drawer into its "order placed" layout.
     const isComplete = !isLoading && cart ? cart.isActive === false : false;
@@ -150,6 +163,7 @@ export function CartDrawer({
         : { initial: { y: '100%' }, animate: { y: 0 }, exit: { y: '100%' } };
 
     return (
+        <>
         <AnimatePresence>
             {isOpen && (
                 <>
@@ -370,6 +384,19 @@ export function CartDrawer({
                                     })}
                                 </ul>
                             )}
+
+                            {/* Chef's Pairings Upsell Section */}
+                            {!isComplete && items.length > 0 && resolvedVenueSlug && (
+                                <CartUpsellSection
+                                    venueSlug={resolvedVenueSlug}
+                                    cartItemIds={cartItemIds}
+                                    isDrawerOpen={isOpen}
+                                    tableId={tableId}
+                                    takeawaySessionId={takeawaySessionId}
+                                    activeHappyHourRules={activeHappyHourRules}
+                                    onSelectUpsellItem={setUpsellModalItem}
+                                />
+                            )}
                         </div>
 
                         {/* Footer / Ready check */}
@@ -431,5 +458,15 @@ export function CartDrawer({
                 </>
             )}
         </AnimatePresence>
+
+        {/* Modal for customizing upsell items with required modifiers */}
+        <GuestItemModal
+            item={upsellModalItem}
+            tableId={tableId}
+            takeawaySessionId={takeawaySessionId}
+            onClose={() => setUpsellModalItem(null)}
+            activeHappyHourRules={activeHappyHourRules}
+        />
+        </>
     );
 }

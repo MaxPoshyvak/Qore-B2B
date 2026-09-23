@@ -3,6 +3,9 @@ import {
     type AddCartItemDto,
     type CartItemResponse,
     type CartSessionResponse,
+    type CartUpsellInput,
+    type CartUpsellResponse,
+    type CartUpsellResponseData,
     type UpdateCartItemDto,
 } from '@my-app/types';
 
@@ -78,5 +81,13 @@ export class CartApi {
             body: JSON.stringify({ guestSessionId }),
         });
         return res.data;
+    }
+
+    static async getUpsellRecommendations(dto: CartUpsellInput): Promise<CartUpsellResponse> {
+        const res = await apiClient<CartUpsellResponseData>('/ai/cart-upsell', {
+            method: 'POST',
+            body: JSON.stringify(dto),
+        });
+        return res;
     }
 }
