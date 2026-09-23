@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, Loader2, Lock, Sparkles } from 'lucide-react';
 import { ApiError } from '@/lib/api-client';
 import { EASE } from '@/shared/config/animations';
-import { body, mono } from '@/shared/lib/fonts';
 import { cn } from '@/shared/lib/utils';
 import { type GenerateDishOutput } from '@my-app/types';
 import { useGenerateDish } from '../api/useGenerateDish';
@@ -76,7 +75,7 @@ export function AiDishGeneratorBar({
     }
 
     return (
-        <div className={cn('select-none', body.className, className)}>
+        <div className={cn('select-none', className)}>
             <div className="rounded-2xl border border-[#8B5CF6]/20 bg-gradient-to-r from-[#8B5CF6]/[0.08] via-[#3B82F6]/[0.03] to-transparent p-3.5 dark:border-[#8B5CF6]/30 dark:from-[#8B5CF6]/15">
                 {/* Success state */}
                 <AnimatePresence initial={false} mode="wait">
@@ -112,11 +111,7 @@ export function AiDishGeneratorBar({
                                 <span className="text-xs font-medium text-[#0A0A0C] dark:text-[#F5F4F2]">
                                     Draft with AI Assistant
                                 </span>
-                                <span
-                                    className={cn(
-                                        'rounded-md bg-[#8B5CF6]/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-[#8B5CF6]',
-                                        mono.className,
-                                    )}>
+                                <span className="rounded-md bg-[#8B5CF6]/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#8B5CF6]">
                                     AI
                                 </span>
                             </div>
@@ -175,18 +170,10 @@ export function AiDishGeneratorBar({
 
                                 <div className="flex items-center justify-between gap-3">
                                     <div className="flex items-center gap-1.5 text-xs text-[#6B6A65] dark:text-[#94938D]">
-                                        <kbd
-                                            className={cn(
-                                                'rounded border border-black/10 bg-black/[0.04] px-1.5 py-0.5 text-[10px] text-[#6B6A65] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D]',
-                                                mono.className,
-                                            )}>
+                                        <kbd className="rounded border border-black/10 bg-black/[0.04] px-1.5 py-0.5 text-[10px] font-medium text-[#6B6A65] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D]">
                                             ⌘ / Ctrl
                                         </kbd>
-                                        <kbd
-                                            className={cn(
-                                                'rounded border border-black/10 bg-black/[0.04] px-1.5 py-0.5 text-[10px] text-[#6B6A65] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D]',
-                                                mono.className,
-                                            )}>
+                                        <kbd className="rounded border border-black/10 bg-black/[0.04] px-1.5 py-0.5 text-[10px] font-medium text-[#6B6A65] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D]">
                                             ↵
                                         </kbd>
                                         <span className="text-[11px]">to generate</span>

@@ -10,7 +10,7 @@ import { getErrorMessage, type CreateHappyHourDto, type HappyHourRuleResponse, t
 import { toast } from '@/shared/ui/Toaster';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
-import { display } from '@/shared/lib/fonts';
+import { cn } from '@/shared/lib/utils';
 import { EASE } from '@/shared/config/animations';
 import { useGetTenantBySlug } from '@/entities/tenant/hooks/useTenants';
 import { useGetCategories } from '@/entities/menu/hooks/useCategories';
@@ -37,11 +37,9 @@ export function HappyHourView({ slug }: HappyHourViewProps) {
     const updateMut = useUpdateHappyHour(tenantId ?? '');
     const deleteMut = useDeleteHappyHour(tenantId ?? '');
 
-    // Потрібен для оптимістичного оновлення списку правил при перемиканні isActive.
     const queryClient = useQueryClient();
     const rulesQueryKey = ['happy-hour', 'rules', tenantId] as const;
 
-    /** Категорії з вкладеними позиціями потрібні для Rule Builder у модалці. */
     const { data: categories = [] } = useGetCategories(tenantId ?? '');
 
     const [modalOpen, setModalOpen] = useState(false);
@@ -79,8 +77,6 @@ export function HappyHourView({ slug }: HappyHourViewProps) {
     function onToggleActive(rule: HappyHourRuleResponse) {
         const nextActive = !rule.isActive;
 
-        // Оптимістичний UI: одразу перемикаємо локальний стан кешу, не чекаючи
-        // відповіді бекенду. Якщо запит упав — відкочуємо зміну і показуємо помилку.
         const previous = queryClient.getQueryData<HappyHourRuleResponse[]>(rulesQueryKey);
         queryClient.setQueryData<HappyHourRuleResponse[]>(rulesQueryKey, (old) =>
             old?.map((r) => (r.id === rule.id ? { ...r, isActive: nextActive } : r)),
@@ -90,7 +86,6 @@ export function HappyHourView({ slug }: HappyHourViewProps) {
             { id: rule.id, data: { isActive: nextActive } },
             {
                 onError: (_err) => {
-                    // Відкочуємо до попереднього стану кешу.
                     queryClient.setQueryData(rulesQueryKey, previous);
                     toast.error(getErrorMessage(_err));
                 },
@@ -119,8 +114,7 @@ export function HappyHourView({ slug }: HappyHourViewProps) {
                         <span className="flex h-1.5 w-1.5 rounded-full bg-[#8B5CF6]" />
                         Happy Hour
                     </span>
-                    <h1
-                        className={`${display.className} mt-4 text-3xl font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2] sm:text-4xl`}>
+                    <h1 className="mt-4 text-2xl sm:text-3xl font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]">
                         Promotions that{' '}
                         <span className="bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] bg-clip-text text-transparent">
                             fill the room
@@ -145,14 +139,14 @@ export function HappyHourView({ slug }: HappyHourViewProps) {
                         {[0, 1].map((i) => (
                             <div
                                 key={i}
-                                className="h-24 animate-pulse rounded-2xl border border-black/5 bg-white/60 dark:border-white/10 dark:bg-white/5"
+                                className="h-28 animate-pulse rounded-2xl border border-[#E7E5E0] bg-white/60 dark:border-[#232327] dark:bg-[#141417]/60"
                             />
                         ))}
                     </div>
                 ) : rules.length === 0 ? (
                     <EmptyState onAction={openCreate} />
                 ) : (
-                    <div className="grid gap-3">
+                    <div className="space-y-3">
                         <AnimatePresence initial={false}>
                             {rules.map((rule) => (
                                 <HappyHourRuleCard
@@ -196,12 +190,12 @@ function EmptyState({ onAction }: { onAction: () => void }) {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: EASE }}
-            className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-[#E7E5E0] bg-white/70 px-6 py-16 text-center backdrop-blur-2xl dark:border-white/10 dark:bg-white/5">
-            <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-br from-[#3B82F6]/15 to-[#8B5CF6]/15 text-[#6D28D9] dark:text-[#C4B5FD]">
+            className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-[#E7E5E0] bg-white/70 px-6 py-16 text-center backdrop-blur-xl dark:border-[#232327] dark:bg-[#141417]/40">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#3B82F6]/15 to-[#8B5CF6]/15 text-[#6D28D9] dark:text-[#C4B5FD]">
                 <Sparkles size={28} />
             </div>
-            <h3 className="mt-5 text-lg font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                Boost your off-peak sales!
+            <h3 className="mt-5 text-lg sm:text-xl font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]">
+                Boost your off-peak sales
             </h3>
             <p className="mt-2 max-w-sm text-sm leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
                 Create your first Happy Hour to drive traffic when it&apos;s quiet — set the days, hours and discount
