@@ -4,6 +4,7 @@ import type {
     FeedbackCreatedResponse,
     DashboardFeedbackResponse,
     PublicFeedbackResponse,
+    ReviewDigestResponse,
 } from '@my-app/types';
 
 export interface SubmitFeedbackInput {
@@ -43,6 +44,12 @@ export class FeedbackApi {
         const res = await apiClient<DashboardFeedbackResponse>(`${FEEDBACK_URL}/${tenantId}/${feedbackId}/approve`, {
             method: 'PATCH',
         });
+        return res.data;
+    }
+
+    /** GET /api/feedback/:tenantId/digest — AI-дайджест відгуків (Pro). */
+    static async getReviewDigest(tenantId: string): Promise<ReviewDigestResponse> {
+        const res = await apiClient<ReviewDigestResponse>(`${FEEDBACK_URL}/${tenantId}/digest`);
         return res.data;
     }
 }

@@ -113,7 +113,7 @@ export default function AnalyticsPage() {
                     ) : tab === 'guests' ? (
                         <GuestsView tenantId={tenantId} />
                     ) : (
-                        <FeedbackView tenantId={tenantId} slug={resolvedSlug} />
+                        <FeedbackView tenantId={tenantId} slug={resolvedSlug} subscriptionPlan={data?.data?.subscriptionPlan} />
                     )}
                 </motion.div>
             </AnimatePresence>

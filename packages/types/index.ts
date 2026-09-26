@@ -16,3 +16,4 @@ export * from './happy-hour';
 export * from './dashboard';
 export * from './ai/generate-dish.schema';
 export * from './ai/cart-upsell.schema';
+export * from './ai/review-digest.schema';

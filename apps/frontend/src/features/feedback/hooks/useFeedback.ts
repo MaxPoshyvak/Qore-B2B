@@ -23,6 +23,15 @@ export const useDashboardFeedbacks = (tenantId?: string) =>
         enabled: Boolean(tenantId),
     });
 
+/** AI Review Digest (Pro). */
+export const useReviewDigest = (tenantId?: string, isPro: boolean = false) =>
+    useQuery({
+        queryKey: ['feedbacks', 'digest', tenantId],
+        queryFn: () => FeedbackApi.getReviewDigest(tenantId as string),
+        enabled: Boolean(tenantId) && isPro,
+        staleTime: 5 * 60 * 1000,
+    });
+
 /** Створення відгуку гостем (публічний потік). */
 export const useSubmitFeedback = (slug: string) => {
     const queryClient = useQueryClient();
@@ -44,3 +53,4 @@ export const useApproveFeedback = (tenantId: string) => {
         },
     });
 };
+

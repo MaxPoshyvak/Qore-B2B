@@ -101,6 +101,7 @@ model Tenant {
   orders         Order[]
   happyHourRules HappyHourRule[]
   feedbacks      Feedback[]
+  feedbackDigest FeedbackDigest?
 }
 
 model TenantSettings {
@@ -371,4 +372,25 @@ model Feedback {
   aiSummaryBatch String? // ID нічного AI-резюме (Pro)
   status         FeedbackStatus @default(published)
   createdAt      DateTime       @default(now())
+}
+
+model FeedbackDigest {
+  id               String   @id @default(cuid())
+  tenant           Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenantId         String   @unique
+  contentHash      String
+  summary          String   @db.Text
+  overallSentiment String
+  sentimentScore   Int
+  topics           Json
+  strengths        String[]
+  improvements     String[]
+  actionableTip    String   @db.Text
+  reviewCount      Int
+  averageRating    Float
+  analyzedAt       DateTime @default(now())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([tenantId, contentHash])
 }

@@ -1,19 +1,26 @@
 import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { TenantGuard } from 'src/common/guards/tenant.guard';
+import { SubscriptionGuard } from 'src/common/guards/subscription.guard';
+import { RequirePlan } from 'src/common/decorators/require-plan.decorator';
 import { Public } from 'src/common/decorators/public.decorator';
 import {
     DashboardFeedbackResponse,
     FeedbackCreatedResponse,
     PublicFeedbackResponse,
+    ReviewDigestResponse,
     SuccessResponse,
 } from '@my-app/types';
 import { FeedbackService } from './feedback.service';
 import { CreateFeedbackDto } from './dto/feedback.dto';
+import { ReviewDigestService } from '../ai/services/review-digest.service';
 
 @Controller()
 export class FeedbackController {
-    constructor(private readonly feedbackService: FeedbackService) {}
+    constructor(
+        private readonly feedbackService: FeedbackService,
+        private readonly reviewDigestService: ReviewDigestService,
+    ) {}
 
     // === Публічні маршрути (гості, без автентифікації) ===
 
@@ -47,6 +54,17 @@ export class FeedbackController {
         @Param('tenantId') tenantId: string,
     ): Promise<SuccessResponse<DashboardFeedbackResponse[]>> {
         const data = await this.feedbackService.getDashboardFeedbacks(tenantId);
+        return { success: true, data };
+    }
+
+    // AI Digest — аналіз відгуків (Pro)
+    @UseGuards(JwtAuthGuard, TenantGuard, SubscriptionGuard)
+    @RequirePlan('pro')
+    @Get('feedback/:tenantId/digest')
+    async getReviewDigest(
+        @Param('tenantId') tenantId: string,
+    ): Promise<SuccessResponse<ReviewDigestResponse>> {
+        const data = await this.reviewDigestService.getOrGenerateDigest(tenantId);
         return { success: true, data };
     }
 

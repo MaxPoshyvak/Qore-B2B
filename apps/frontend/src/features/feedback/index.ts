@@ -4,5 +4,6 @@ export {
     useDashboardFeedbacks,
     useSubmitFeedback,
     useApproveFeedback,
+    useReviewDigest,
 } from './hooks/useFeedback';
 export { PostOrderFeedback } from './components/PostOrderFeedback';
