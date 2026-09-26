@@ -32,5 +32,5 @@ ENV PORT=10000
 
 EXPOSE 10000
 
-# Apply database migrations on start, then launch NestJS
-CMD ["sh", "-c", "cd /app/packages/database && bunx prisma migrate deploy; cd /app/apps/backend && node dist/main.js"]
+# Start NestJS server
+CMD ["node", "dist/main.js"]

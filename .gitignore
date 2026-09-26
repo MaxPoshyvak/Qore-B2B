@@ -9,3 +9,5 @@ dist/
 *.tsbuildinfo
 .prisma/
 DESIGN_SYSTEM.md
+.vercel
+.env*
