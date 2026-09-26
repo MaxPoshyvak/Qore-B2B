@@ -1,0 +1,11 @@
+node_modules
+.next
+.turbo
+dist
+.git
+.kilo
+*.log
+.prisma
+apps/backend
+.env*
+!apps/frontend/.env.example
