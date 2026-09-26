@@ -1,10 +1,10 @@
 'use client';
 
 import { display } from '@/shared/lib/fonts';
-import { PRICING_PLANS } from '../../config/landing-data';
+import { PRICING_PLANS } from '@my-app/types';
 import { Eyebrow } from '@/shared/ui/Eyebrow';
 import { Reveal } from '../ui/Reveal';
-import { PricingCard } from '../ui/PricingCard';
+import { PricingCard } from '@/shared/ui/PricingCard';
 
 export function PricingSection() {
     return (
@@ -22,14 +22,15 @@ export function PricingSection() {
                 <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-3 md:items-center">
                     {PRICING_PLANS.map((p) => (
                         <PricingCard
-                            key={p.tier}
+                            key={p.id}
                             tier={p.tier}
                             price={p.price}
                             period={p.period}
                             description={p.description}
                             features={p.features}
                             featured={p.featured}
-                            cta={p.cta}
+                            ctaText={p.ctaText}
+                            ctaHref={`/register?plan=${p.id}`}
                         />
                     ))}
                 </div>

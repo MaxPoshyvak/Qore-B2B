@@ -164,62 +164,7 @@ export const SPLIT_BENEFITS: string[] = [
 /*  Pricing                                                            */
 /* ------------------------------------------------------------------ */
 
-export type PricingPlan = {
-    tier: string;
-    price: string;
-    period?: string;
-    description: string;
-    features: string[];
-    featured?: boolean;
-    cta: string;
-};
-
-export const PRICING_PLANS: PricingPlan[] = [
-    {
-        tier: 'Free',
-        price: '$0',
-        period: '/mo',
-        description: 'Everything you need to launch one venue.',
-        cta: 'Start for free',
-        features: [
-            'Menu, categories, table QR codes',
-            'Reservations and calendar',
-            'Live table cart and split billing',
-            'Order-ahead and the 86 list',
-            'Dynamic happy hour',
-            'Basic analytics and NPS',
-        ],
-    },
-    {
-        tier: 'Pro',
-        price: '$39',
-        period: '/mo',
-        description: 'Everything in Free, plus the AI growth engine.',
-        featured: true,
-        cta: 'Upgrade to Pro',
-        features: [
-            'Everything in Free',
-            'AI waiter concierge',
-            'AI menu design generator',
-            'AI upselling in cart',
-            'AI sentiment analysis on NPS',
-            'Advanced analytics and forecasts',
-        ],
-    },
-    {
-        tier: 'Business',
-        price: 'Custom',
-        description: 'For restaurant groups and custom infrastructure.',
-        cta: 'Contact us',
-        features: [
-            'Everything in Pro',
-            'POS integrations (Square, Toast, Lightspeed)',
-            'Custom domain and white-label',
-            'Multi-location support',
-            'Priority support',
-        ],
-    },
-];
+export { PRICING_PLANS, type PricingPlan } from '@my-app/types';
 
 /* ------------------------------------------------------------------ */
 /*  Footer                                                            */
