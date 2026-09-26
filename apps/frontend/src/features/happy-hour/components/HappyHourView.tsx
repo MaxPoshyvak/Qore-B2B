@@ -1,13 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Plus, Sparkles } from 'lucide-react';
 
-import { getErrorMessage, type CreateHappyHourDto, type HappyHourRuleResponse, type UpdateHappyHourDto } from '@my-app/types';
+import { type CreateHappyHourDto, type HappyHourRuleResponse, type UpdateHappyHourDto } from '@my-app/types';
 
-import { toast } from '@/shared/ui/Toaster';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
 import { cn } from '@/shared/lib/utils';
@@ -36,9 +34,6 @@ export function HappyHourView({ slug }: HappyHourViewProps) {
     const createMut = useCreateHappyHour(tenantId ?? '');
     const updateMut = useUpdateHappyHour(tenantId ?? '');
     const deleteMut = useDeleteHappyHour(tenantId ?? '');
-
-    const queryClient = useQueryClient();
-    const rulesQueryKey = ['happy-hour', 'rules', tenantId] as const;
 
     const { data: categories = [] } = useGetCategories(tenantId ?? '');
 
@@ -75,22 +70,7 @@ export function HappyHourView({ slug }: HappyHourViewProps) {
     }
 
     function onToggleActive(rule: HappyHourRuleResponse) {
-        const nextActive = !rule.isActive;
-
-        const previous = queryClient.getQueryData<HappyHourRuleResponse[]>(rulesQueryKey);
-        queryClient.setQueryData<HappyHourRuleResponse[]>(rulesQueryKey, (old) =>
-            old?.map((r) => (r.id === rule.id ? { ...r, isActive: nextActive } : r)),
-        );
-
-        updateMut.mutate(
-            { id: rule.id, data: { isActive: nextActive } },
-            {
-                onError: (_err) => {
-                    queryClient.setQueryData(rulesQueryKey, previous);
-                    toast.error(getErrorMessage(_err));
-                },
-            },
-        );
+        updateMut.mutate({ id: rule.id, data: { isActive: !rule.isActive } });
     }
 
     function onConfirmDelete() {
