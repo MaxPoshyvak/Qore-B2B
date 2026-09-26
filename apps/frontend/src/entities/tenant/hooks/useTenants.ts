@@ -10,10 +10,14 @@ export const useGetMyTenants = () => {
     });
 };
 
-export const useGetTenantBySlug = (slug: string) => {
+export const useGetTenantBySlug = (
+    slug: string,
+    options?: { refetchInterval?: number | false; enabled?: boolean },
+) => {
     return useQuery({
         queryKey: ['tenants', 'details', slug],
         queryFn: () => TenantService.getTenantBySlug(slug),
-        enabled: !!slug,
+        enabled: options?.enabled !== undefined ? options.enabled : !!slug,
+        refetchInterval: options?.refetchInterval,
     });
 };

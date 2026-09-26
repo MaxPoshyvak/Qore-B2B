@@ -158,7 +158,13 @@ export function SettingsForm({ slug, initialData }: SettingsFormProps) {
                                     <StaffKdsTab slug={slug} settings={settings} />
                                 </TabsContent>
                                 <TabsContent value="billing">
-                                    <BillingTab currentPlan={initialData.subscriptionPlan ?? 'free'} />
+                                    <BillingTab
+                                        tenantId={initialData.id}
+                                        slug={slug}
+                                        currentPlan={initialData.subscriptionPlan ?? 'free'}
+                                        subscriptionStatus={initialData.subscriptionStatus}
+                                        subscriptionExpiresAt={initialData.subscriptionExpiresAt}
+                                    />
                                 </TabsContent>
                             </div>
                             <AnimatePresence>

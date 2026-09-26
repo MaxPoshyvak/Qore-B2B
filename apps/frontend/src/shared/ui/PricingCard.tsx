@@ -2,11 +2,12 @@
 
 import * as React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Check } from 'lucide-react';
+import { ArrowRight, Check, Loader2 } from 'lucide-react';
 
 import { display, mono, body } from '@/shared/lib/fonts';
 import { EASE } from '@/shared/config/animations';
 import { cn } from '@/shared/lib/utils';
+import type { SubscriptionPlanId } from '@my-app/types';
 import { MagneticButton } from './MagneticButton';
 
 export type PricingCardProps = {
@@ -23,6 +24,8 @@ export type PricingCardProps = {
     disabled?: boolean;
     animate?: boolean;
     className?: string;
+    loading?: boolean;
+    planId?: SubscriptionPlanId;
 };
 
 export function PricingCard({
@@ -39,6 +42,8 @@ export function PricingCard({
     disabled = false,
     animate = true,
     className,
+    loading = false,
+    planId,
 }: PricingCardProps) {
     const cardAnimationProps = animate
         ? {
@@ -49,13 +54,18 @@ export function PricingCard({
           }
         : {};
 
+    const isFreePlan = planId === 'free' || tier.toLowerCase() === 'free' || price === '$0';
+    const isUpgradeAction = !isCurrent && !isFreePlan && !disabled;
+
     const buttonClassNames = cn(
         body.className,
         'mt-8 flex w-full items-center justify-center gap-2 rounded-2xl py-3 text-[14px] font-medium transition-colors',
-        featured
-            ? 'bg-[#0A0A0C] text-white md:hover:bg-[#232327] dark:bg-[#3B82F6] dark:md:hover:bg-[#60A5FA]'
-            : 'border border-[#E7E5E0] text-[#0A0A0C] md:hover:border-[#3B82F6]/40 dark:border-[#232327] dark:text-[#F5F4F2]',
-        disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
+        disabled
+            ? 'border border-black/10 bg-black/5 text-[#6B6A65] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D] cursor-not-allowed opacity-60'
+            : isUpgradeAction
+              ? 'bg-blue-600 text-white md:hover:bg-blue-500 shadow-sm cursor-pointer'
+              : 'border border-[#E7E5E0] text-[#0A0A0C] md:hover:border-[#3B82F6]/40 dark:border-[#232327] dark:text-[#F5F4F2] cursor-pointer',
+        loading && 'pointer-events-none opacity-80',
     );
 
     return (
@@ -123,7 +133,7 @@ export function PricingCard({
                 ))}
             </ul>
 
-            {isCurrent ? (
+            {isCurrent && !onCtaClick ? (
                 <button
                     type="button"
                     disabled
@@ -133,15 +143,29 @@ export function PricingCard({
                     )}>
                     Current Plan
                 </button>
+            ) : isCurrent && onCtaClick ? (
+                <button
+                    type="button"
+                    onClick={onCtaClick}
+                    disabled={disabled || loading}
+                    className={cn(
+                        body.className,
+                        'mt-8 flex w-full items-center justify-center gap-2 rounded-2xl border border-[#E7E5E0] py-3 text-[14px] font-medium text-[#0A0A0C] transition-colors md:hover:border-[#3B82F6]/40 dark:border-[#232327] dark:text-[#F5F4F2]',
+                        (disabled || loading) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
+                        loading && 'pointer-events-none'
+                    )}>
+                    {ctaText}
+                    {loading ? <Loader2 size={15} className="animate-spin" /> : <ArrowRight size={15} />}
+                </button>
             ) : ctaHref ? (
                 <MagneticButton href={ctaHref} showSparks={featured} className={buttonClassNames}>
                     {ctaText}
-                    <ArrowRight size={15} />
+                    {loading ? <Loader2 size={15} className="animate-spin" /> : <ArrowRight size={15} />}
                 </MagneticButton>
             ) : (
-                <button type="button" onClick={onCtaClick} disabled={disabled} className={buttonClassNames}>
+                <button type="button" onClick={onCtaClick} disabled={disabled || loading} className={buttonClassNames}>
                     {ctaText}
-                    <ArrowRight size={15} />
+                    {loading ? <Loader2 size={15} className="animate-spin" /> : <ArrowRight size={15} />}
                 </button>
             )}
         </motion.div>

@@ -8,7 +8,9 @@ import { ZodValidationPipe } from 'nestjs-zod';
 import { HttpExceptionFilter } from 'src/common/filters/http-exception.filter';
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, {
+        rawBody: true,
+    });
     app.use(cookieParser());
     app.enableCors({
         origin: 'http://localhost:3000',

@@ -82,6 +82,9 @@ model Tenant {
   subscriptionPlan      SubscriptionPlan @default(free)
   subscriptionExpiresAt DateTime?
   stripeSubscriptionId  String?          @unique
+  stripeCustomerId      String?          @unique
+  stripePriceId         String?
+  subscriptionStatus    String?          @default("active")
 
   activeThemeId String?  @unique
   createdAt     DateTime @default(now())

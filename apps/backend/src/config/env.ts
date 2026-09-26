@@ -21,6 +21,9 @@ const envSchema = z.object({
     OPENROUTER_MODEL: z.string().default('google/gemini-2.0-flash-001'),
     OPENROUTER_UPSELL_MODEL: z.string().default('openai/gpt-4o-mini'),
     STRIPE_SECRET_KEY: z.string().min(10),
+    STRIPE_PRO_PRICE_ID: z.string().min(10),
+    STRIPE_BUSINESS_PRICE_ID: z.string().min(10),
+    STRIPE_WEBHOOK_SECRET: z.string().min(10),
 });
 
 const _env = envSchema.safeParse(process.env);
