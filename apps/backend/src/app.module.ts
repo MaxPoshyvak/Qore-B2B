@@ -14,6 +14,7 @@ import { HappyHourModule } from './modules/happy-hour/happy-hour.module';
 import { MediaModule } from './modules/media/media.module';
 import { AiModule } from './modules/ai/ai.module';
 import { BillingModule } from './modules/billing/billing.module';
+import { PaymentsModule } from './modules/payments/payments.module';
 
 @Module({
     imports: [
@@ -32,6 +33,7 @@ import { BillingModule } from './modules/billing/billing.module';
         MediaModule,
         AiModule,
         BillingModule,
+        PaymentsModule,
     ],
     controllers: [],
     providers: [],

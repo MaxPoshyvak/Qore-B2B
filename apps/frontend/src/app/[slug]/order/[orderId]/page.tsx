@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { BellRing, CheckCircle2, Clock, CookingPot, RotateCcw, Star, Store } from 'lucide-react';
@@ -10,7 +10,7 @@ import { AmbientBackground } from '@/shared/ui/AmbientBackground';
 import { BaseHeader } from '@/shared/ui/BaseHeader';
 import { Modal } from '@/shared/ui/Modal';
 import { ThemeToggle } from '@/shared/ui/ThemeToggle';
-import { Toaster } from '@/shared/ui/Toaster';
+import { toast, Toaster } from '@/shared/ui/Toaster';
 import { EASE } from '@/shared/config/animations';
 import { display } from '@/shared/lib/fonts';
 import { formatPrice } from '@/shared/lib/utils';
@@ -18,6 +18,10 @@ import { useTheme } from '@/shared/hooks/useTheme';
 import { useGetPublicTenant } from '@/entities/tenant/hooks/useGetPublicTenant';
 import { useOrderTracking } from '@/features/order-tracking/hooks/useOrderTracking';
 import { PostOrderFeedback } from '@/features/feedback';
+import { useTableSessionStore } from '@/shared/store/useTableSessionStore';
+import { useCartStore } from '@/features/public-menu/store/useCartStore';
+import { BillPaymentCard } from '@/features/public-menu/components/BillPaymentCard';
+import { useUnlockItems, useVerifyOrderPayment } from '@/features/public-menu/hooks/useOrderPayment';
 
 const STATUS_STEPS = [
     { value: 'new', label: 'Pending', icon: Clock, accent: 'text-[#6B6A65] dark:text-[#94938D]' },
@@ -41,11 +45,51 @@ export default function OrderTrackingPage() {
     const resolvedOrderId = orderId ?? '';
     const { theme, toggle, mounted } = useTheme();
 
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+
+    const guestSessionId = useTableSessionStore((s) => s.guestSessionId);
+    const guestName = useCartStore((s) => s.guestName);
+
     const { data: tenant } = useGetPublicTenant(resolvedSlug);
     const { data: order, isLoading, isError } = useOrderTracking(resolvedOrderId);
 
+    const verifyMutation = useVerifyOrderPayment(resolvedOrderId);
+    const unlockMutation = useUnlockItems(resolvedOrderId);
+
     const [feedbackOpen, setFeedbackOpen] = useState(false);
     const [feedbackShown, setFeedbackShown] = useState(false);
+
+    // Auto-verify payment on return from Stripe Checkout
+    useEffect(() => {
+        const paymentParam = searchParams.get('payment');
+        const sessionId = searchParams.get('session_id');
+
+        if (paymentParam === 'success' && sessionId) {
+            verifyMutation.mutate(
+                { sessionId },
+                {
+                    onSuccess: (data) => {
+                        if (data.paid) {
+                            toast.success(
+                                data.paymentStatus === 'paid'
+                                    ? 'Bill settled in full! Thank you.'
+                                    : 'Your share was paid successfully!',
+                            );
+                        }
+                    },
+                },
+            );
+            router.replace(pathname, { scroll: false });
+        } else if (paymentParam === 'cancelled') {
+            if (guestSessionId) {
+                unlockMutation.mutate(guestSessionId);
+            }
+            toast.error('Payment was cancelled.');
+            router.replace(pathname, { scroll: false });
+        }
+    }, [searchParams, resolvedOrderId, pathname, router, guestSessionId]);
 
     const status = (order?.status ?? 'new') as StatusValue;
     const currentStepIndex = STATUS_STEPS.findIndex((s) => s.value === status);
@@ -146,6 +190,14 @@ export default function OrderTrackingPage() {
                                 })}
                             </div>
                         </motion.div>
+
+                        {/* Bill & Payment Card */}
+                        <BillPaymentCard
+                            orderId={resolvedOrderId}
+                            guestSessionId={guestSessionId}
+                            guestName={guestName}
+                            isDineIn={!order.isOrderAhead}
+                        />
 
                         {/* Позиції та сума */}
                         <motion.div

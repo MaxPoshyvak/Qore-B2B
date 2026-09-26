@@ -235,7 +235,7 @@ export class BillingService {
           const tenantId = session.metadata?.tenantId;
           const plan = session.metadata?.plan as SubscriptionPlan;
           
-          if (!tenantId) break;
+          if (!tenantId || session.metadata?.type === 'order_payment' || !plan) break;
 
           const subscription = await this.stripe.subscriptions.retrieve(session.subscription as string);
 

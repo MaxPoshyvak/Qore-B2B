@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { Check, Minus, Plus, UtensilsCrossed, X } from 'lucide-react';
@@ -71,6 +72,11 @@ export function GuestItemModal({
 
     const [quantity, setQuantity] = useState(1);
     const [selection, setSelection] = useState<SelectionMap>({});
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const open = !!item;
     const groups: ModifierGroupResponse[] = item?.modifiers ?? [];
@@ -227,7 +233,9 @@ export function GuestItemModal({
         }
     }
 
-    return (
+    if (!mounted) return null;
+
+    return createPortal(
         <AnimatePresence>
             {open && item && (
                 <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-6">
@@ -466,7 +474,7 @@ export function GuestItemModal({
                         </div>
 
                         {/* 4. Липкий скляний футер: кількість + додавання */}
-                        <div className="shrink-0 border-t border-white/60 bg-white/70 px-5 py-4 backdrop-blur-2xl dark:border-white/10 dark:bg-[#121215]/80">
+                        <div className="shrink-0 border-t border-white/60 bg-white/70 px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:py-4 backdrop-blur-2xl dark:border-white/10 dark:bg-[#121215]/80">
                             <div className="flex items-center gap-3">
                                 {/* Пілюля кількості */}
                                 <div className="flex shrink-0 items-center gap-1 rounded-full border border-black/10 bg-white/60 p-1 dark:border-white/15 dark:bg-white/5">
@@ -540,6 +548,7 @@ export function GuestItemModal({
                     </motion.div>
                 </div>
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body,
     );
 }

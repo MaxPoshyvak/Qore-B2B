@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import type { MenuItemResponse, PublicMenuCategoryResponse, PublicMenuResponseDTO } from '@my-app/types';
 
@@ -10,6 +9,7 @@ import { Reveal } from '@/shared/ui/Reveal';
 import { GuestItemModal } from './GuestItemModal';
 import { PublicMenuItem } from './PublicMenuItem';
 import { pickBestDiscount, type ActiveHappyHourRule } from '../hooks/usePublicHappyHour';
+import { useCartStore } from '../store/useCartStore';
 
 type PublicMenuListProps = {
     categories: PublicMenuResponseDTO['categories'];
@@ -44,8 +44,9 @@ export function PublicMenuList({
     takeawaySessionId,
     activeHappyHourRules = [],
 }: PublicMenuListProps) {
-    // Одна модалка на все меню: тримаємо лише обрану страву, а не N інстансів.
-    const [selectedItem, setSelectedItem] = useState<MenuItemResponse | null>(null);
+    // Single source of truth in useCartStore so CartBanner knows when a dish modal is open.
+    const selectedItem = useCartStore((s) => s.selectedDish);
+    const setSelectedItem = useCartStore((s) => s.setSelectedDish);
 
     return (
         <div className="mt-10 flex flex-col gap-12">

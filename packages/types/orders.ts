@@ -71,8 +71,12 @@ export interface PublicOrderItemResponse {
 export interface PublicOrderResponse {
     id: string;
     status: OrderStatusType;
+    paymentStatus: string;
+    isOrderAhead: boolean;
     /** Decimal → number. */
     totalAmount: number;
+    paidAmount: number;
+    paymentMethod?: string | null;
     items: PublicOrderItemResponse[];
     createdAt: string;
 }
@@ -83,6 +87,8 @@ export interface OrderResponse {
     tableId: string | null;
     status: OrderStatusType;
     paymentStatus: string;
+    paidAmount: string;
+    paymentMethod: string | null;
     isOrderAhead: boolean;
     pickupAt: string | null;
     /** Decimal serialized to string over HTTP. */

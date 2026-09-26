@@ -2,6 +2,7 @@
 
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import type { MenuItemResponse } from '@my-app/types';
 
 /**
  * Страва, яку гість сконфігурував у `GuestItemModal`, але ще не додав у кошик
@@ -20,6 +21,9 @@ type CartState = {
     guestName: string | null;
     isNameModalOpen: boolean;
     isCartDrawerOpen: boolean;
+    /** Current dish being viewed / customized in GuestItemModal. */
+    selectedDish: MenuItemResponse | null;
+    isDishModalOpen: boolean;
     /** Internal: a dish the guest configured before naming themselves; flushed once named. */
     pendingCartItem: PendingCartItem | null;
     /** Takeaway (single-player) cart session id, when the guest opted for order-ahead. */
@@ -35,6 +39,7 @@ type CartState = {
     setGuestName: (name: string) => void;
     setCartDrawerOpen: (isOpen: boolean) => void;
     setNameModalOpen: (isOpen: boolean) => void;
+    setSelectedDish: (dish: MenuItemResponse | null) => void;
     setPendingCartItem: (item: PendingCartItem | null) => void;
     setTakeawaySessionId: (sessionId: string | null) => void;
     setOrderTypeModalOpen: (isOpen: boolean) => void;
@@ -56,6 +61,8 @@ export const useCartStore = create<CartState>()(
             guestName: null,
             isNameModalOpen: false,
             isCartDrawerOpen: false,
+            selectedDish: null,
+            isDishModalOpen: false,
             pendingCartItem: null,
             takeawaySessionId: null,
             isOrderTypeModalOpen: false,
@@ -66,6 +73,7 @@ export const useCartStore = create<CartState>()(
             setGuestName: (name) => set({ guestName: name.trim(), isNameModalOpen: false }),
             setCartDrawerOpen: (isOpen) => set({ isCartDrawerOpen: isOpen }),
             setNameModalOpen: (isOpen) => set({ isNameModalOpen: isOpen }),
+            setSelectedDish: (dish) => set({ selectedDish: dish, isDishModalOpen: !!dish }),
             setPendingCartItem: (item) => set({ pendingCartItem: item }),
             setTakeawaySessionId: (sessionId) => set({ takeawaySessionId: sessionId }),
             setOrderTypeModalOpen: (isOpen) => set({ isOrderTypeModalOpen: isOpen }),

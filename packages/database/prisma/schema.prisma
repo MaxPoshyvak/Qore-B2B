@@ -29,8 +29,23 @@ enum ReservationStatus {
 
 enum PaymentStatus {
   pending
+  partially_paid
   paid
   failed
+}
+
+enum PaymentTransactionStatus {
+  pending
+  succeeded
+  failed
+  cancelled
+}
+
+enum SplitType {
+  full
+  equal
+  by_item
+  custom
 }
 
 enum FeedbackStatus {
@@ -101,10 +116,11 @@ model Tenant {
   reservations   Reservation[]
   menuViews      MenuView[]
   themes         TenantTheme[]
-  orders         Order[]
-  happyHourRules HappyHourRule[]
-  feedbacks      Feedback[]
-  feedbackDigest FeedbackDigest?
+  orders              Order[]
+  paymentTransactions PaymentTransaction[]
+  happyHourRules      HappyHourRule[]
+  feedbacks           Feedback[]
+  feedbackDigest      FeedbackDigest?
 }
 
 model TenantSettings {
@@ -309,12 +325,15 @@ model Order {
   pickupAt      DateTime?
   customerName  String? // ім'я гостя для замовлень "з собою" / order-ahead 
   totalAmount   Decimal
+  paidAmount    Decimal       @default(0)
+  paymentMethod String?
 
-  items OrderItem[]
-
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  items     OrderItem[]
+  payments  PaymentTransaction[]
   feedbacks Feedback[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model OrderItem {
@@ -338,9 +357,43 @@ model OrderItem {
   guestName      String?
 
   // Для спліт-чеку (Split Bill)
-  paidByGuestId      String? // Хто саме оплатив цю позицію
-  isLockedForPayment Boolean   @default(false) // Захист від подвійного списання
-  lockedAt           DateTime? // Таймер розблокування, якщо оплата зависла
+  paidByGuestId        String? // Хто саме оплатив цю позицію
+  isLockedForPayment   Boolean             @default(false) // Захист від подвійного списання
+  lockedAt             DateTime? // Таймер розблокування, якщо оплата зависла
+  lockedBySessionId    String? // Хто саме заблокував цю позицію
+  paymentTransaction   PaymentTransaction? @relation(fields: [paymentTransactionId], references: [id], onDelete: SetNull)
+  paymentTransactionId String?
+}
+
+model PaymentTransaction {
+  id                    String                   @id @default(cuid())
+  order                 Order                    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId               String
+  tenant                Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenantId              String
+
+  guestSessionId        String? // ID гостя (браузера), який здійснив оплату
+  guestName             String? // Ім'я гостя для чека
+
+  amount                Decimal // Сума замовлення/страви
+  tipAmount             Decimal                  @default(0) // Чайові
+  totalCharged          Decimal // amount + tipAmount
+
+  status                PaymentTransactionStatus @default(pending)
+  splitType             SplitType                @default(full)
+  splitPayerCount       Int?
+
+  stripeSessionId       String?                  @unique
+  stripePaymentIntentId String?                  @unique
+
+  paidItems             OrderItem[]
+
+  paidAt                DateTime?
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @updatedAt
+
+  @@index([orderId])
+  @@index([tenantId])
 }
 
 model HappyHourRule {

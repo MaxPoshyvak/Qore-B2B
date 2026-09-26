@@ -255,7 +255,11 @@ export class OrdersService {
         return {
             id: order.id,
             status: order.status,
+            paymentStatus: order.paymentStatus,
+            isOrderAhead: order.isOrderAhead,
             totalAmount: Number(order.totalAmount),
+            paidAmount: Number(order.paidAmount),
+            paymentMethod: order.paymentMethod,
             items: order.items.map((item) => ({
                 id: item.id,
                 menuItemName: item.menuItem?.name ?? 'Item',
