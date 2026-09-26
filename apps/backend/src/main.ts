@@ -12,8 +12,28 @@ async function bootstrap() {
         rawBody: true,
     });
     app.use(cookieParser());
+    const allowedOrigins = [
+        env.FRONTEND_URL,
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
+    ].filter(Boolean);
+
     app.enableCors({
-        origin: 'http://localhost:3000',
+        origin: (
+            origin: string | undefined,
+            callback: (err: Error | null, allow?: boolean) => void,
+        ) => {
+            // Allow requests with no origin (e.g., mobile apps, curl, server-to-server)
+            if (!origin) return callback(null, true);
+            if (
+                allowedOrigins.includes(origin) ||
+                origin.endsWith('.vercel.app') ||
+                process.env.NODE_ENV !== 'production'
+            ) {
+                return callback(null, true);
+            }
+            callback(new Error(`Origin ${origin} not allowed by CORS`));
+        },
         credentials: true,
     });
 
@@ -29,8 +49,9 @@ async function bootstrap() {
     app.useGlobalPipes(new ZodValidationPipe());
     app.useGlobalFilters(new HttpExceptionFilter());
 
-    await app.listen(env.PORT, () => {
-        console.log(`🚀 Сервер на порту ${env.PORT} | режим: ${env.NODE_ENV}`);
+    const port = Number(env.PORT) || 4000;
+    await app.listen(port, '0.0.0.0', () => {
+        console.log(`🚀 Server running on port ${port} | host: 0.0.0.0 | env: ${env.NODE_ENV}`);
     });
 }
 

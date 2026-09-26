@@ -3,8 +3,8 @@ import { z } from 'zod';
 
 export const env = createEnv({
     server: {
-        DATABASE_URL: z.string().url(),
-        STRIPE_SECRET_KEY: z.string().min(1),
+        DATABASE_URL: z.string().url().optional(),
+        STRIPE_SECRET_KEY: z.string().min(1).optional(),
         NEXTAUTH_SECRET: z.string().min(1),
     },
     client: {
@@ -13,4 +13,5 @@ export const env = createEnv({
     experimental__runtimeEnv: {
         NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     },
+    emptyStringAsUndefined: true,
 });

@@ -8,7 +8,7 @@ import { resolve } from 'node:path';
 // fall back to `process.env` directly so resolution never depends on import order.
 config({ path: resolve(__dirname, '.env') });
 
-const directUrl = process.env.DIRECT_URL;
+const directUrl = process.env.DIRECT_URL || process.env.DATABASE_URL;
 
 export default defineConfig({
     datasource: {

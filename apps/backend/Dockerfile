@@ -1,27 +1,36 @@
-# Використовуємо офіційний легкий образ Bun
-FROM oven/bun:1-alpine
+FROM oven/bun:1.3.14-alpine AS base
 
 WORKDIR /app
 
-# Копіюємо весь монорепозиторій (це важливо для доступу до packages)
-COPY . .
+# Install openssl and nodejs for runtime
+RUN apk add --no-cache openssl nodejs npm
 
-# Встановлюємо всі залежності всього проєкту
+# Copy workspace package manifests
+COPY package.json bun.lock* turbo.json ./
+COPY packages/database/package.json ./packages/database/
+COPY packages/types/package.json ./packages/types/
+COPY apps/backend/package.json ./apps/backend/
+
+# Install dependencies
 RUN bun install
 
-# Генеруємо Prisma-клієнт (інакше база даних не працюватиме)
-RUN cd packages/database && bun generate
-RUN cd packages/types && bun run build
+# Copy source code
+COPY packages ./packages
+COPY apps/backend ./apps/backend
 
-# Відкриваємо порт бекенду
-EXPOSE 4000
+# Generate Prisma client and build packages
+RUN cd packages/database && bunx prisma generate && bunx tsc -p tsconfig.json
+RUN cd packages/types && bunx tsc -p tsconfig.json
 
-# Переходимо в папку бекенду і запускаємо його
+# Build backend NestJS application
+RUN cd apps/backend && bun run build
+
 WORKDIR /app/apps/backend
 
-# Якщо у тебе є скрипт build (наприклад, для NestJS), розкоментуй наступний рядок:
-# RUN bun run build
+ENV NODE_ENV=production
+ENV PORT=10000
 
-# Запускаємо сервер
-CMD ["bun", "run", "dev"] 
-# (Для продакшну заміни "dev" на свій стартовий скрипт, наприклад "start")
+EXPOSE 10000
+
+# Apply database migrations on start, then launch NestJS
+CMD ["sh", "-c", "cd /app/packages/database && bunx prisma migrate deploy; cd /app/apps/backend && node dist/main.js"]
