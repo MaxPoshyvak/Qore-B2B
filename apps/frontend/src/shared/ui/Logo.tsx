@@ -1,20 +1,31 @@
 'use client';
 
+import Link from 'next/link';
 import { display } from '@/shared/lib/fonts';
+import { cn } from '@/shared/lib/utils';
+import { LogoIcon } from './LogoIcon';
 
-export function Logo() {
+export { LogoIcon };
+
+export type LogoProps = {
+    className?: string;
+    showText?: boolean;
+    size?: number;
+    href?: string;
+};
+
+export function Logo({ className, showText = true, size = 32, href = '/' }: LogoProps) {
     return (
-        <a href="/" className="flex items-center gap-2">
-            <span
-                className="relative flex h-8 w-8 items-center justify-center rounded-xl text-white"
-                style={{ background: 'linear-gradient(135deg, #3B82F6, #8B5CF6)' }}>
-                <span className={`${display.className} text-[14px] font-bold`}>Q</span>
-                <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full border-2 border-[#FAFAF9] bg-[#10B981] dark:border-[#08080A]" />
-            </span>
-            <span
-                className={`${display.className} text-[16px] font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                Qore
-            </span>
-        </a>
+        <Link href={href} className={cn('group flex items-center gap-2.5', className)}>
+            <div className="relative shrink-0 transition-transform duration-200 md:group-hover:scale-105">
+                <LogoIcon size={size} />
+            </div>
+            {showText && (
+                <span
+                    className={`${display.className} text-[16px] font-bold tracking-tight text-[#0A0A0C] transition-colors dark:text-[#F5F4F2]`}>
+                    Qore
+                </span>
+            )}
+        </Link>
     );
 }
