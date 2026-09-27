@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="auto">
+  <defs>
+    <linearGradient id="g-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" rx="16" fill="url(#g-bg)"/>
+  <rect width="798" height="498" x="1" y="1" rx="15" fill="none" stroke="#334155" stroke-width="1"/>
+  
+  <!-- Header Bar -->
+  <rect x="24" y="24" width="752" height="60" rx="12" fill="#1E293B"/>
+  <circle cx="56" cy="54" r="16" fill="#3B82F6"/>
+  <text x="84" y="59" font-family="-apple-system, sans-serif" font-size="16" font-weight="700" fill="#F8FAFC">Table #4 • The Oak Bistro</text>
+  <rect x="630" y="38" width="126" height="32" rx="16" fill="#10B981" opacity="0.2"/>
+  <text x="693" y="59" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="13" font-weight="600" fill="#34D399">Live Synced (3)</text>
+
+  <!-- Categories -->
+  <g transform="translate(24, 104)">
+    <rect x="0" y="0" width="100" height="36" rx="8" fill="#3B82F6"/>
+    <text x="50" y="23" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="13" font-weight="600" fill="#FFFFFF">Starters</text>
+    <rect x="110" y="0" width="100" height="36" rx="8" fill="#1E293B"/>
+    <text x="160" y="23" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="13" font-weight="500" fill="#94A3B8">Mains</text>
+    <rect x="220" y="0" width="100" height="36" rx="8" fill="#1E293B"/>
+    <text x="270" y="23" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="13" font-weight="500" fill="#94A3B8">Drinks</text>
+    <rect x="330" y="0" width="110" height="36" rx="8" fill="#1E293B"/>
+    <text x="385" y="23" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="13" font-weight="500" fill="#94A3B8">Happy Hour</text>
+  </g>
+
+  <!-- Cards Grid -->
+  <g transform="translate(24, 160)">
+    <!-- Card 1 -->
+    <rect x="0" y="0" width="364" height="140" rx="12" fill="#1E293B" stroke="#334155"/>
+    <rect x="16" y="16" width="108" height="108" rx="8" fill="#0F172A"/>
+    <text x="136" y="42" font-family="-apple-system, sans-serif" font-size="16" font-weight="700" fill="#F8FAFC">Truffle Arancini</text>
+    <text x="136" y="66" font-family="-apple-system, sans-serif" font-size="12" font-weight="400" fill="#94A3B8">Crispy wild mushroom risotto spheres</text>
+    <text x="136" y="112" font-family="-apple-system, sans-serif" font-size="16" font-weight="700" fill="#60A5FA">$14.50</text>
+    <rect x="280" y="92" width="68" height="32" rx="8" fill="#3B82F6"/>
+    <text x="314" y="112" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="12" font-weight="600" fill="#FFFFFF">+ Add</text>
+
+    <!-- Card 2 -->
+    <rect x="388" y="0" width="364" height="140" rx="12" fill="#1E293B" stroke="#334155"/>
+    <rect x="404" y="16" width="108" height="108" rx="8" fill="#0F172A"/>
+    <text x="524" y="42" font-family="-apple-system, sans-serif" font-size="16" font-weight="700" fill="#F8FAFC">Burrata Caprese</text>
+    <text x="524" y="66" font-family="-apple-system, sans-serif" font-size="12" font-weight="400" fill="#94A3B8">Heirloom tomatoes, basil emulsion</text>
+    <text x="524" y="112" font-family="-apple-system, sans-serif" font-size="16" font-weight="700" fill="#60A5FA">$16.00</text>
+    <rect x="668" y="92" width="68" height="32" rx="8" fill="#3B82F6"/>
+    <text x="702" y="112" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="12" font-weight="600" fill="#FFFFFF">+ Add</text>
+  </g>
+
+  <!-- Split Bill Floating Tray -->
+  <rect x="180" y="380" width="440" height="70" rx="35" fill="#09090B" stroke="#3B82F6" stroke-width="2"/>
+  <text x="220" y="422" font-family="-apple-system, sans-serif" font-size="15" font-weight="700" fill="#FFFFFF">Table Total: $68.50</text>
+  <rect x="450" y="394" width="150" height="42" rx="21" fill="#3B82F6"/>
+  <text x="525" y="420" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="13" font-weight="700" fill="#FFFFFF">Split Bill / Pay</text>
+</svg>

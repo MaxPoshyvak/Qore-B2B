@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="auto">
+  <defs>
+    <linearGradient id="b-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" rx="16" fill="url(#b-bg)"/>
+  <rect width="798" height="498" x="1" y="1" rx="15" fill="none" stroke="#334155" stroke-width="1"/>
+  
+  <!-- Header -->
+  <text x="32" y="52" font-family="-apple-system, sans-serif" font-size="22" font-weight="800" fill="#FFFFFF">Subscription &amp; Billing</text>
+  <text x="32" y="78" font-family="-apple-system, sans-serif" font-size="13" font-weight="400" fill="#94A3B8">Manage your venue tier, invoices, and Stripe billing lifecycle</text>
+
+  <!-- 3 Pricing Cards -->
+  <!-- Free -->
+  <g transform="translate(32, 110)">
+    <rect width="224" height="340" rx="12" fill="#1E293B" stroke="#334155"/>
+    <text x="20" y="38" font-family="-apple-system, sans-serif" font-size="18" font-weight="700" fill="#FFFFFF">Free</text>
+    <text x="20" y="72" font-family="-apple-system, sans-serif" font-size="28" font-weight="800" fill="#FFFFFF">$0<tspan font-size="13" font-weight="400" fill="#64748B">/mo</tspan></text>
+    <text x="20" y="100" font-family="-apple-system, sans-serif" font-size="11" font-weight="400" fill="#94A3B8">Essential QR Menu &amp; Orders</text>
+    <line x1="20" y1="120" x2="204" y2="120" stroke="#334155"/>
+    <text x="20" y="150" font-family="-apple-system, sans-serif" font-size="12" fill="#CBD5E1">✓ 10 Tables</text>
+    <text x="20" y="178" font-family="-apple-system, sans-serif" font-size="12" fill="#CBD5E1">✓ Digital QR Menu</text>
+    <text x="20" y="206" font-family="-apple-system, sans-serif" font-size="12" fill="#CBD5E1">✓ Basic Analytics</text>
+    <rect x="20" y="280" width="184" height="36" rx="8" fill="#334155"/>
+    <text x="112" y="303" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="12" font-weight="600" fill="#94A3B8">Current Plan</text>
+  </g>
+
+  <!-- Pro (Featured) -->
+  <g transform="translate(288, 95)">
+    <rect width="224" height="370" rx="12" fill="#1E293B" stroke="#3B82F6" stroke-width="2"/>
+    <rect x="140" y="-12" width="70" height="24" rx="12" fill="#3B82F6"/>
+    <text x="175" y="4" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="10" font-weight="700" fill="#FFFFFF">POPULAR</text>
+    <text x="20" y="53" font-family="-apple-system, sans-serif" font-size="18" font-weight="700" fill="#FFFFFF">Pro</text>
+    <text x="20" y="87" font-family="-apple-system, sans-serif" font-size="28" font-weight="800" fill="#60A5FA">$29<tspan font-size="13" font-weight="400" fill="#94A3B8">/mo</tspan></text>
+    <text x="20" y="115" font-family="-apple-system, sans-serif" font-size="11" font-weight="400" fill="#94A3B8">Growth for busy bistros</text>
+    <line x1="20" y1="135" x2="204" y2="135" stroke="#334155"/>
+    <text x="20" y="165" font-family="-apple-system, sans-serif" font-size="12" fill="#CBD5E1">✓ Unlimited Tables</text>
+    <text x="20" y="193" font-family="-apple-system, sans-serif" font-size="12" fill="#CBD5E1">✓ Split-Bill Engine</text>
+    <text x="20" y="221" font-family="-apple-system, sans-serif" font-size="12" fill="#CBD5E1">✓ AI Smart Upsells</text>
+    <text x="20" y="249" font-family="-apple-system, sans-serif" font-size="12" fill="#CBD5E1">✓ Kitchen Display (KDS)</text>
+    <rect x="20" y="305" width="184" height="40" rx="8" fill="#3B82F6"/>
+    <text x="112" y="330" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="13" font-weight="700" fill="#FFFFFF">Upgrade to Pro</text>
+  </g>
+
+  <!-- Business -->
+  <g transform="translate(544, 110)">
+    <rect width="224" height="340" rx="12" fill="#1E293B" stroke="#334155"/>
+    <text x="20" y="38" font-family="-apple-system, sans-serif" font-size="18" font-weight="700" fill="#FFFFFF">Business</text>
+    <text x="20" y="72" font-family="-apple-system, sans-serif" font-size="28" font-weight="800" fill="#FFFFFF">$79<tspan font-size="13" font-weight="400" fill="#64748B">/mo</tspan></text>
+    <text x="20" y="100" font-family="-apple-system, sans-serif" font-size="11" font-weight="400" fill="#94A3B8">Multi-venue chains</text>
+    <line x1="20" y1="120" x2="204" y2="120" stroke="#334155"/>
+    <text x="20" y="150" font-family="-apple-system, sans-serif" font-size="12" fill="#CBD5E1">✓ Multi-Location Hub</text>
+    <text x="20" y="178" font-family="-apple-system, sans-serif" font-size="12" fill="#CBD5E1">✓ AI Chef Generator</text>
+    <text x="20" y="206" font-family="-apple-system, sans-serif" font-size="12" fill="#CBD5E1">✓ Dedicated Account Mgr</text>
+    <rect x="20" y="280" width="184" height="36" rx="8" fill="#1E293B" stroke="#475569"/>
+    <text x="112" y="303" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="12" font-weight="600" fill="#E2E8F0">Upgrade to Business</text>
+  </g>
+</svg>
