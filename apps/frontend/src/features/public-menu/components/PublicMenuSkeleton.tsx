@@ -36,7 +36,7 @@ export function PublicMenuSkeleton() {
             </div>
 
             {/* Floating pill nav */}
-            <div className="sticky top-4 z-40 mx-auto mt-8 w-[calc(100%-2rem)] max-w-2xl rounded-full border border-white/20 bg-white/60 p-1.5 shadow-lg backdrop-blur-2xl dark:border-white/10 dark:bg-black/40">
+            <div className="sticky top-4 z-20 mx-auto mt-8 w-[calc(100%-2rem)] max-w-2xl rounded-full border border-white/20 bg-white/60 p-1.5 shadow-lg backdrop-blur-2xl dark:border-white/10 dark:bg-black/40">
                 <div className="flex gap-1 px-1">
                     {[0, 1, 2].map((i) => (
                         <div

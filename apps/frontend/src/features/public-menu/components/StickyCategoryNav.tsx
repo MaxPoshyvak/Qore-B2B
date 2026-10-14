@@ -112,7 +112,7 @@ export function StickyCategoryNav({ categories }: { categories: any[] }) {
         <div
             ref={wrapperRef}
             style={{ top: STICKY_TOP }}
-            className="sticky mt-5 z-40 mb-6 rounded-[2rem] border border-[#E7E5E0]/80 bg-white/70 px-3 py-3 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-black/40">
+            className="sticky mt-5 z-20 mb-6 rounded-[2rem] border border-[#E7E5E0]/80 bg-white/70 px-3 py-3 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-black/40">
             <div
                 ref={navRef}
                 className="flex items-center gap-2 overflow-x-auto px-1 scrollbar-hide"

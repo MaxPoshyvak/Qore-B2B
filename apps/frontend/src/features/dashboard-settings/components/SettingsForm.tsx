@@ -80,6 +80,8 @@ export function SettingsForm({ slug, initialData }: SettingsFormProps) {
         wifiSsid: settings?.wifiSsid ?? '',
         wifiPassword: settings?.wifiPassword ?? '',
         workingHours: (settings?.workingHours as WorkingHours) ?? emptyWorkingHours(),
+        convertPrices: false,
+        conversionRate: undefined,
     };
 
     const methods = useForm<UpdateTenantSettingsDto>({

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Store, Palette, MapPin, Wifi, Coins, AlertTriangle, ArrowRight } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -44,15 +44,25 @@ export function GeneralTab({ initialCurrency = 'USD' }: GeneralTabProps) {
     const newConfig = getCurrencyConfig(selectedCurrency);
     const suggestedRate = getSuggestedExchangeRate(initialCurrency, selectedCurrency);
 
-    // Auto set suggested conversion rate when currency changes
+    const prevCurrencyRef = useRef(initialCurrency);
+
+    // Keep prevCurrencyRef in sync if initialCurrency prop changes from outside (e.g. after save)
     useEffect(() => {
-        if (isCurrencyChanged) {
-            setValue('conversionRate', suggestedRate, { shouldValidate: true, shouldDirty: true });
-        } else {
-            setValue('convertPrices', false, { shouldValidate: true, shouldDirty: true });
-            setValue('conversionRate', undefined, { shouldValidate: true, shouldDirty: true });
+        prevCurrencyRef.current = initialCurrency;
+    }, [initialCurrency]);
+
+    // Auto set suggested conversion rate ONLY when currency actually changes
+    useEffect(() => {
+        if (selectedCurrency !== prevCurrencyRef.current) {
+            prevCurrencyRef.current = selectedCurrency;
+            if (isCurrencyChanged) {
+                setValue('conversionRate', suggestedRate, { shouldValidate: true, shouldDirty: true });
+            } else {
+                setValue('convertPrices', false, { shouldValidate: true });
+                setValue('conversionRate', undefined, { shouldValidate: true });
+            }
         }
-    }, [selectedCurrency, initialCurrency, suggestedRate, isCurrencyChanged, setValue]);
+    }, [selectedCurrency, isCurrencyChanged, suggestedRate, setValue]);
 
     const effectiveRate = Number(conversionRate) > 0 ? Number(conversionRate) : suggestedRate;
     const sampleConvertedPrice = formatCurrencyPrice(10 * effectiveRate, newConfig.code);
