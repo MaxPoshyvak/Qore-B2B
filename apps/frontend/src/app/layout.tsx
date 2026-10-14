@@ -1,17 +1,25 @@
 import { QueryProvider } from '@/lib/query-client';
 import { AuthProvider } from '@/shared/ui/AuthProvider';
 import { ReactNode } from 'react';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages } from 'next-intl/server';
 
 import './globals.css';
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+    const locale = await getLocale();
+    const messages = await getMessages();
+
     return (
-        <html lang="uk">
+        <html lang={locale} suppressHydrationWarning>
             <body>
-                <AuthProvider>
-                    <QueryProvider>{children}</QueryProvider>
-                </AuthProvider>
+                <NextIntlClientProvider locale={locale} messages={messages}>
+                    <AuthProvider>
+                        <QueryProvider>{children}</QueryProvider>
+                    </AuthProvider>
+                </NextIntlClientProvider>
             </body>
         </html>
     );
 }
+

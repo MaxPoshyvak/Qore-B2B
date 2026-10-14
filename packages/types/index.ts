@@ -20,3 +20,4 @@ export * from './ai/review-digest.schema';
 export * from './pricing';
 export * from './payments';
 export * from './currency';
+export * from './locale';
