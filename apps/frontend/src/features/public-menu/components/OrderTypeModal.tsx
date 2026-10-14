@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Loader2, QrCode, ShoppingBag } from 'lucide-react';
 
 import { Modal } from '@/shared/ui/Modal';
@@ -7,6 +8,7 @@ import { useCartStore } from '../store/useCartStore';
 import { useCreateTakeawaySession } from '../hooks/useSharedCart';
 
 export function OrderTypeModal() {
+    const t = useTranslations('publicMenu');
     const isOpen = useCartStore((s) => s.isOrderTypeModalOpen);
     const setOpen = useCartStore((s) => s.setOrderTypeModalOpen);
     const createTakeaway = useCreateTakeawaySession();
@@ -15,8 +17,8 @@ export function OrderTypeModal() {
         <Modal
             open={isOpen}
             onClose={() => setOpen(false)}
-            title="How are you ordering?"
-            description="Choose how you'd like to enjoy your meal.">
+            title={t('howAreYouOrdering')}
+            description={t('chooseHowToEnjoy')}>
             <div className="flex flex-col gap-3">
                 {/* Dine-in — informational (requires scanning the table QR) */}
                 <div className="rounded-2xl border border-black/5 bg-black/[0.03] p-4 dark:border-white/10 dark:bg-white/[0.03]">
@@ -26,10 +28,10 @@ export function OrderTypeModal() {
                         </span>
                         <div>
                             <p className="text-[15px] font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                Dine-in
+                                {t('dineIn')}
                             </p>
                             <p className="text-[12.5px] leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
-                                Scan the QR code on your table to join the shared cart.
+                                {t('scanQrDesc')}
                             </p>
                         </div>
                     </div>
@@ -37,7 +39,7 @@ export function OrderTypeModal() {
                         type="button"
                         onClick={() => setOpen(false)}
                         className="mt-3 w-full rounded-xl border border-black/10 py-2.5 text-[13px] font-medium text-[#6B6A65] transition-colors hover:border-black/20 dark:border-white/15 dark:text-[#94938D]">
-                        I&apos;ll scan my table
+                        {t('illScanTable')}
                     </button>
                 </div>
 
@@ -52,7 +54,7 @@ export function OrderTypeModal() {
                     ) : (
                         <ShoppingBag size={16} />
                     )}
-                    Order Takeaway
+                    {t('orderTakeaway')}
                 </button>
             </div>
         </Modal>

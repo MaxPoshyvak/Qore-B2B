@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { AnimatePresence, motion } from 'framer-motion';
 import { BellRing, CheckCircle2, Clock, CookingPot, RotateCcw, Star, Store } from 'lucide-react';
 
@@ -10,6 +11,7 @@ import { AmbientBackground } from '@/shared/ui/AmbientBackground';
 import { BaseHeader } from '@/shared/ui/BaseHeader';
 import { Modal } from '@/shared/ui/Modal';
 import { ThemeToggle } from '@/shared/ui/ThemeToggle';
+import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
 import { toast, Toaster } from '@/shared/ui/Toaster';
 import { EASE } from '@/shared/config/animations';
 import { display } from '@/shared/lib/fonts';
@@ -39,7 +41,19 @@ function statusMeta(status: StatusValue) {
     return STATUS_STEPS.find((s) => s.value === status) ?? STATUS_STEPS[0];
 }
 
+function getStatusLabel(value: StatusValue, t: (key: string) => string) {
+    switch (value) {
+        case 'new': return t('statusReceived');
+        case 'preparing': return t('statusPreparing');
+        case 'ready': return t('statusReady');
+        case 'delivered': return t('statusDelivered');
+        case 'cancelled': return t('statusCancelled');
+        default: return t('statusReceived');
+    }
+}
+
 export default function OrderTrackingPage() {
+    const t = useTranslations('publicMenu');
     const { slug, orderId } = useParams<{ slug: string; orderId: string }>();
     const resolvedSlug = slug ?? '';
     const resolvedOrderId = orderId ?? '';
@@ -117,6 +131,7 @@ export default function OrderTrackingPage() {
                         </span>
                     ) : null
                 }>
+                <LanguageSwitcher />
                 {mounted && <ThemeToggle theme={theme} toggle={toggle} />}
             </BaseHeader>
 
@@ -126,13 +141,13 @@ export default function OrderTrackingPage() {
                 ) : isError || !order ? (
                     <div className="mt-6 rounded-[2rem] border border-white/60 bg-white/80 px-6 py-12 text-center shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04]">
                         <p className="text-sm text-[#6B6A65] dark:text-[#94938D]">
-                            We couldn&apos;t find that order. It may have expired.
+                            {t('orderNotFound')}
                         </p>
                         <Link
                             href={`/${resolvedSlug}/menu`}
                             className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#0A0A0C] px-6 py-3 text-[14px] font-medium text-white dark:bg-[#F5F4F2] dark:text-[#0A0A0C]">
                             <Store size={16} />
-                            Back to Menu
+                            {t('backToMenu')}
                         </Link>
                     </div>
                 ) : (
@@ -153,14 +168,14 @@ export default function OrderTrackingPage() {
                             </motion.span>
 
                             <p className={`${display.className} mt-5 text-2xl font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                                {meta.label}
+                                {getStatusLabel(status, t)}
                             </p>
                             <p className="mt-1 text-sm text-[#6B6A65] dark:text-[#94938D]">
                                 {status === 'delivered'
-                                    ? 'Your order is complete. Enjoy!'
+                                    ? t('orderCompleteEnjoy')
                                     : status === 'cancelled'
-                                      ? 'This order was cancelled.'
-                                      : "We're on it — sit tight."}
+                                      ? t('orderWasCancelled')
+                                      : t('orderOnIt')}
                             </p>
 
                             {/* Степпер прогресу */}
@@ -183,7 +198,7 @@ export default function OrderTrackingPage() {
                                                 className={`text-[10px] uppercase tracking-wider ${
                                                     done || active ? 'text-[#0A0A0C] dark:text-[#F5F4F2]' : 'text-[#9C9B95]'
                                                 }`}>
-                                                {step.label}
+                                                {getStatusLabel(step.value, t)}
                                             </span>
                                         </div>
                                     );
@@ -207,7 +222,7 @@ export default function OrderTrackingPage() {
                             className="mt-4 rounded-[2rem] border border-white/60 bg-white/80 px-6 py-6 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-2xl">
                             <div className="flex items-center justify-between">
                                 <span className={`${display.className} text-[16px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                                    Your Order
+                                    {t('yourOrder')}
                                 </span>
                                 <span
                                     className={`${display.className} text-[16px] font-bold tabular-nums text-[#0A0A0C] dark:text-[#F5F4F2]`}>
@@ -240,7 +255,7 @@ export default function OrderTrackingPage() {
                                     onClick={() => setFeedbackOpen(true)}
                                     className="flex w-full items-center justify-center gap-2 rounded-full bg-[#FBBF24] px-6 py-3.5 text-[14px] font-medium text-[#0A0A0C] shadow-lg shadow-[#FBBF24]/20 transition-colors hover:bg-[#FCD34D]">
                                     <Star size={17} className="fill-[#0A0A0C] text-[#0A0A0C]" />
-                                    Leave a Review
+                                    {t('leaveReview')}
                                 </button>
                             )}
 
@@ -248,7 +263,7 @@ export default function OrderTrackingPage() {
                                 href={`/${resolvedSlug}/menu`}
                                 className="flex w-full items-center justify-center gap-2 rounded-full border border-[#E7E5E0] px-6 py-3.5 text-[14px] font-medium text-[#0A0A0C] transition-colors hover:border-[#3B82F6]/40 dark:border-[#232327] dark:text-[#F5F4F2]">
                                 <RotateCcw size={17} strokeWidth={1.9} />
-                                Make Another Order
+                                {t('makeAnotherOrder')}
                             </Link>
                         </div>
                     </>
@@ -259,8 +274,8 @@ export default function OrderTrackingPage() {
             <Modal
                 open={feedbackOpen}
                 onClose={() => setFeedbackOpen(false)}
-                title="How was your order?"
-                description="Your feedback helps this venue serve you better.">
+                title={t('howWasYourOrder')}
+                description={t('feedbackDesc')}>
                 <PostOrderFeedback
                     slug={resolvedSlug}
                     orderId={resolvedOrderId}

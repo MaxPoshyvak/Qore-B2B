@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { Check, Minus, Plus, UtensilsCrossed, X } from 'lucide-react';
 import type { MenuItemResponse, ModifierGroupResponse, ModifierOptionResponse } from '@my-app/types';
 
@@ -62,6 +63,8 @@ export function GuestItemModal({
     onClose,
     activeHappyHourRules = [],
 }: GuestItemModalProps) {
+    const t = useTranslations('publicMenu');
+    const tCommon = useTranslations('common');
     const isDesktop = useIsDesktop();
     const guestName = useCartStore((s) => s.guestName);
     const setPendingCartItem = useCartStore((s) => s.setPendingCartItem);
@@ -351,7 +354,7 @@ export function GuestItemModal({
                                         <span
                                             key={`allergen-${allergen}`}
                                             className="rounded-full border border-amber-500/25 bg-amber-500/10 px-2.5 py-1 text-[11px] font-semibold text-amber-600 dark:text-amber-400">
-                                            Contains {allergen}
+                                            {t('contains', { allergen })}
                                         </span>
                                     ))}
                                 </div>
@@ -378,13 +381,13 @@ export function GuestItemModal({
                                                         ? 'border-blue-500/30 bg-blue-500/10 text-blue-500'
                                                         : 'border-black/10 text-[#6B6A65] dark:border-white/15 dark:text-[#94938D]',
                                                 )}>
-                                                {isRequired ? 'Required' : 'Optional'}
+                                                {isRequired ? t('required') : t('optional')}
                                             </span>
                                         </div>
 
                                         {!isRadio && (
                                             <p className="mt-1 text-xs text-[#6B6A65] dark:text-[#94938D]">
-                                                Choose up to {group.maxSelections}
+                                                {t('chooseUpTo', { count: group.maxSelections })}
                                             </p>
                                         )}
 
@@ -505,15 +508,15 @@ export function GuestItemModal({
                                     disabled={!canAdd}
                                     className="flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#3B82F6]/25 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none [@media(hover:hover)]:hover:opacity-95">
                                     {isSoldOut ? (
-                                        'Sold out'
+                                        t('soldOut')
                                     ) : !canAdd ? (
                                         // Обов'язкова група модифікаторів не заповнена — саме це
                                         // блокує кнопку, тому текст має вказувати причину.
-                                        'Select required options'
+                                        t('selectRequiredOptions')
                                     ) : (
                                         <>
                                             {/* `truncate` + `shrink` — щоб дві ціни не розпирали футер */}
-                                            <span className="truncate">Add to Cart</span>
+                                            <span className="truncate">{t('addToCart')}</span>
                                             <span className="shrink-0 opacity-70">—</span>
                                             {bestDiscount ? (
                                                 <span className="flex shrink-0 items-baseline gap-1.5 tabular-nums">
@@ -541,7 +544,7 @@ export function GuestItemModal({
                                         exit={{ opacity: 0, height: 0 }}
                                         transition={{ duration: 0.2 }}
                                         className="overflow-hidden pt-2 text-center text-xs text-[#6B6A65] dark:text-[#94938D]">
-                                        Please choose {unmetGroups.map((group) => group.name).join(', ')}
+                                        {t('pleaseChoose', { groups: unmetGroups.map((group) => group.name).join(', ') })}
                                     </motion.p>
                                 )}
                             </AnimatePresence>

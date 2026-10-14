@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 
 import { Modal } from '@/shared/ui/Modal';
@@ -10,6 +11,7 @@ import { useCartStore } from '../store/useCartStore';
 import { useTableSessionStore } from '@/shared/store/useTableSessionStore';
 
 export function GuestNameModal() {
+    const t = useTranslations('publicMenu');
     const isOpen = useCartStore((s) => s.isNameModalOpen);
     const setGuestName = useCartStore((s) => s.setGuestName);
     const setNameModalOpen = useCartStore((s) => s.setNameModalOpen);
@@ -37,16 +39,16 @@ export function GuestNameModal() {
         <Modal
             open={isOpen}
             onClose={() => setNameModalOpen(false)}
-            title={tableName ? `Welcome to Table ${tableName}!` : 'Welcome!'}
-            description="Enter your name so everyone at the table knows who added this item.">
+            title={tableName ? t('welcomeToTable', { table: tableName }) : t('welcome')}
+            description={t('enterYourNameDesc')}>
             <label className="block">
                 <span className="mb-1.5 block text-sm font-medium text-[#6B6A65] dark:text-[#94938D]">
-                    Your name
+                    {t('yourName')}
                 </span>
                 <Input
                     type="text"
                     autoFocus
-                    placeholder="e.g. Alex"
+                    placeholder={t('namePlaceholder')}
                     value={name}
                     onChange={(e) => {
                         setName(e.target.value);
@@ -63,7 +65,7 @@ export function GuestNameModal() {
 
             <div className="mt-5 flex justify-end">
                 <PrimaryButton type="button" onClick={handleSubmit}>
-                    Continue to Menu
+                    {t('continueToMenu')}
                 </PrimaryButton>
             </div>
         </Modal>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { getCurrencyConfig } from '@my-app/types';
 import { formatPrice } from '@/shared/lib/utils';
 import { cn } from '@/shared/lib/utils';
@@ -15,6 +16,7 @@ type TipSelectorProps = {
 const TIP_PERCENTAGES = [0, 10, 15, 20] as const;
 
 export function TipSelector({ baseAmount, tipAmount, onTipChange, currency = 'USD' }: TipSelectorProps) {
+    const t = useTranslations('billing');
     const [isCustom, setIsCustom] = useState(false);
     const [customValue, setCustomValue] = useState('');
     const currencyConfig = getCurrencyConfig(currency);
@@ -40,7 +42,7 @@ export function TipSelector({ baseAmount, tipAmount, onTipChange, currency = 'US
     return (
         <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between text-xs font-medium text-[#6B6A65] dark:text-[#94938D]">
-                <span>Add tip for staff</span>
+                <span>{t('addTip')}</span>
                 {tipAmount > 0 && (
                     <span className="font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
                         +{formatPrice(tipAmount, currency)}
@@ -64,7 +66,7 @@ export function TipSelector({ baseAmount, tipAmount, onTipChange, currency = 'US
                                     ? 'border-[#3B82F6] bg-[#3B82F6]/10 font-bold text-[#2563EB] dark:border-[#60A5FA] dark:text-[#60A5FA]'
                                     : 'border-black/10 bg-black/[0.02] text-[#0A0A0C] [@media(hover:hover)]:hover:border-black/20 dark:border-white/10 dark:bg-white/[0.03] dark:text-[#F5F4F2] dark:[@media(hover:hover)]:hover:border-white/20',
                             )}>
-                            <span>{pct === 0 ? 'No tip' : `${pct}%`}</span>
+                            <span>{pct === 0 ? t('noTip') : `${pct}%`}</span>
                             {pct > 0 && (
                                 <span className="text-[10px] opacity-75">
                                     {formatPrice(presetAmount, currency)}
@@ -85,7 +87,7 @@ export function TipSelector({ baseAmount, tipAmount, onTipChange, currency = 'US
                             ? 'border-[#3B82F6] bg-[#3B82F6]/10 font-bold text-[#2563EB] dark:border-[#60A5FA] dark:text-[#60A5FA]'
                             : 'border-black/10 bg-black/[0.02] text-[#0A0A0C] [@media(hover:hover)]:hover:border-black/20 dark:border-white/10 dark:bg-white/[0.03] dark:text-[#F5F4F2] dark:[@media(hover:hover)]:hover:border-white/20',
                     )}>
-                    <span>Custom</span>
+                    <span>{t('customTip')}</span>
                 </button>
             </div>
 

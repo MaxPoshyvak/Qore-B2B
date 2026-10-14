@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslations } from 'next-intl';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CheckCircle2, Download, Receipt, X } from 'lucide-react';
 import { display, mono } from '@/shared/lib/fonts';
@@ -16,6 +17,9 @@ type PaymentSuccessReceiptProps = {
 };
 
 export function PaymentSuccessReceipt({ open, onClose, bill }: PaymentSuccessReceiptProps) {
+    const t = useTranslations('billing');
+    const tCommon = useTranslations('common');
+    const tMenu = useTranslations('publicMenu');
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -64,18 +68,18 @@ export function PaymentSuccessReceipt({ open, onClose, bill }: PaymentSuccessRec
                         </motion.div>
 
                         <h3 className={`${display.className} mt-4 text-xl font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                            Payment Confirmed!
+                            {t('paymentConfirmed')}
                         </h3>
                         <p className="mt-1 text-xs text-[#6B6A65] dark:text-[#94938D]">
                             {isFullyPaid
-                                ? 'The bill is completely settled. Thank you!'
-                                : 'Your payment share was received successfully.'}
+                                ? t('billSettledDesc')
+                                : t('shareReceivedDesc')}
                         </p>
 
                         {/* Receipt details breakdown */}
                         <div className="mt-5 space-y-2.5 rounded-2xl border border-black/5 bg-black/[0.02] p-4 text-left text-xs dark:border-white/5 dark:bg-white/[0.02]">
                             <div className="flex justify-between">
-                                <span className="text-[#6B6A65] dark:text-[#94938D]">Order ID</span>
+                                <span className="text-[#6B6A65] dark:text-[#94938D]">{t('orderId')}</span>
                                 <span className={`${mono.className} font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
                                     #{bill.orderId.slice(-6).toUpperCase()}
                                 </span>
@@ -83,7 +87,7 @@ export function PaymentSuccessReceipt({ open, onClose, bill }: PaymentSuccessRec
 
                             {bill.tableName && (
                                 <div className="flex justify-between">
-                                    <span className="text-[#6B6A65] dark:text-[#94938D]">Table</span>
+                                    <span className="text-[#6B6A65] dark:text-[#94938D]">{tMenu('table')}</span>
                                     <span className="font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
                                         {bill.tableName}
                                     </span>
@@ -93,21 +97,21 @@ export function PaymentSuccessReceipt({ open, onClose, bill }: PaymentSuccessRec
                             {latestTxn && (
                                 <>
                                     <div className="flex justify-between">
-                                        <span className="text-[#6B6A65] dark:text-[#94938D]">Amount Paid</span>
+                                        <span className="text-[#6B6A65] dark:text-[#94938D]">{t('amountPaid')}</span>
                                         <span className="font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
                                             {formatPrice(latestTxn.amount, bill.currency)}
                                         </span>
                                     </div>
                                     {latestTxn.tipAmount > 0 && (
                                         <div className="flex justify-between">
-                                            <span className="text-[#6B6A65] dark:text-[#94938D]">Tip</span>
+                                            <span className="text-[#6B6A65] dark:text-[#94938D]">{t('tipAmount')}</span>
                                             <span className="font-semibold text-[#10B981]">
                                                 +{formatPrice(latestTxn.tipAmount, bill.currency)}
                                             </span>
                                         </div>
                                     )}
                                     <div className="flex justify-between border-t border-black/5 pt-2 text-sm font-bold dark:border-white/5">
-                                        <span className="text-[#0A0A0C] dark:text-[#F5F4F2]">Total Charged</span>
+                                        <span className="text-[#0A0A0C] dark:text-[#F5F4F2]">{t('totalCharged')}</span>
                                         <span className="text-[#2563EB] dark:text-[#60A5FA]">
                                             {formatPrice(latestTxn.totalCharged, bill.currency)}
                                         </span>
@@ -121,7 +125,7 @@ export function PaymentSuccessReceipt({ open, onClose, bill }: PaymentSuccessRec
                                 type="button"
                                 onClick={onClose}
                                 className="w-full rounded-2xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] py-3 text-sm font-semibold text-white shadow-lg shadow-[#3B82F6]/20 transition-opacity [@media(hover:hover)]:hover:opacity-95">
-                                Done
+                                {tCommon('done')}
                             </button>
                         </div>
                     </motion.div>

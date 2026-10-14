@@ -10,6 +10,7 @@ import { useTableSessionStore } from '@/shared/store/useTableSessionStore';
 import { AmbientBackground } from '@/shared/ui/AmbientBackground';
 import { BaseHeader } from '@/shared/ui/BaseHeader';
 import { ThemeToggle } from '@/shared/ui/ThemeToggle';
+import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
 import { useTheme } from '@/shared/hooks/useTheme';
 import { MenuNotFound } from '@/features/public-menu/components/MenuNotFound';
 import { PublicMenuList } from '@/features/public-menu/components/PublicMenuList';
@@ -196,6 +197,7 @@ export default function PublicMenuPage() {
             <AmbientBackground />
 
             <BaseHeader activeRules={activeHappyHourRules}>
+                <LanguageSwitcher />
                 {mounted && <ThemeToggle theme={theme} toggle={toggle} />}
             </BaseHeader>
 

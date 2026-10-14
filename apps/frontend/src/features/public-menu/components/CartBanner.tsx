@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { ShoppingBag } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { formatPrice } from '@/shared/lib/utils';
 import { useCartStore } from '../store/useCartStore';
@@ -16,6 +17,7 @@ type CartBannerProps = {
 };
 
 export function CartBanner({ cart, activeHappyHourRules = [] }: CartBannerProps) {
+    const t = useTranslations('publicMenu');
     const setCartDrawerOpen = useCartStore((s) => s.setCartDrawerOpen);
     const isCartDrawerOpen = useCartStore((s) => s.isCartDrawerOpen);
     const isDishModalOpen = useCartStore((s) => s.isDishModalOpen);
@@ -48,7 +50,7 @@ export function CartBanner({ cart, activeHappyHourRules = [] }: CartBannerProps)
                             </span>
                             <div className="leading-tight">
                                 <p className="text-[11px] uppercase tracking-wider text-[#6B6A65] dark:text-[#94938D]">
-                                    Shared order
+                                    {t('cart')}
                                 </p>
                                 <p className="text-sm font-semibold tabular-nums text-[#0A0A0C] dark:text-[#F5F4F2]">
                                     {formatPrice(total, currency)}
@@ -60,7 +62,7 @@ export function CartBanner({ cart, activeHappyHourRules = [] }: CartBannerProps)
                             type="button"
                             onClick={() => setCartDrawerOpen(true)}
                             className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#3B82F6]/20 transition-opacity [@media(hover:hover)]:hover:opacity-95">
-                            View Cart
+                            {t('viewCart')}
                         </button>
                     </div>
                 </motion.div>
@@ -68,3 +70,4 @@ export function CartBanner({ cart, activeHappyHourRules = [] }: CartBannerProps)
         </AnimatePresence>
     );
 }
+

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { Check, Loader2, Lock, Minus, Plus, Sparkles, Trash2, UtensilsCrossed, X } from 'lucide-react';
@@ -120,6 +121,8 @@ export function CartDrawer({
     onOrderCreated,
 }: CartDrawerProps) {
     const params = useParams<{ slug: string }>();
+    const t = useTranslations('publicMenu');
+    const tCommon = useTranslations('common');
     const resolvedVenueSlug = venueSlug || params?.slug || '';
     const [upsellModalItem, setUpsellModalItem] = useState<MenuItemResponse | null>(null);
 
@@ -192,7 +195,7 @@ export function CartDrawer({
                             <div className="flex flex-wrap items-center gap-2">
                                 {tableName && (
                                     <span className="inline-flex items-center gap-1.5 rounded-full bg-[#3B82F6]/10 px-3 py-1 text-xs font-medium text-[#2563EB] dark:text-[#93C5FD]">
-                                        Table {tableName}
+                                        {t('table')} {tableName}
                                     </span>
                                 )}
                                 {guestName ? (
@@ -201,21 +204,21 @@ export function CartDrawer({
                                         onClick={() => setNameModalOpen(true)}
                                         className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-black/5 px-3 py-1 text-xs font-medium text-[#0A0A0C] transition-colors hover:border-black/20 dark:border-white/15 dark:bg-white/10 dark:text-[#F5F4F2]">
                                         {guestName}
-                                        <span className="text-[#6B6A65] dark:text-[#94938D]">Edit</span>
+                                        <span className="text-[#6B6A65] dark:text-[#94938D]">{tCommon('edit')}</span>
                                     </button>
                                 ) : (
                                     <button
                                         type="button"
                                         onClick={() => setNameModalOpen(true)}
                                         className="rounded-full border border-[#3B82F6]/30 bg-[#3B82F6]/5 px-3 py-1 text-xs font-medium text-[#2563EB] dark:text-[#93C5FD]">
-                                        Add name
+                                        {t('addName')}
                                     </button>
                                 )}
                             </div>
                             <button
                                 type="button"
                                 onClick={() => setCartDrawerOpen(false)}
-                                aria-label="Close cart"
+                                aria-label={tCommon('close')}
                                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-black/10 text-[#6B6A65] transition-colors hover:border-black/20 hover:text-[#0A0A0C] dark:border-white/10 dark:text-[#94938D] dark:hover:text-[#F5F4F2]">
                                 <X size={16} />
                             </button>
@@ -226,11 +229,11 @@ export function CartDrawer({
                             {isLoading ? (
                                 <p className="flex items-center justify-center gap-2 py-10 text-sm text-[#6B6A65] dark:text-[#94938D]">
                                     <Loader2 size={14} className="animate-spin" />
-                                    Loading the shared cart...
+                                    {t('loadingCart')}
                                 </p>
                             ) : groups.length === 0 ? (
                                 <p className="py-10 text-center text-sm text-[#6B6A65] dark:text-[#94938D]">
-                                    The shared cart is empty.
+                                    {t('emptySharedCart')}
                                 </p>
                             ) : (
                                 <ul className="flex flex-col gap-6 pb-2">
@@ -258,14 +261,13 @@ export function CartDrawer({
                                                             {isMine && (
                                                                 <span
                                                                     className={`${mono.className} ml-1.5 text-[10px] font-medium uppercase tracking-widest text-[#3B82F6] dark:text-[#60A5FA]`}>
-                                                                    (You)
+                                                                    {t('you')}
                                                                 </span>
                                                             )}
                                                         </p>
                                                         <p
                                                             className={`${mono.className} mt-0.5 text-[10.5px] uppercase tracking-wider text-[#6B6A65]/70 dark:text-[#94938D]/70`}>
-                                                            {group.items.length}{' '}
-                                                            {group.items.length === 1 ? 'item' : 'items'}
+                                                            {t('itemsCount', { count: group.items.length })}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -296,7 +298,7 @@ export function CartDrawer({
 
                                                                 <div className="min-w-0 flex-1">
                                                                     <p className="truncate text-sm font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                                                        {item.menuItem?.name ?? 'Removed item'}
+                                                                        {item.menuItem?.name ?? t('removedItem')}
                                                                     </p>
                                                                     {/* Обрані модифікатори — приглушений перелік */}
                                                                     {(() => {
@@ -315,7 +317,7 @@ export function CartDrawer({
                                                                     <PriceTag item={item} activeHappyHourRules={activeHappyHourRules} />
                                                                     {!isMine && (
                                                                     <p className="mt-1 text-[11px] text-[#9C9B95] dark:text-[#6E6D68]">
-                                                                        Added by {item.guestName}
+                                                                        {t('addedBy', { name: item.guestName })}
                                                                     </p>
                                                                 )}
                                                             </div>
@@ -323,7 +325,7 @@ export function CartDrawer({
                                                             {isMine && isMineConfirmed ? (
                                                                 <span className="inline-flex items-center gap-1.5 rounded-full bg-[#04916C]/10 px-3 py-1.5 text-[12px] font-medium text-[#04916C] dark:text-[#10B981]">
                                                                     <Lock size={12} />
-                                                                    Confirmed
+                                                                    {t('confirmed')}
                                                                 </span>
                                                             ) : isMine ? (
                                                                 <div className="flex items-center gap-2">
@@ -405,7 +407,7 @@ export function CartDrawer({
                         {!isComplete && (
                             <div className="border-t border-black/5 px-5 py-4 dark:border-white/10">
                                 <div className="mb-3 flex items-center justify-between text-sm">
-                                    <span className="text-[#6B6A65] dark:text-[#94938D]">Subtotal</span>
+                                    <span className="text-[#6B6A65] dark:text-[#94938D]">{t('subtotal')}</span>
                                     <span className="font-semibold tabular-nums text-[#0A0A0C] dark:text-[#F5F4F2]">
                                         {formatPrice(total, currency)}
                                     </span>
@@ -420,7 +422,7 @@ export function CartDrawer({
                                         }}
                                         disabled={items.length === 0 || isLoading}
                                         className="inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#3B82F6]/20 transition-opacity hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50">
-                                        Proceed to Checkout
+                                        {t('proceedToCheckout')}
                                     </button>
                                 ) : (
                                     <>
@@ -428,7 +430,7 @@ export function CartDrawer({
                                             <p
                                                 className={`${mono.className} mb-3 flex items-center gap-2 text-[11px] uppercase tracking-wider text-[#6B6A65] dark:text-[#94938D]`}>
                                                 <Loader2 size={12} className="animate-spin" />
-                                                Waiting for others ({confirmedCount}/{totalGuests} ready)...
+                                                {t('waitingForOthers', { ready: confirmedCount, total: totalGuests })}
                                             </p>
                                         )}
 
@@ -438,7 +440,7 @@ export function CartDrawer({
                                                     toggleReady.mutate(localSessionId, {
                                                         onSuccess: (data) => {
                                                             // Лише той гість, що натиснув «Confirm», має потрапити
-                                                            // на трекінг: сервер кладе `createdOrderId` саме у відповідь
+                                                             // на трекінг: сервер кладе `createdOrderId` саме у відповідь
                                                             // на останній підтверджений тап.
                                                             if (data.createdOrderId) onOrderCreated?.(data.createdOrderId);
                                                         },
@@ -450,7 +452,7 @@ export function CartDrawer({
                                                     ? 'inline-flex w-full items-center justify-center rounded-2xl border border-[#3B82F6]/30 bg-[#3B82F6]/5 px-5 py-3.5 text-sm font-semibold text-[#2563EB] transition-colors hover:border-[#3B82F6]/60 dark:text-[#60A5FA] disabled:cursor-not-allowed disabled:opacity-50'
                                                     : 'inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#3B82F6]/20 transition-opacity hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50'
                                             }>
-                                            {isMineConfirmed ? 'Unlock to add more items' : 'Confirm My Order'}
+                                            {isMineConfirmed ? t('unlockToAdd') : t('confirmMyOrder')}
                                         </button>
                                     </>
                                 )}

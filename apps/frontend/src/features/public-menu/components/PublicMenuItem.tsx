@@ -3,6 +3,7 @@
 import { motion, type Variants } from 'framer-motion';
 import { UtensilsCrossed } from 'lucide-react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import type { MenuItemResponse } from '@my-app/types';
 
 import { cn, formatPrice } from '@/shared/lib/utils';
@@ -35,6 +36,7 @@ type PublicMenuItemProps = {
  * `GuestItemModal`, а редагування вже доданого — у `CartDrawer`.
  */
 export function PublicMenuItem({ item, variants, onSelect, discountedPrice, discountBadge }: PublicMenuItemProps) {
+    const t = useTranslations('publicMenu');
     const isDesktop = useIsDesktop();
     const currency = useCartStore((s) => s.currency);
 
@@ -103,7 +105,7 @@ export function PublicMenuItem({ item, variants, onSelect, discountedPrice, disc
 
                         {!item.isActive && (
                             <span className="absolute bottom-3 left-3 rounded-full bg-black/70 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-md">
-                                Sold out
+                                {t('soldOut')}
                             </span>
                         )}
                     </div>
@@ -142,7 +144,7 @@ export function PublicMenuItem({ item, variants, onSelect, discountedPrice, disc
                             {/* Підказка, що страву можна зібрати під себе */}
                             {hasModifiers && item.isActive && (
                                 <span className="shrink-0 text-[11px] font-semibold text-[#2563EB] dark:text-[#60A5FA]">
-                                    Customize
+                                    {t('customize')}
                                 </span>
                             )}
                         </div>

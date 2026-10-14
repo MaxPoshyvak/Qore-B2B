@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { CreditCard, Loader2, Receipt, SplitSquareHorizontal } from 'lucide-react';
 import { display, mono } from '@/shared/lib/fonts';
@@ -25,6 +26,7 @@ export function BillPaymentCard({
     guestName,
     isDineIn = true,
 }: BillPaymentCardProps) {
+    const t = useTranslations('billing');
     const { data: bill, isLoading } = useOrderBill(orderId, guestSessionId);
     const payFullMutation = useCreateFullPayment(orderId);
 
@@ -74,10 +76,10 @@ export function BillPaymentCard({
                             </span>
                             <div className="text-left leading-tight">
                                 <p className="text-xs uppercase tracking-wider text-[#059669] dark:text-[#34D399]">
-                                    Bill Settled
+                                    {t('billSettled')}
                                 </p>
                                 <p className="text-sm font-bold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                    {formatPrice(bill.totalAmount, bill.currency)} Paid in Full
+                                    {formatPrice(bill.totalAmount, bill.currency)} {t('paidInFull')}
                                 </p>
                             </div>
                         </div>
@@ -87,7 +89,7 @@ export function BillPaymentCard({
                             onClick={() => setReceiptModalOpen(true)}
                             className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-white/80 px-4 py-2 text-xs font-semibold text-[#0A0A0C] shadow-sm transition-colors [@media(hover:hover)]:hover:bg-white dark:border-white/10 dark:bg-[#141417]/80 dark:text-[#F5F4F2] dark:[@media(hover:hover)]:hover:bg-[#141417]">
                             <Receipt size={14} />
-                            View Receipt
+                            {t('viewReceipt')}
                         </button>
                     </div>
                 </motion.div>
@@ -112,7 +114,7 @@ export function BillPaymentCard({
                     <div className="flex items-center gap-2">
                         <CreditCard size={18} className="text-[#3B82F6]" />
                         <h3 className={`${display.className} text-[16px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                            Bill &amp; Payment
+                            {t('billAndPayment')}
                         </h3>
                     </div>
 
@@ -120,7 +122,7 @@ export function BillPaymentCard({
                         className={`${mono.className} text-xs font-semibold uppercase tracking-wider ${
                             isPartiallyPaid ? 'text-amber-500' : 'text-[#6B6A65] dark:text-[#94938D]'
                         }`}>
-                        {isPartiallyPaid ? 'Partially Paid' : 'Unpaid'}
+                        {isPartiallyPaid ? t('partiallyPaid') : t('unpaid')}
                     </span>
                 </div>
 
@@ -137,7 +139,7 @@ export function BillPaymentCard({
                     {/* Balance breakdown */}
                     <div className="flex items-baseline justify-between text-sm">
                         <span className="text-[#6B6A65] dark:text-[#94938D]">
-                            {isPartiallyPaid ? 'Remaining to Pay' : 'Total Amount'}
+                            {isPartiallyPaid ? t('remainingToPay') : t('totalCharged')}
                         </span>
                         <span className={`${display.className} text-xl font-bold tabular-nums text-[#0A0A0C] dark:text-[#F5F4F2]`}>
                             {formatPrice(remaining, bill.currency)}
@@ -168,10 +170,12 @@ export function BillPaymentCard({
                             {payFullMutation.isPending ? (
                                 <>
                                     <Loader2 size={16} className="animate-spin" />
-                                    Opening Checkout...
+                                    {t('openingCheckout')}
                                 </>
+                            ) : isPartiallyPaid ? (
+                                t('payRemainingAmount', { amount: formatPrice(totalToCharge, bill.currency) })
                             ) : (
-                                `Pay ${isPartiallyPaid ? 'Remaining' : 'Full Bill'} — ${formatPrice(totalToCharge, bill.currency)}`
+                                t('payFullBillAmount', { amount: formatPrice(totalToCharge, bill.currency) })
                             )}
                         </button>
 
@@ -182,7 +186,7 @@ export function BillPaymentCard({
                                 onClick={() => setSplitModalOpen(true)}
                                 className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#3B82F6]/30 bg-[#3B82F6]/5 px-5 py-3 text-sm font-semibold text-[#2563EB] transition-colors [@media(hover:hover)]:hover:border-[#3B82F6]/60 dark:text-[#60A5FA]">
                                 <SplitSquareHorizontal size={16} />
-                                Split Bill (Equally or by Dish)
+                                {t('splitBillDineIn')}
                             </button>
                         )}
                     </div>

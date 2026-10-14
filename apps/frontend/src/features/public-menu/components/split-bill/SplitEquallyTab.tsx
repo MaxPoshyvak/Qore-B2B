@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Loader2, Minus, Plus, Users } from 'lucide-react';
 import { formatPrice } from '@/shared/lib/utils';
 import { TipSelector } from '../TipSelector';
@@ -23,6 +24,7 @@ export function SplitEquallyTab({
     guestName,
     currency = 'USD',
 }: SplitEquallyTabProps) {
+    const t = useTranslations('billing');
     const [totalParts, setTotalParts] = useState(2);
     const [tipAmount, setTipAmount] = useState(0);
 
@@ -57,7 +59,7 @@ export function SplitEquallyTab({
                 <div className="flex items-center justify-between">
                     <span className="flex items-center gap-2 text-sm font-medium text-[#0A0A0C] dark:text-[#F5F4F2]">
                         <Users size={16} className="text-[#3B82F6]" />
-                        Split between
+                        {t('splitBetween')}
                     </span>
                     <div className="flex items-center gap-2">
                         <button
@@ -81,9 +83,9 @@ export function SplitEquallyTab({
                 </div>
 
                 <div className="mt-2 flex items-baseline justify-between border-t border-black/5 pt-3 text-xs text-[#6B6A65] dark:border-white/5 dark:text-[#94938D]">
-                    <span>Calculation ({formatPrice(totalAmount, currency)} / {totalParts})</span>
+                    <span>{t('calculation', { total: formatPrice(totalAmount, currency), parts: totalParts })}</span>
                     <span className="text-sm font-bold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                        {formatPrice(shareAmount, currency)} each
+                        {formatPrice(shareAmount, currency)} {t('eachPays')}
                     </span>
                 </div>
             </div>
@@ -111,10 +113,10 @@ export function SplitEquallyTab({
                 {equalSplitMutation.isPending ? (
                     <>
                         <Loader2 size={16} className="animate-spin" />
-                        Connecting to Stripe...
+                        {t('openingCheckout')}
                     </>
                 ) : (
-                    `Pay My Share — ${formatPrice(totalToCharge, currency)}`
+                    `${t('payShare')} — ${formatPrice(totalToCharge, currency)}`
                 )}
             </button>
         </div>

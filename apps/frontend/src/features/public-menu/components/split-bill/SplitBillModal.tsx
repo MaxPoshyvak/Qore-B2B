@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslations } from 'next-intl';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Check, SplitSquareHorizontal, Users, UtensilsCrossed, X } from 'lucide-react';
 import { display, mono } from '@/shared/lib/fonts';
@@ -30,6 +31,9 @@ export function SplitBillModal({
     guestSessionId,
     guestName,
 }: SplitBillModalProps) {
+    const t = useTranslations('billing');
+    const tMenu = useTranslations('publicMenu');
+    const tCommon = useTranslations('common');
     const [mounted, setMounted] = useState(false);
     const [mode, setMode] = useState<SplitMode>('equal');
 
@@ -94,11 +98,11 @@ export function SplitBillModal({
                                 </span>
                                 <div>
                                     <h3 className={`${display.className} text-lg font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                                        Split the Bill
+                                        {t('splitTheBill')}
                                     </h3>
                                     <p className={`${mono.className} text-[11px] text-[#6B6A65] dark:text-[#94938D]`}>
-                                        {bill.tableName ? `Table ${bill.tableName} · ` : ''}
-                                        Order #{bill.orderId.slice(-6).toUpperCase()}
+                                        {bill.tableName ? `${tMenu('table')} ${bill.tableName} · ` : ''}
+                                        {t('orderId')} #{bill.orderId.slice(-6).toUpperCase()}
                                     </p>
                                 </div>
                             </div>
@@ -106,7 +110,7 @@ export function SplitBillModal({
                             <button
                                 type="button"
                                 onClick={handleClose}
-                                aria-label="Close"
+                                aria-label={tCommon('close')}
                                 className="flex h-9 w-9 items-center justify-center rounded-full text-[#6B6A65] transition-colors [@media(hover:hover)]:hover:bg-black/5 dark:text-[#94938D] dark:[@media(hover:hover)]:hover:bg-white/10">
                                 <X size={18} />
                             </button>
@@ -133,7 +137,7 @@ export function SplitBillModal({
                                             : 'text-[#6B6A65] [@media(hover:hover)]:hover:text-[#0A0A0C] dark:text-[#94938D] dark:[@media(hover:hover)]:hover:text-[#F5F4F2]',
                                     )}>
                                     <Users size={14} />
-                                    Split Equally
+                                    {t('splitEqually')}
                                 </button>
                                 <button
                                     type="button"
@@ -145,7 +149,7 @@ export function SplitBillModal({
                                             : 'text-[#6B6A65] [@media(hover:hover)]:hover:text-[#0A0A0C] dark:text-[#94938D] dark:[@media(hover:hover)]:hover:text-[#F5F4F2]',
                                     )}>
                                     <UtensilsCrossed size={14} />
-                                    Pay by Dish
+                                    {t('splitByItem')}
                                 </button>
                             </div>
 

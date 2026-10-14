@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Check, CheckSquare, Loader2, Lock, Square } from 'lucide-react';
 import { formatPrice } from '@/shared/lib/utils';
 import { cn } from '@/shared/lib/utils';
@@ -23,6 +24,7 @@ export function SplitByItemTab({
     guestName,
     currency = 'USD',
 }: SplitByItemTabProps) {
+    const t = useTranslations('billing');
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [tipAmount, setTipAmount] = useState(0);
 
@@ -85,13 +87,13 @@ export function SplitByItemTab({
                     type="button"
                     onClick={selectAllMine}
                     className="text-xs font-semibold text-[#2563EB] transition-colors [@media(hover:hover)]:hover:text-[#1D4ED8] dark:text-[#60A5FA]">
-                    Select my dishes
+                    {t('selectMyDishes')}
                 </button>
                 <button
                     type="button"
                     onClick={selectAllAvailable}
                     className="text-xs font-medium text-[#6B6A65] transition-colors [@media(hover:hover)]:hover:text-[#0A0A0C] dark:text-[#94938D] dark:[@media(hover:hover)]:hover:text-[#F5F4F2]">
-                    Select all unpaid
+                    {t('selectAllUnpaid')}
                 </button>
             </div>
 
@@ -140,15 +142,15 @@ export function SplitByItemTab({
                                     <div className="flex items-center gap-2 pt-0.5">
                                         {isPaid ? (
                                             <span className="text-[10px] font-bold text-[#10B981]">
-                                                Paid
+                                                {t('paid')}
                                             </span>
                                         ) : isLockedByOther ? (
                                             <span className="text-[10px] font-bold text-amber-500">
-                                                In checkout...
+                                                {t('inCheckout')}
                                             </span>
                                         ) : item.isMine ? (
                                             <span className="text-[10px] font-medium text-[#3B82F6] dark:text-[#60A5FA]">
-                                                Your dish
+                                                {t('yourDish')}
                                             </span>
                                         ) : item.guestName ? (
                                             <span className="text-[10px] text-[#6B6A65] dark:text-[#94938D]">
@@ -192,12 +194,15 @@ export function SplitByItemTab({
                 {itemSplitMutation.isPending ? (
                     <>
                         <Loader2 size={16} className="animate-spin" />
-                        Connecting to Stripe...
+                        {t('connectingToStripe')}
                     </>
                 ) : selectedIds.length > 0 ? (
-                    `Pay Selected (${selectedIds.length}) — ${formatPrice(totalToCharge, currency)}`
+                    t('paySelectedWithAmount', {
+                        count: selectedIds.length,
+                        amount: formatPrice(totalToCharge, currency),
+                    })
                 ) : (
-                    'Select dishes to pay'
+                    t('selectDishesToPay')
                 )}
             </button>
         </div>

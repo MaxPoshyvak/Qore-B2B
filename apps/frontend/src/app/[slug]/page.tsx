@@ -13,6 +13,7 @@ import { BaseHeader } from '@/shared/ui/BaseHeader';
 import { MagneticButton } from '@/shared/ui/MagneticButton';
 import { Reveal } from '@/shared/ui/Reveal';
 import { ThemeToggle } from '@/shared/ui/ThemeToggle';
+import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
 import { body } from '@/shared/lib/fonts';
 import { useTheme } from '@/shared/hooks/useTheme';
 import { MenuNotFound } from '@/features/public-menu/components/MenuNotFound';
@@ -68,6 +69,7 @@ export default function PublicVenuePage() {
                         <span className="text-sm font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">{tenant.name}</span>
                     ) : null
                 }>
+                <LanguageSwitcher />
                 {mounted && <ThemeToggle theme={theme} toggle={toggle} />}
             </BaseHeader>
 

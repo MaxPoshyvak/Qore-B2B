@@ -2,6 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Check, Clock, Loader2, ShoppingBag } from 'lucide-react';
 
@@ -25,6 +26,8 @@ const PICKUP_OPTIONS = [
 ] as const;
 
 export function TakeawayCheckoutModal({ onComplete }: TakeawayCheckoutModalProps) {
+    const t = useTranslations('publicMenu');
+    const tCommon = useTranslations('common');
     const isOpen = useCartStore((s) => s.isTakeawayCheckoutOpen);
     const setOpen = useCartStore((s) => s.setTakeawayCheckoutOpen);
     const guestName = useCartStore((s) => s.guestName);
@@ -116,7 +119,7 @@ export function TakeawayCheckoutModal({ onComplete }: TakeawayCheckoutModalProps
         <Modal
             open={isOpen}
             onClose={close}
-            title="Takeaway checkout"
+            title={t('takeawayDetails')}
             description="Almost ready — just a couple of details before we fire up the kitchen.">
             {submitted ? (
                 <div className="flex flex-col items-center py-6 text-center">
@@ -128,18 +131,18 @@ export function TakeawayCheckoutModal({ onComplete }: TakeawayCheckoutModalProps
                         <Check size={28} strokeWidth={3} />
                     </motion.span>
                     <p className={`${display.className} mt-4 text-[17px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                        Order confirmed!
+                        {t('orderConfirmed')}
                     </p>
                     <p className="mt-1 text-[13.5px] leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
                         {pickupMode === 'asap'
-                            ? "We'll have it ready as soon as possible."
-                            : `See you at ${pickupTime}.`}
+                            ? t('readyAsap')
+                            : t('seeYouAt', { time: pickupTime ?? '' })}
                     </p>
                     <button
                         type="button"
                         onClick={handleDone}
                         className="mt-6 w-full rounded-2xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#3B82F6]/20 transition-opacity hover:opacity-95">
-                        Done
+                        {tCommon('done')}
                     </button>
                 </div>
             ) : (
@@ -147,7 +150,7 @@ export function TakeawayCheckoutModal({ onComplete }: TakeawayCheckoutModalProps
                     {/* Name */}
                     <label className="block">
                         <span className="mb-1.5 block text-sm font-medium text-[#6B6A65] dark:text-[#94938D]">
-                            Who is this order for?
+                            {t('whoIsThisOrderFor')}
                         </span>
                         <input
                             type="text"
@@ -156,7 +159,7 @@ export function TakeawayCheckoutModal({ onComplete }: TakeawayCheckoutModalProps
                                 setName(e.target.value);
                                 if (error) setError(null);
                             }}
-                            placeholder="e.g. Alex"
+                            placeholder={t('namePlaceholder')}
                             className={`w-full rounded-2xl border bg-white/70 px-4 py-3 text-[14px] text-[#0A0A0C] outline-none transition-colors focus:border-[#3B82F6]/60 dark:bg-white/[0.04] dark:text-[#F5F4F2] ${
                                 error ? 'border-red-400/70' : 'border-black/10 dark:border-white/15'
                             }`}
@@ -167,7 +170,7 @@ export function TakeawayCheckoutModal({ onComplete }: TakeawayCheckoutModalProps
                     <div>
                         <span
                             className={`${mono.className} mb-2 block text-[10.5px] uppercase tracking-widest text-[#6B6A65]/70 dark:text-[#94938D]/70`}>
-                            Pickup time
+                            {t('pickupTime')}
                         </span>
                         <div className="relative grid grid-cols-2 gap-1 rounded-2xl border border-black/10 bg-black/[0.03] p-1 dark:border-white/15 dark:bg-white/[0.04]">
                             {PICKUP_OPTIONS.map((opt) => {
@@ -189,7 +192,7 @@ export function TakeawayCheckoutModal({ onComplete }: TakeawayCheckoutModalProps
                                             className={`relative z-10 ${
                                                 active ? 'text-white' : 'text-[#6B6A65] dark:text-[#94938D]'
                                             }`}>
-                                            {opt.label}
+                                            {opt.value === 'asap' ? t('asap') : t('schedule')}
                                         </span>
                                     </button>
                                 );
@@ -209,7 +212,7 @@ export function TakeawayCheckoutModal({ onComplete }: TakeawayCheckoutModalProps
                                 className="overflow-hidden">
                                 <label className="block">
                                     <span className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-[#6B6A65] dark:text-[#94938D]">
-                                        <Clock size={14} /> Choose a time
+                                        <Clock size={14} /> {t('chooseTime')}
                                     </span>
                                     <input
                                         type="time"
@@ -251,7 +254,7 @@ export function TakeawayCheckoutModal({ onComplete }: TakeawayCheckoutModalProps
                             })}
                         </ul>
                         <div className="mt-2 flex items-center justify-between border-t border-black/5 pt-2 dark:border-white/10">
-                            <span className="text-sm text-[#6B6A65] dark:text-[#94938D]">Total</span>
+                            <span className="text-sm text-[#6B6A65] dark:text-[#94938D]">{t('total')}</span>
                             <span
                                 className={`${display.className} text-[15px] font-bold tabular-nums text-[#0A0A0C] dark:text-[#F5F4F2]`}>
                                 {formatPrice(total, currency)}
@@ -267,12 +270,12 @@ export function TakeawayCheckoutModal({ onComplete }: TakeawayCheckoutModalProps
                         {placeOrder.isPending ? (
                             <>
                                 <Loader2 size={16} className="animate-spin" />
-                                Placing order...
+                                {t('placingOrder')}
                             </>
                         ) : (
                             <>
                                 <ShoppingBag size={16} />
-                                Confirm &amp; Pay
+                                {t('confirmAndPay')}
                             </>
                         )}
                     </button>
