@@ -27,22 +27,23 @@ export function BaseHeader({ children, centerContent, bottomContent, scrolled = 
                 }}
                 transition={{ duration: 0.3, ease: EASE }}
                 className="mx-auto max-w-6xl rounded-[2rem] border border-[#E7E5E0]/80 bg-white/70 backdrop-blur-xl dark:border-white/10 dark:bg-black/40">
-                {/* Трьохколонкова сітка: лого зліва, назва по центру,
-                    банер + дії справа. Гарантує ідеальне центрування назви
-                    незалежно від ширини банера Happy Hour. */}
-                <div className="grid grid-cols-3 items-center w-full px-4 py-3 sm:px-5">
-                    {/* Ліва колонка: лого (або кнопка «назад») */}
-                    <div className="flex justify-start">
+                {/* Flex layout: logo on the left, center content with overflow safety,
+                    happy hour banner + actions on the right without squeezing */}
+                <div className="flex items-center justify-between w-full px-4 py-2.5 sm:px-5 gap-2 sm:gap-4">
+                    {/* Left column: logo */}
+                    <div className="flex items-center justify-start shrink-0">
                         <Logo />
                     </div>
 
-                    {/* Центральна колонка: назва закладу / навігація */}
-                    <div className="flex justify-center text-center">
-                        {centerContent}
-                    </div>
+                    {/* Center column: venue name / navigation (hidden on small mobile to avoid crushing actions) */}
+                    {centerContent && (
+                        <div className="hidden min-w-0 flex-1 items-center justify-center text-center sm:flex px-2">
+                            {centerContent}
+                        </div>
+                    )}
 
-                    {/* Права колонка: банер Happy Hour + дії */}
-                    <div className="flex justify-end items-center gap-3">
+                    {/* Right column: Happy Hour banner + actions */}
+                    <div className="flex items-center justify-end gap-2 sm:gap-2.5 shrink-0 ml-auto">
                         {activeRules && activeRules.length > 0 && <HappyHourBanner rules={activeRules} />}
                         {children}
                     </div>

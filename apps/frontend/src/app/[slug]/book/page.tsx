@@ -40,14 +40,13 @@ export default function GuestBookingPage() {
                 }>
                 <Link
                     href={`/${resolvedSlug}`}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-[#E7E5E0]/80 bg-white/60 px-3 py-1.5 text-[12px] font-medium text-[#6B6A65] transition-colors hover:border-[#3B82F6]/40 hover:text-[#3B82F6] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D] dark:hover:text-[#60A5FA]">
+                    className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-[#E7E5E0]/80 bg-white/60 px-3 py-1.5 text-[12px] font-medium text-[#6B6A65] transition-colors hover:border-[#3B82F6]/40 hover:text-[#3B82F6] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D] dark:hover:text-[#60A5FA]">
                     <ArrowLeft size={13} />
-                    <span className="hidden sm:inline">{t('backTo', { venue: venueName })}</span>
-                    <span className="sm:hidden">{t('back')}</span>
+                    <span>{t('back')}</span>
                 </Link>
                 <Link
                     href={`/${resolvedSlug}/menu`}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-[#E7E5E0]/80 bg-white/60 px-3 py-1.5 text-[12px] font-medium text-[#6B6A65] transition-colors hover:border-[#3B82F6]/40 hover:text-[#3B82F6] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D] dark:hover:text-[#60A5FA]">
+                    className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-[#E7E5E0]/80 bg-white/60 px-3 py-1.5 text-[12px] font-medium text-[#6B6A65] transition-colors hover:border-[#3B82F6]/40 hover:text-[#3B82F6] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D] dark:hover:text-[#60A5FA]">
                     <UtensilsCrossed size={13} />
                     <span className="hidden sm:inline">{t('viewMenu')}</span>
                     <span className="sm:hidden">{t('menu')}</span>

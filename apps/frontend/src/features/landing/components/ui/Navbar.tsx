@@ -37,7 +37,7 @@ export function Navbar({ theme, toggleTheme }: { theme: Theme; toggleTheme: () =
     };
 
     const centerNav = (
-        <nav className={`${body.className} flex items-center gap-7 text-[13.5px] text-[#6B6A65] dark:text-[#94938D]`}>
+        <nav className={`${body.className} hidden md:flex items-center gap-5 lg:gap-7 text-[13.5px] text-[#6B6A65] dark:text-[#94938D] whitespace-nowrap`}>
             {NAV_LINKS.map((l) => (
                 <Link
                     key={l.href}
@@ -87,7 +87,7 @@ export function Navbar({ theme, toggleTheme }: { theme: Theme; toggleTheme: () =
                                 <Link
                                     href="/dashboard"
                                     onClick={() => setMobileOpen(false)}
-                                    className={`${body.className} flex items-center gap-1.5 text-[14px] font-medium text-[#3B82F6]`}>
+                                    className={`${body.className} flex items-center gap-1.5 text-[14px] font-semibold text-[#3B82F6]`}>
                                     <LayoutDashboard size={15} />
                                     <span>{t('dashboard')}</span>
                                 </Link>
@@ -100,14 +100,16 @@ export function Navbar({ theme, toggleTheme }: { theme: Theme; toggleTheme: () =
                             )}
                         </div>
 
-                        <MagneticButton
-                            primary
-                            showSparks
-                            href="/register"
-                            onClick={() => setMobileOpen(false)}
-                            className={`${body.className} mt-3 flex cursor-pointer items-center justify-center rounded-full bg-[#0A0A0C] px-4 py-3 text-[14px] font-medium text-white dark:bg-[#F5F4F2] dark:text-[#0A0A0C]`}>
-                            {t('startForFree')}
-                        </MagneticButton>
+                        {!isAuthenticated && (
+                            <MagneticButton
+                                primary
+                                showSparks
+                                href="/register"
+                                onClick={() => setMobileOpen(false)}
+                                className={`${body.className} mt-3 flex cursor-pointer items-center justify-center rounded-full bg-[#0A0A0C] px-4 py-3 text-[14px] font-medium text-white dark:bg-[#F5F4F2] dark:text-[#0A0A0C]`}>
+                                {t('startForFree')}
+                            </MagneticButton>
+                        )}
                     </div>
                 </motion.div>
             )}
@@ -119,30 +121,30 @@ export function Navbar({ theme, toggleTheme }: { theme: Theme; toggleTheme: () =
             <LanguageSwitcher />
             <ThemeToggle theme={theme} toggle={toggleTheme} className="hidden sm:flex" />
 
-            {isAuthenticated && (
+            {isAuthenticated ? (
                 <Link
                     href="/dashboard"
-                    className={`${body.className} hidden items-center gap-1.5 rounded-full border border-black/10 bg-black/5 px-3 py-1.5 text-[13px] font-medium text-[#0A0A0C] transition-all hover:bg-black/10 dark:border-white/15 dark:bg-white/10 dark:text-[#F5F4F2] dark:hover:bg-white/15 sm:inline-flex`}>
+                    className={`${body.className} hidden sm:inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-[#0A0A0C] px-3.5 py-1.5 text-[13px] font-medium text-white shadow-sm transition-all hover:bg-[#232327] dark:bg-[#F5F4F2] dark:text-[#0A0A0C] dark:hover:bg-white`}>
                     <LayoutDashboard size={14} className="text-[#3B82F6]" />
                     <span>{t('dashboard')}</span>
+                    <ArrowRight size={13} className="opacity-70" />
                 </Link>
+            ) : (
+                <>
+                    <Link
+                        href="/login"
+                        className={`${body.className} hidden whitespace-nowrap text-[13.5px] text-[#6B6A65] hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:text-[#F5F4F2] lg:block`}>
+                        {t('logIn')}
+                    </Link>
+                    <MagneticButton
+                        primary
+                        showSparks
+                        href="/register"
+                        className={`${body.className} hidden shrink-0 cursor-pointer whitespace-nowrap rounded-full bg-[#0A0A0C] px-4 py-2 text-[13.5px] font-medium text-white transition-colors hover:bg-[#232327] dark:bg-[#F5F4F2] dark:text-[#0A0A0C] dark:hover:bg-white sm:inline-block`}>
+                        {t('startForFree')}
+                    </MagneticButton>
+                </>
             )}
-
-            {!isAuthenticated && (
-                <Link
-                    href="/login"
-                    className={`${body.className} hidden text-[13.5px] text-[#6B6A65] hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:text-[#F5F4F2] lg:block`}>
-                    {t('logIn')}
-                </Link>
-            )}
-
-            <MagneticButton
-                primary
-                showSparks
-                href="/register"
-                className={`${body.className} hidden cursor-pointer rounded-full bg-[#0A0A0C] px-4 py-2 text-[13.5px] font-medium text-white transition-colors hover:bg-[#232327] dark:bg-[#F5F4F2] dark:text-[#0A0A0C] dark:hover:bg-white sm:inline-block`}>
-                {t('startForFree')}
-            </MagneticButton>
 
             <button
                 type="button"
