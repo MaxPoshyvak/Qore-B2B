@@ -14,7 +14,8 @@
     "success": "Success",
     "language": "Language",
     "live": "Live",
-    "done": "Done"
+    "done": "Done",
+    "selectLanguage": "Select Language"
   },
   "publicMenu": {
     "headerTitle": "Menu",
@@ -295,7 +296,8 @@
       "newPlanLabel": "New plan",
       "paymentMethodLabel": "Payment method",
       "cardOnFileStripe": "Card on file (Stripe)",
-      "confirmAndUpgrade": "Confirm & Upgrade"
+      "confirmAndUpgrade": "Confirm & Upgrade",
+      "venueLanguageDesc": "Choose the default language for your venue interface and guests."
     },
     "analytics": {
       "title": "Analytics",
@@ -528,7 +530,10 @@
     "regenDialogDesc": "The current QR code will stop working immediately. Printed or displayed codes using the old token will no longer resolve to this table.",
     "cancel": "Cancel",
     "saveChanges": "Save changes",
-    "nameExistsError": "A table with this name already exists"
+    "nameExistsError": "A table with this name already exists",
+    "deleteTitle": "Delete table?",
+    "deleteDesc": "\"{name}\" will be permanently removed. Any active guest sessions on this table will be disconnected.",
+    "deleteConfirm": "Delete table"
   },
   "landing": {
     "nav": {
@@ -754,6 +759,42 @@
       "fri": "Fri",
       "sat": "Sat",
       "sun": "Sun"
-    }
+    },
+    "categoryGroup": "Category Group",
+    "category": "Category",
+    "noItemsInCategory": "No items in this category yet.",
+    "leaveUnselectedNotice": "Leave unselected to discount all items in this category.",
+    "noCategoriesAvailable": "No categories available",
+    "createCategoriesFirst": "Create categories in Menu first."
+  },
+  "pricing": {
+    "currentPlanBadge": "Current Plan",
+    "recommendedBadge": "Recommended",
+    "freeTier": "Free",
+    "proTier": "Pro",
+    "businessTier": "Business",
+    "freeDesc": "Everything you need to launch one venue.",
+    "proDesc": "Everything in Free, plus the AI growth engine.",
+    "businessDesc": "For restaurant groups and custom infrastructure.",
+    "startForFree": "Start for free",
+    "upgradeToPro": "Upgrade to Pro",
+    "upgradeToBusiness": "Upgrade to Business",
+    "freeFeature1": "Menu, categories, table QR codes",
+    "freeFeature2": "Reservations and calendar",
+    "freeFeature3": "Live table cart and split billing",
+    "freeFeature4": "Order-ahead and the 86 list",
+    "freeFeature5": "Dynamic happy hour",
+    "freeFeature6": "Basic analytics and NPS",
+    "proFeature1": "Everything in Free",
+    "proFeature2": "AI waiter concierge",
+    "proFeature3": "AI menu design generator",
+    "proFeature4": "AI upselling in cart",
+    "proFeature5": "AI sentiment analysis on NPS",
+    "proFeature6": "Advanced analytics and forecasts",
+    "businessFeature1": "Everything in Pro",
+    "businessFeature2": "POS integrations (Square, Toast, Lightspeed)",
+    "businessFeature3": "Custom domain and white-label",
+    "businessFeature4": "Multi-location support",
+    "businessFeature5": "Priority support"
   }
 }

@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Check, Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { display, mono, body } from '@/shared/lib/fonts';
 import { EASE } from '@/shared/config/animations';
@@ -45,6 +46,7 @@ export function PricingCard({
     loading = false,
     planId,
 }: PricingCardProps) {
+    const t = useTranslations('pricing');
     const cardAnimationProps = animate
         ? {
               initial: { opacity: 0, scale: 0.95 },
@@ -83,13 +85,13 @@ export function PricingCard({
             {isCurrent && (
                 <span
                     className={`${mono.className} absolute -top-3 left-7 rounded-full bg-[#04916C] px-3 py-1 text-[10px] uppercase tracking-widest text-white shadow-sm dark:bg-[#10B981]`}>
-                    current plan
+                    {t('currentPlanBadge')}
                 </span>
             )}
             {featured && !isCurrent && (
                 <span
                     className={`${mono.className} absolute -top-3 left-7 rounded-full bg-[#3B82F6] px-3 py-1 text-[10px] uppercase tracking-widest text-white`}>
-                    recommended
+                    {t('recommendedBadge')}
                 </span>
             )}
 
@@ -141,7 +143,7 @@ export function PricingCard({
                         body.className,
                         'mt-8 flex w-full cursor-default items-center justify-center gap-2 rounded-2xl border border-black/10 bg-black/5 py-3 text-[14px] font-medium text-[#6B6A65] dark:border-white/15 dark:bg-white/5 dark:text-[#94938D]',
                     )}>
-                    Current Plan
+                    {t('currentPlanBadge')}
                 </button>
             ) : isCurrent && onCtaClick ? (
                 <button

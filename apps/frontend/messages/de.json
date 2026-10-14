@@ -14,7 +14,8 @@
     "success": "Erfolgreich",
     "language": "Sprache",
     "live": "Live",
-    "done": "Fertig"
+    "done": "Fertig",
+    "selectLanguage": "Sprache wählen"
   },
   "publicMenu": {
     "headerTitle": "Speisekarte",
@@ -295,7 +296,8 @@
       "newPlanLabel": "Neuer Tarif",
       "paymentMethodLabel": "Zahlungsmethode",
       "cardOnFileStripe": "Hinterlegte Karte (Stripe)",
-      "confirmAndUpgrade": "Bestätigen & upgraden"
+      "confirmAndUpgrade": "Bestätigen & upgraden",
+      "venueLanguageDesc": "Wählen Sie die Standardsprache für Ihre Menüoberfläche und Gäste."
     },
     "analytics": {
       "title": "Analytik",
@@ -528,7 +530,10 @@
     "regenDialogDesc": "Der aktuelle QR-Code funktioniert sofort nicht mehr. Gedruckte Codes mit dem alten Token sind nicht mehr mit diesem Tisch verknüpft.",
     "cancel": "Abbrechen",
     "saveChanges": "Änderungen speichern",
-    "nameExistsError": "Ein Tisch mit diesem Namen existiert bereits"
+    "nameExistsError": "Ein Tisch mit diesem Namen existiert bereits",
+    "deleteTitle": "Tisch löschen?",
+    "deleteDesc": "„{name}“ wird dauerhaft entfernt. Alle aktiven Gastsitzungen an diesem Tisch werden getrennt.",
+    "deleteConfirm": "Tisch löschen"
   },
   "landing": {
     "nav": {
@@ -754,6 +759,42 @@
       "fri": "Fr",
       "sat": "Sa",
       "sun": "So"
-    }
+    },
+    "categoryGroup": "Kategoriegruppe",
+    "category": "Kategorie",
+    "noItemsInCategory": "Noch keine Artikel in dieser Kategorie.",
+    "leaveUnselectedNotice": "Nicht ausgewählt lassen, um alle Artikel dieser Kategorie zu rabattieren.",
+    "noCategoriesAvailable": "Keine Kategorien verfügbar",
+    "createCategoriesFirst": "Erstellen Sie zuerst Kategorien im Menü."
+  },
+  "pricing": {
+    "currentPlanBadge": "Aktueller Plan",
+    "recommendedBadge": "Empfohlen",
+    "freeTier": "Free",
+    "proTier": "Pro",
+    "businessTier": "Business",
+    "freeDesc": "Alles, was Sie zum Start eines Lokals benötigen.",
+    "proDesc": "Alles in Free plus die KI-Wachstums-Engine.",
+    "businessDesc": "Für Restaurantgruppen und maßgeschneiderte Infrastruktur.",
+    "startForFree": "Kostenlos starten",
+    "upgradeToPro": "Auf Pro upgraden",
+    "upgradeToBusiness": "Auf Business upgraden",
+    "freeFeature1": "Menü, Kategorien, Tisch-QR-Codes",
+    "freeFeature2": "Reservierungen und Kalender",
+    "freeFeature3": "Gemeinsamer Tisch-Warenkorb & Rechnungsaufteilung",
+    "freeFeature4": "Vorbestellungen und Stop-Liste (86)",
+    "freeFeature5": "Dynamische Happy-Hour-Aktionen",
+    "freeFeature6": "Basis-Analytik und NPS-Feedback",
+    "proFeature1": "Alles in Free",
+    "proFeature2": "KI-Kellner-Concierge",
+    "proFeature3": "KI-Menü-Design-Generator",
+    "proFeature4": "KI-Upselling im Warenkorb",
+    "proFeature5": "KI-Sentiment-Analyse für NPS",
+    "proFeature6": "Erweiterte Analytik und Prognosen",
+    "businessFeature1": "Alles in Pro",
+    "businessFeature2": "POS-Integrationen (Square, Toast, Lightspeed)",
+    "businessFeature3": "Eigene Domain und White-Label",
+    "businessFeature4": "Unterstützung mehrerer Standorte",
+    "businessFeature5": "Prioritäts-Support"
   }
 }

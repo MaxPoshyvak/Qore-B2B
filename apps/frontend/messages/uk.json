@@ -14,7 +14,8 @@
     "success": "Успішно",
     "language": "Мова",
     "live": "Наживо",
-    "done": "Готово"
+    "done": "Готово",
+    "selectLanguage": "Оберіть мову"
   },
   "publicMenu": {
     "headerTitle": "Меню",
@@ -295,7 +296,8 @@
       "newPlanLabel": "Новий план",
       "paymentMethodLabel": "Спосіб оплати",
       "cardOnFileStripe": "Збережена картка (Stripe)",
-      "confirmAndUpgrade": "Підтвердити та оновити"
+      "confirmAndUpgrade": "Підтвердити та оновити",
+      "venueLanguageDesc": "Оберіть мову за замовчуванням для інтерфейсу закладу та гостей."
     },
     "analytics": {
       "title": "Аналітика",
@@ -528,7 +530,10 @@
     "regenDialogDesc": "Поточний QR-код негайно перестане працювати. Надруковані коди зі старим токеном більше не відкриватимуть цей стіл.",
     "cancel": "Скасувати",
     "saveChanges": "Зберегти зміни",
-    "nameExistsError": "Стіл із такою назвою вже існує"
+    "nameExistsError": "Стіл із такою назвою вже існує",
+    "deleteTitle": "Видалити стіл?",
+    "deleteDesc": "«{name}» буде назавжди видалено. Усі активні сесії гостей за цим столом буде відключено.",
+    "deleteConfirm": "Видалити стіл"
   },
   "landing": {
     "nav": {
@@ -754,6 +759,42 @@
       "fri": "Пт",
       "sat": "Сб",
       "sun": "Нд"
-    }
+    },
+    "categoryGroup": "Група категорій",
+    "category": "Категорія",
+    "noItemsInCategory": "У цій категорії ще немає страв.",
+    "leaveUnselectedNotice": "Залиште невибраним, щоб застосувати знижку до всіх страв цієї категорії.",
+    "noCategoriesAvailable": "Немає доступних категорій",
+    "createCategoriesFirst": "Спочатку створіть категорії в Меню."
+  },
+  "pricing": {
+    "currentPlanBadge": "Поточний тариф",
+    "recommendedBadge": "Рекомендований",
+    "freeTier": "Free",
+    "proTier": "Pro",
+    "businessTier": "Business",
+    "freeDesc": "Усе необхідне для запуску одного закладу.",
+    "proDesc": "Усе з тарифу Free плюс AI рушій зростання.",
+    "businessDesc": "Для мереж ресторанів та індивідуальної інфраструктури.",
+    "startForFree": "Почати безкоштовно",
+    "upgradeToPro": "Оновити до Pro",
+    "upgradeToBusiness": "Оновити до Business",
+    "freeFeature1": "Меню, категорії, QR-коди для столів",
+    "freeFeature2": "Бронювання та календар",
+    "freeFeature3": "Спільний кошик столу та роздільний рахунок",
+    "freeFeature4": "Передзамовлення та стоп-лист (86)",
+    "freeFeature5": "Динамічні Happy Hour акції",
+    "freeFeature6": "Базова аналітика та відгуки NPS",
+    "proFeature1": "Усе з тарифу Free",
+    "proFeature2": "AI консьєрж-офіціант",
+    "proFeature3": "AI генератор дизайну меню",
+    "proFeature4": "AI розумні допродажі в кошику",
+    "proFeature5": "AI аналіз тональності відгуків",
+    "proFeature6": "Розширена аналітика та прогнози",
+    "businessFeature1": "Усе з тарифу Pro",
+    "businessFeature2": "POS-інтеграції (Square, Toast, Lightspeed)",
+    "businessFeature3": "Власний домен та White-Label",
+    "businessFeature4": "Підтримка мережі закладів",
+    "businessFeature5": "Пріоритетна підтримка"
   }
 }

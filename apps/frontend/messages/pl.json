@@ -14,7 +14,8 @@
     "success": "Sukces",
     "language": "Język",
     "live": "Na żywo",
-    "done": "Gotowe"
+    "done": "Gotowe",
+    "selectLanguage": "Wybierz język"
   },
   "publicMenu": {
     "headerTitle": "Menu",
@@ -295,7 +296,8 @@
       "newPlanLabel": "Nowy plan",
       "paymentMethodLabel": "Metoda płatności",
       "cardOnFileStripe": "Zapisana karta (Stripe)",
-      "confirmAndUpgrade": "Potwierdź i uaktualnij"
+      "confirmAndUpgrade": "Potwierdź i uaktualnij",
+      "venueLanguageDesc": "Wybierz domyślny język interfejsu Twojego lokalu i gości."
     },
     "analytics": {
       "title": "Analityka",
@@ -528,7 +530,10 @@
     "regenDialogDesc": "Obecny kod QR natychmiast przestanie działać. Wydrukowane kody ze starym tokenem nie będą już prowadzić do tego stolika.",
     "cancel": "Anuluj",
     "saveChanges": "Zapisz zmiany",
-    "nameExistsError": "Stolik o tej nazwie już istnieje"
+    "nameExistsError": "Stolik o tej nazwie już istnieje",
+    "deleteTitle": "Usunąć stolik?",
+    "deleteDesc": "„{name}” zostanie trwale usunięty. Wszelkie aktywne sesje gości przy tym stoliku zostaną rozłączone.",
+    "deleteConfirm": "Usuń stolik"
   },
   "landing": {
     "nav": {
@@ -754,6 +759,42 @@
       "fri": "Pt",
       "sat": "Sb",
       "sun": "Nd"
-    }
+    },
+    "categoryGroup": "Grupa kategorii",
+    "category": "Kategoria",
+    "noItemsInCategory": "Brak pozycji w tej kategorii.",
+    "leaveUnselectedNotice": "Pozostaw niezaznaczone, aby objąć zniżką wszystkie pozycje w tej kategorii.",
+    "noCategoriesAvailable": "Brak dostępnych kategorii",
+    "createCategoriesFirst": "Najpierw utwórz kategorie w Menu."
+  },
+  "pricing": {
+    "currentPlanBadge": "Aktualny plan",
+    "recommendedBadge": "Polecane",
+    "freeTier": "Free",
+    "proTier": "Pro",
+    "businessTier": "Business",
+    "freeDesc": "Wszystko, czego potrzebujesz, aby uruchomić jeden lokal.",
+    "proDesc": "Wszystko z planu Free plus silnik wzrostu AI.",
+    "businessDesc": "Dla grup restauracyjnych i dedykowanej infrastruktury.",
+    "startForFree": "Rozpocznij za darmo",
+    "upgradeToPro": "Przejdź na Pro",
+    "upgradeToBusiness": "Przejdź na Business",
+    "freeFeature1": "Menu, kategorie, kody QR dla stolików",
+    "freeFeature2": "Rezerwacje i kalendarz",
+    "freeFeature3": "Wspólny koszyk stolika i dzielenie rachunku",
+    "freeFeature4": "Zamówienia z wyprzedzeniem i stop-lista (86)",
+    "freeFeature5": "Dynamiczne promocje Happy Hour",
+    "freeFeature6": "Podstawowa analityka i oceny NPS",
+    "proFeature1": "Wszystko z planu Free",
+    "proFeature2": "Kelner concierge AI",
+    "proFeature3": "Generator projektu menu AI",
+    "proFeature4": "Inteligentny upselling AI w koszyku",
+    "proFeature5": "Analiza nastrojów AI dla NPS",
+    "proFeature6": "Zaawansowana analityka i prognozy",
+    "businessFeature1": "Wszystko z planu Pro",
+    "businessFeature2": "Integracje POS (Square, Toast, Lightspeed)",
+    "businessFeature3": "Własna domena i White-Label",
+    "businessFeature4": "Obsługa wielu lokalizacji",
+    "businessFeature5": "Wsparcie priorytetowe"
   }
 }

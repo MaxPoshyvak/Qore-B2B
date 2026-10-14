@@ -116,7 +116,7 @@ export function RuleBuilder({ scope, onScopeChange, groups, onGroupsChange, cate
                                         <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#3B82F6]/15 text-[10px] font-bold text-[#2563EB] dark:text-[#60A5FA]">
                                             {index + 1}
                                         </span>
-                                        Category Group
+                                        {t('categoryGroup')}
                                     </span>
                                     {groups.length > 1 && (
                                         <button
@@ -132,12 +132,14 @@ export function RuleBuilder({ scope, onScopeChange, groups, onGroupsChange, cate
                                 {/* === CATEGORY SELECT === */}
                                 <div>
                                     <span className="mb-1.5 block text-xs font-medium text-[#6B6A65] dark:text-[#94938D]">
-                                        Category
+                                        {t('category')}
                                     </span>
                                     <CategoryDropdown
                                         value={group.categoryId}
                                         options={options}
                                         placeholder={t('selectCategory')}
+                                        emptyLabel={t('noCategoriesAvailable')}
+                                        emptyNotice={t('createCategoriesFirst')}
                                         onChange={(categoryId) => updateGroup(group.uid, { categoryId, itemIds: [] })}
                                     />
                                 </div>
@@ -176,7 +178,7 @@ export function RuleBuilder({ scope, onScopeChange, groups, onGroupsChange, cate
 
                                         {items.length === 0 ? (
                                             <p className="rounded-xl border border-dashed border-[#E7E5E0] bg-black/[0.02] px-3 py-2 text-xs text-[#94938D] dark:border-[#232327] dark:bg-white/[0.02]">
-                                                No items in this category yet.
+                                                {t('noItemsInCategory')}
                                             </p>
                                         ) : (
                                             <div className="flex max-h-36 flex-wrap gap-1.5 overflow-y-auto rounded-xl border border-[#E7E5E0] bg-black/[0.02] p-2 dark:border-[#232327] dark:bg-white/[0.02]">
@@ -203,7 +205,7 @@ export function RuleBuilder({ scope, onScopeChange, groups, onGroupsChange, cate
 
                                         {group.itemIds.length === 0 && items.length > 0 && (
                                             <p className="text-[11px] text-[#94938D]">
-                                                Leave unselected to discount all items in this category.
+                                                {t('leaveUnselectedNotice')}
                                             </p>
                                         )}
                                     </div>
@@ -265,11 +267,15 @@ function CategoryDropdown({
     value,
     options,
     placeholder = 'Select a category…',
+    emptyLabel = 'No categories available',
+    emptyNotice = 'Create categories in Menu first.',
     onChange,
 }: {
     value: string;
     options: MenuCategoryWithItemsResponse[];
     placeholder?: string;
+    emptyLabel?: string;
+    emptyNotice?: string;
     onChange: (id: string) => void;
 }) {
     const selected = options.find((o) => o.id === value);
@@ -281,7 +287,7 @@ function CategoryDropdown({
                 onChange={(e) => onChange(e.target.value)}
                 className="h-10 w-full appearance-none rounded-xl border border-[#E7E5E0] bg-white px-3 pr-9 text-xs text-[#0A0A0C] outline-none transition-colors hover:border-black/20 focus-visible:border-[#3B82F6]/60 focus-visible:ring-2 focus-visible:ring-[#3B82F6]/15 disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#232327] dark:bg-[#141417] dark:text-[#F5F4F2] sm:text-sm">
                 <option value="" disabled>
-                    {options.length === 0 ? 'No categories available' : placeholder}
+                    {options.length === 0 ? emptyLabel : placeholder}
                 </option>
                 {options.map((option) => (
                     <option key={option.id} value={option.id}>
@@ -293,7 +299,7 @@ function CategoryDropdown({
                 ▾
             </span>
             {!selected && value === '' && options.length === 0 && (
-                <p className="mt-1 text-[11px] text-[#94938D]">Create categories in Menu first.</p>
+                <p className="mt-1 text-[11px] text-[#94938D]">{emptyNotice}</p>
             )}
         </div>
     );

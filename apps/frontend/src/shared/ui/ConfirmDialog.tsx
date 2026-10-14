@@ -2,6 +2,8 @@
 
 import { AlertTriangle, Loader2 } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
+
 import { Modal } from '@/shared/ui/Modal';
 import { SecondaryButton } from '@/shared/ui/PrimaryButton';
 
@@ -10,6 +12,7 @@ type ConfirmDialogProps = {
     title: string;
     description: string;
     confirmLabel?: string;
+    cancelLabel?: string;
     loading?: boolean;
     /** Blocks confirmation when the action is not currently allowed. */
     confirmDisabled?: boolean;
@@ -23,13 +26,18 @@ export function ConfirmDialog({
     open,
     title,
     description,
-    confirmLabel = 'Delete',
+    confirmLabel,
+    cancelLabel,
     loading = false,
     confirmDisabled = false,
     error,
     onConfirm,
     onClose,
 }: ConfirmDialogProps) {
+    const t = useTranslations('common');
+    const resolvedConfirmLabel = confirmLabel ?? t('delete');
+    const resolvedCancelLabel = cancelLabel ?? (confirmDisabled ? t('close') : t('cancel'));
+
     return (
         <Modal open={open} onClose={onClose} title={title}>
             <div className="flex items-start gap-3 rounded-2xl border border-red-500/20 bg-red-500/5 p-4">
@@ -41,7 +49,7 @@ export function ConfirmDialog({
 
             <div className="mt-5 flex justify-end gap-2">
                 <SecondaryButton type="button" onClick={onClose} disabled={loading}>
-                    {confirmDisabled ? 'Close' : 'Cancel'}
+                    {resolvedCancelLabel}
                 </SecondaryButton>
                 {!confirmDisabled && (
                     <button
@@ -50,9 +58,10 @@ export function ConfirmDialog({
                         disabled={loading}
                         className="inline-flex items-center justify-center gap-2 rounded-2xl bg-red-500 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60">
                         {loading && <Loader2 size={16} className="animate-spin" />}
-                        {confirmLabel}
+                        {resolvedConfirmLabel}
                     </button>
-                )}            </div>
+                )}
+            </div>
         </Modal>
     );
 }

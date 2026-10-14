@@ -30,10 +30,52 @@ export function BillingTab({
     subscriptionExpiresAt: initialExpiresAt = null,
 }: BillingTabProps) {
     const t = useTranslations('dashboard.settings');
+    const tPricing = useTranslations('pricing');
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
     const queryClient = useQueryClient();
+
+    const localizedPlansMeta: Record<
+        SubscriptionPlanId,
+        { description: string; ctaText: string; features: string[] }
+    > = {
+        free: {
+            description: tPricing('freeDesc'),
+            ctaText: tPricing('startForFree'),
+            features: [
+                tPricing('freeFeature1'),
+                tPricing('freeFeature2'),
+                tPricing('freeFeature3'),
+                tPricing('freeFeature4'),
+                tPricing('freeFeature5'),
+                tPricing('freeFeature6'),
+            ],
+        },
+        pro: {
+            description: tPricing('proDesc'),
+            ctaText: tPricing('upgradeToPro'),
+            features: [
+                tPricing('proFeature1'),
+                tPricing('proFeature2'),
+                tPricing('proFeature3'),
+                tPricing('proFeature4'),
+                tPricing('proFeature5'),
+                tPricing('proFeature6'),
+            ],
+        },
+        business: {
+            description: tPricing('businessDesc'),
+            ctaText: tPricing('upgradeToBusiness'),
+            features: [
+                tPricing('businessFeature1'),
+                tPricing('businessFeature2'),
+                tPricing('businessFeature3'),
+                tPricing('businessFeature4'),
+                tPricing('businessFeature5'),
+            ],
+        },
+    };
 
     const sessionId = searchParams?.get('session_id');
 
@@ -264,9 +306,10 @@ export function BillingTab({
                     const planRank = PLAN_RANK[plan.id] ?? 0;
                     const isCurrent = effectivePlan === plan.id;
                     const convertedPrice = getPlanPriceForCurrency(plan.id, venueCurrency).formattedPrice;
+                    const localized = localizedPlansMeta[plan.id];
 
                     let onCtaClick: (() => void) | undefined = undefined;
-                    let ctaText = plan.ctaText;
+                    let ctaText = localized.ctaText;
                     let disabled = isPolling;
 
                     if (isCurrent && effectivePlan !== 'free') {
@@ -287,8 +330,8 @@ export function BillingTab({
                             tier={plan.tier}
                             price={convertedPrice}
                             period={plan.period}
-                            description={plan.description}
-                            features={plan.features}
+                            description={localized.description}
+                            features={localized.features}
                             featured={plan.featured}
                             isCurrent={isCurrent}
                             ctaText={ctaText}

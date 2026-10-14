@@ -14,7 +14,8 @@
     "success": "Úspěšně",
     "language": "Jazyk",
     "live": "Živě",
-    "done": "Hotovo"
+    "done": "Hotovo",
+    "selectLanguage": "Vyberte jazyk"
   },
   "publicMenu": {
     "headerTitle": "Menu",
@@ -295,7 +296,8 @@
       "newPlanLabel": "Nový plán",
       "paymentMethodLabel": "Způsob platby",
       "cardOnFileStripe": "Uložená karta (Stripe)",
-      "confirmAndUpgrade": "Potvrdit a přejít"
+      "confirmAndUpgrade": "Potvrdit a přejít",
+      "venueLanguageDesc": "Vyberte výchozí jazyk pro rozhraní vašeho podniku a hosty."
     },
     "analytics": {
       "title": "Analytika",
@@ -528,7 +530,10 @@
     "regenDialogDesc": "Současný QR kód okamžitě přestane fungovat. Vytištěné kódy se starým tokenem již nebudou fungovat pro tento stůl.",
     "cancel": "Zrušit",
     "saveChanges": "Uložit změny",
-    "nameExistsError": "Stůl s tímto názvem již existuje"
+    "nameExistsError": "Stůl s tímto názvem již existuje",
+    "deleteTitle": "Smazat stůl?",
+    "deleteDesc": "„{name}“ bude trvale odstraněn. Všechny aktivní relace hostů u tohoto stolu budou odpojeny.",
+    "deleteConfirm": "Smazat stůl"
   },
   "landing": {
     "nav": {
@@ -754,6 +759,42 @@
       "fri": "Pá",
       "sat": "So",
       "sun": "Ne"
-    }
+    },
+    "categoryGroup": "Skupina kategorií",
+    "category": "Kategorie",
+    "noItemsInCategory": "V této kategorii zatím nejsou žádné položky.",
+    "leaveUnselectedNotice": "Ponechte nevybrané pro slevu na všechny položky v této kategorii.",
+    "noCategoriesAvailable": "Žádné kategorie k dispozici",
+    "createCategoriesFirst": "Nejprve vytvořte kategorie v Menu."
+  },
+  "pricing": {
+    "currentPlanBadge": "Aktuální tarif",
+    "recommendedBadge": "Doporučeno",
+    "freeTier": "Free",
+    "proTier": "Pro",
+    "businessTier": "Business",
+    "freeDesc": "Vše, co potřebujete ke spuštění jednoho podniku.",
+    "proDesc": "Vše z tarifu Free a navíc AI růstový engine.",
+    "businessDesc": "Pro restaurační skupiny a vlastní infrastrukturu.",
+    "startForFree": "Začít zdarma",
+    "upgradeToPro": "Přejít na Pro",
+    "upgradeToBusiness": "Přejít na Business",
+    "freeFeature1": "Menu, kategorie, QR kódy pro stoly",
+    "freeFeature2": "Rezervace a kalendář",
+    "freeFeature3": "Sdílený košík stolu a rozdělení účtu",
+    "freeFeature4": "Předobjednávky a stop-list (86)",
+    "freeFeature5": "Dynamické Happy Hour akce",
+    "freeFeature6": "Základní analytika a hodnocení NPS",
+    "proFeature1": "Vše z tarifu Free",
+    "proFeature2": "AI číšník concierge",
+    "proFeature3": "AI generátor designu menu",
+    "proFeature4": "AI chytrý upselling v košíku",
+    "proFeature5": "AI analýza nálady z recenzí NPS",
+    "proFeature6": "Pokročilá analytika a předpovědi",
+    "businessFeature1": "Vše z tarifu Pro",
+    "businessFeature2": "POS integrace (Square, Toast, Lightspeed)",
+    "businessFeature3": "Vlastní doména a White-Label",
+    "businessFeature4": "Podpora více poboček",
+    "businessFeature5": "Prioritní podpora"
   }
 }

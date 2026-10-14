@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useTransition } from 'react';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Globe, ChevronDown, Check, Loader2 } from 'lucide-react';
@@ -14,13 +14,16 @@ type LanguageSwitcherProps = {
     className?: string;
     variant?: 'compact' | 'full';
     direction?: 'up' | 'down';
+    align?: 'left' | 'right';
 };
 
 export function LanguageSwitcher({
     className,
     variant = 'compact',
     direction = 'down',
+    align = 'right',
 }: LanguageSwitcherProps) {
+    const t = useTranslations('common');
     const locale = useLocale() as Locale;
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
@@ -111,11 +114,12 @@ export function LanguageSwitcher({
                         exit={{ opacity: 0, scale: 0.95, y: direction === 'down' ? 6 : -6 }}
                         transition={{ duration: 0.15, ease: EASE }}
                         className={cn(
-                            'absolute z-50 min-w-48 overflow-hidden rounded-2xl border border-black/10 bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#141417]/95',
-                            direction === 'down' ? 'top-full mt-2 right-0' : 'bottom-full mb-2 right-0',
+                            'absolute z-50 min-w-44 max-w-[calc(100vw-32px)] overflow-hidden rounded-2xl border border-black/10 bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#141417]/95',
+                            direction === 'down' ? 'top-full mt-2' : 'bottom-full mb-2',
+                            align === 'left' ? 'left-0' : 'right-0',
                         )}>
                         <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#6B6A65] dark:text-[#94938D]">
-                            Select Language
+                            {t('selectLanguage')}
                         </div>
                         <div className="space-y-0.5">
                             {LOCALES_CONFIG.map((lang) => {

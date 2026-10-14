@@ -71,8 +71,8 @@ export function GeneralTab({ initialCurrency = 'USD' }: GeneralTabProps) {
             </div>
 
             {/* Basic Information - Blue Accent */}
-            <section className="relative overflow-hidden rounded-3xl border border-[#E7E5E0] bg-white p-6 shadow-sm transition-colors hover:border-[#3B82F6]/30 dark:border-[#232327] dark:bg-[#141417] sm:p-7">
-                <div className="absolute bottom-0 left-0 top-0 w-1 bg-[#3B82F6]" />
+            <section className="relative overflow-visible rounded-3xl border border-[#E7E5E0] bg-white p-6 shadow-sm transition-colors hover:border-[#3B82F6]/30 dark:border-[#232327] dark:bg-[#141417] sm:p-7">
+                <div className="absolute bottom-0 left-0 top-0 w-1 rounded-l-3xl bg-[#3B82F6]" />
                 <div className="mb-6 flex items-start gap-4">
                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#3B82F6]/10 text-[#3B82F6]">
                         <Store size={20} strokeWidth={2} />
@@ -224,10 +224,10 @@ export function GeneralTab({ initialCurrency = 'USD' }: GeneralTabProps) {
                                 {t('venueLanguage')}
                             </span>
                             <p className="text-[12px] text-[#6B6A65] dark:text-[#94938D]">
-                                {t('currencyRegionDesc')}
+                                {t('venueLanguageDesc')}
                             </p>
                         </div>
-                        <LanguageSwitcher />
+                        <LanguageSwitcher direction="up" />
                     </div>
                 </div>
             </section>

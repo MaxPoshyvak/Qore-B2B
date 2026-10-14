@@ -351,8 +351,8 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                     <span />
                 )}
                 <div className="flex items-center gap-2">
-                    <LanguageSwitcher direction="up" />
                     <div className="hidden md:block">{mounted && <ThemeToggle theme={theme} toggle={toggle} />}</div>
+                    <LanguageSwitcher direction="up" align="right" />
                 </div>
             </div>
         </div>

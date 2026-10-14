@@ -112,13 +112,14 @@ export function TableGrid({ slug, venueName }: TableGridProps) {
 
             <ConfirmDialog
                 open={Boolean(deleteTarget)}
-                title="Delete table?"
+                title={t('deleteTitle')}
                 description={
                     deleteTarget
-                        ? `"${deleteTarget.name}" will be permanently removed. Any active guest sessions on this table will be disconnected.`
+                        ? t('deleteDesc', { name: deleteTarget.name })
                         : ''
                 }
-                confirmLabel="Delete table"
+                confirmLabel={t('deleteConfirm')}
+                cancelLabel={t('cancel')}
                 loading={deleteTable.isPending}
                 onConfirm={async () => {
                     if (!deleteTarget) return;
