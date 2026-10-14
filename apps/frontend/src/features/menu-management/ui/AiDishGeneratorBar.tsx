@@ -9,6 +9,7 @@ import { cn } from '@/shared/lib/utils';
 import { type GenerateDishOutput } from '@my-app/types';
 import { useGenerateDish } from '../api/useGenerateDish';
 import { ProUpgradeModal } from './ProUpgradeModal';
+import { useTranslations } from 'next-intl';
 
 type AiDishGeneratorBarProps = {
     /** Whether the active venue is on a PRO (or higher) plan. */
@@ -24,6 +25,7 @@ type AiDishGeneratorBarProps = {
 };
 
 export function AiDishGeneratorBar({ isPro, categories, onPopulate, onUpgrade, className }: AiDishGeneratorBarProps) {
+    const t = useTranslations('menuManagement');
     const [expanded, setExpanded] = useState(false);
     const [prompt, setPrompt] = useState('');
     const [upgradeOpen, setUpgradeOpen] = useState(false);
@@ -54,10 +56,10 @@ export function AiDishGeneratorBar({ isPro, categories, onPopulate, onUpgrade, c
                         }
                     }
                     if (error instanceof ApiError && error.status === 429) {
-                        setRateLimitMsg('Too many requests. Please wait a minute.');
+                        setRateLimitMsg(t('rateLimitError'));
                         return;
                     }
-                    setRateLimitMsg('Something went wrong. Please try again.');
+                    setRateLimitMsg(t('genericAiError'));
                 },
             },
         );
@@ -83,13 +85,13 @@ export function AiDishGeneratorBar({ isPro, categories, onPopulate, onUpgrade, c
                             className="flex items-center justify-between gap-3">
                             <span className="flex items-center gap-2 text-xs font-medium text-[#8B5CF6]">
                                 <Sparkles size={14} />
-                                Form drafted by AI. You can review and adjust.
+                                {t('draftedByAi')}
                             </span>
                             <button
                                 type="button"
                                 onClick={resetDraft}
                                 className="shrink-0 text-xs font-medium text-[#8B5CF6]/80 underline-offset-2 transition-colors md:hover:underline">
-                                Draft again
+                                {t('draftAgain')}
                             </button>
                         </motion.div>
                     ) : (
@@ -103,10 +105,10 @@ export function AiDishGeneratorBar({ isPro, categories, onPopulate, onUpgrade, c
                             <div className="flex items-center gap-2">
                                 <Sparkles size={15} className="text-[#8B5CF6]" />
                                 <span className="text-xs font-medium text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                    Draft with AI Assistant
+                                    {t('draftWithAi')}
                                 </span>
                                 <span className="rounded-md bg-[#8B5CF6]/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#8B5CF6]">
-                                    AI
+                                    {t('aiBadge')}
                                 </span>
                             </div>
 
@@ -116,7 +118,7 @@ export function AiDishGeneratorBar({ isPro, categories, onPopulate, onUpgrade, c
                                     onClick={() => setExpanded((v) => !v)}
                                     aria-expanded={expanded}
                                     className="flex items-center gap-1.5 rounded-xl border border-[#8B5CF6]/30 bg-white/70 px-3 py-1.5 text-xs font-medium text-[#7C3AED] shadow-xs transition-colors dark:border-[#8B5CF6]/35 dark:bg-white/5 dark:text-[#C4B5FD] md:hover:bg-[#8B5CF6]/10">
-                                    Generate with AI
+                                    {t('generateWithAi')}
                                     <ChevronDown
                                         size={14}
                                         className={cn('transition-transform duration-200', expanded && 'rotate-180')}
@@ -128,7 +130,7 @@ export function AiDishGeneratorBar({ isPro, categories, onPopulate, onUpgrade, c
                                     onClick={() => setUpgradeOpen(true)}
                                     className="flex items-center gap-1.5 rounded-xl bg-[#8B5CF6]/15 px-2.5 py-1 text-[11px] font-medium text-[#8B5CF6] transition-colors md:hover:bg-[#8B5CF6]/25">
                                     <Lock size={12} />
-                                    Pro
+                                    {t('proBadge')}
                                 </button>
                             )}
                         </motion.div>
@@ -153,7 +155,7 @@ export function AiDishGeneratorBar({ isPro, categories, onPopulate, onUpgrade, c
                                         if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') handleGenerate();
                                     }}
                                     rows={3}
-                                    placeholder="e.g. Creamy truffle pasta with wild mushrooms, parmesan crisp, and fresh thyme..."
+                                    placeholder={t('aiPlaceholder')}
                                     className={cn(
                                         'w-full resize-none rounded-xl border bg-white/90 p-3 text-sm font-normal leading-relaxed text-[#0A0A0C] outline-none transition-colors placeholder:text-[#A8A6A0] focus:border-[#8B5CF6]/70 focus:ring-1 focus:ring-[#8B5CF6]/20 dark:border-[#232327] dark:bg-[#141417]/90 dark:text-[#F5F4F2] dark:placeholder:text-[#5A5A56]',
                                         generate.isPending
@@ -170,7 +172,7 @@ export function AiDishGeneratorBar({ isPro, categories, onPopulate, onUpgrade, c
                                         <kbd className="rounded border border-black/10 bg-black/[0.04] px-1.5 py-0.5 text-[10px] font-medium text-[#6B6A65] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D]">
                                             ↵
                                         </kbd>
-                                        <span className="text-[11px]">to generate</span>
+                                        <span className="text-[11px]">{t('toGenerate')}</span>
                                     </div>
 
                                     <button
@@ -179,14 +181,14 @@ export function AiDishGeneratorBar({ isPro, categories, onPopulate, onUpgrade, c
                                         disabled={!prompt.trim() || generate.isPending}
                                         className="flex items-center gap-1.5 rounded-xl bg-[#8B5CF6] px-3.5 py-2 text-xs font-medium text-white shadow-sm transition-all md:hover:bg-[#7C3AED] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50">
                                         {generate.isPending ? (
-                                            <>
+                                             <>
                                                 <Loader2 size={13} className="animate-spin" />
-                                                <span>Generating...</span>
+                                                <span>{t('generating')}</span>
                                             </>
                                         ) : (
                                             <>
                                                 <Sparkles size={13} />
-                                                <span>Generate dish</span>
+                                                <span>{t('generateDish')}</span>
                                             </>
                                         )}
                                     </button>

@@ -5,6 +5,7 @@ import { Check, Loader2, UtensilsCrossed } from 'lucide-react';
 
 import { EASE } from '@/shared/config/animations';
 import { display } from '@/shared/lib/fonts';
+import { useTranslations } from 'next-intl';
 
 type OrderSuccessOverlayProps = {
     onRestart: () => void;
@@ -13,6 +14,8 @@ type OrderSuccessOverlayProps = {
 };
 
 export function OrderSuccessOverlay({ onRestart, isRestarting = false }: OrderSuccessOverlayProps) {
+    const t = useTranslations('publicMenu');
+
     return (
         <motion.div
             initial={{ opacity: 0 }}
@@ -38,12 +41,12 @@ export function OrderSuccessOverlay({ onRestart, isRestarting = false }: OrderSu
 
                     <h2
                         className={`${display.className} mt-5 text-[26px] font-bold leading-tight tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                        Order sent to kitchen!
+                        {t('orderSentToKitchen')}
                     </h2>
 
                     <p className="mt-2 flex items-center gap-2 text-sm text-[#6B6A65] dark:text-[#94938D]">
                         <UtensilsCrossed size={15} className="text-[#04916C] dark:text-[#10B981]" />
-                        The staff will prepare your table&apos;s dishes shortly.
+                        {t('staffPrepareDishes')}
                     </p>
 
                     <button
@@ -52,7 +55,7 @@ export function OrderSuccessOverlay({ onRestart, isRestarting = false }: OrderSu
                         disabled={isRestarting}
                         className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#E7E5E0] px-5 py-3.5 text-[14px] font-medium text-[#0A0A0C] transition-colors hover:border-[#3B82F6]/40 disabled:cursor-not-allowed disabled:opacity-60 dark:border-[#232327] dark:text-[#F5F4F2]">
                         {isRestarting && <Loader2 size={15} className="animate-spin" />}
-                        {isRestarting ? 'Preparing your table...' : 'Start New Order'}
+                        {isRestarting ? t('preparingYourTable') : t('startNewOrder')}
                     </button>
                 </div>
             </motion.div>

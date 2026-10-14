@@ -7,6 +7,7 @@ import { ChefHat, Lock } from 'lucide-react';
 import { EASE } from '@/shared/config/animations';
 import { display, mono } from '@/shared/lib/fonts';
 import { useKdsStore } from '@/shared/store/useKdsStore';
+import { useTranslations } from 'next-intl';
 
 /**
  * Full-screen PIN gate for the isolated KDS. The 4-digit `x-kds-pin` is stored in the
@@ -22,6 +23,7 @@ export function KdsLockScreen({
     onUnlock: (pin: string) => void;
     pinError?: boolean;
 }) {
+    const t = useTranslations('kds');
     const [digits, setDigits] = useState<string[]>(['', '', '', '']);
     const [error, setError] = useState(false);
     const inputs = useRef<Array<HTMLInputElement | null>>([]);
@@ -95,10 +97,10 @@ export function KdsLockScreen({
 
                     <h1
                         className={`${display.className} mt-5 text-[24px] font-bold leading-tight tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                        Enter KDS PIN
+                        {t('title')}
                     </h1>
                     <p className="mt-2 text-[13.5px] leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
-                        This kitchen display is locked. Enter the 4-digit PIN from your venue Settings.
+                        {t('description')}
                     </p>
 
                     <div className="mt-7 flex justify-center gap-3">
@@ -129,7 +131,7 @@ export function KdsLockScreen({
 
                     {(error || pinError) && (
                         <p className={`${mono.className} mt-3 text-[11px] uppercase tracking-widest text-red-500`}>
-                            {pinError ? 'Incorrect PIN, please try again' : 'Enter the full 4-digit PIN'}
+                            {pinError ? t('incorrectPin') : t('enterFullPin')}
                         </p>
                     )}
 
@@ -138,7 +140,7 @@ export function KdsLockScreen({
                         onClick={submit}
                         disabled={pin.length !== 4}
                         className="mt-7 inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-5 py-3.5 text-[14px] font-semibold text-white shadow-lg shadow-[#3B82F6]/20 transition-opacity hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50">
-                        Unlock Kitchen
+                        {t('unlockKitchen')}
                     </button>
                 </div>
             </motion.div>

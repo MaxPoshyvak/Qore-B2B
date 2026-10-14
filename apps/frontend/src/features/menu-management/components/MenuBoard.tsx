@@ -5,6 +5,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle } from 'lucide-react';
 import { getErrorMessage, type MenuCategoryWithItemsResponse, type MenuItemResponse } from '@my-app/types';
 
+import { useTranslations } from 'next-intl';
+
 import { useDeleteCategory, useGetCategories } from '@/entities/menu/hooks/useCategories';
 import { useDeleteMenuItem } from '@/entities/menu/hooks/useMenuItems';
 import { useGetTenantBySlug } from '@/entities/tenant/hooks/useTenants';
@@ -25,11 +27,12 @@ type MenuBoardProps = {
 };
 
 function BoardError({ message }: { message: string }) {
+    const t = useTranslations('menuManagement');
     return (
         <div className="flex items-start gap-3 rounded-3xl border border-red-400/30 bg-red-500/5 p-6">
             <AlertCircle size={18} className="mt-0.5 shrink-0 text-red-500" />
             <div>
-                <p className="text-sm font-semibold text-red-500">We couldn&apos;t load your menu</p>
+                <p className="text-sm font-semibold text-red-500">{t('cantLoadMenu')}</p>
                 <p className="mt-1 text-sm text-[#6B6A65] dark:text-[#94938D]">{message}</p>
             </div>
         </div>
@@ -37,6 +40,7 @@ function BoardError({ message }: { message: string }) {
 }
 
 export function MenuBoard({ slug, createCategoryOpen, onCreateCategoryOpenChange }: MenuBoardProps) {
+    const t = useTranslations('menuManagement');
     const {
         data: tenantResponse,
         isLoading: isTenantLoading,
@@ -129,7 +133,7 @@ export function MenuBoard({ slug, createCategoryOpen, onCreateCategoryOpenChange
                         onClick={() => onCreateCategoryOpenChange(true)}
                         transition={{ duration: 0.3, ease: EASE }}
                         className="flex items-center justify-center gap-2 rounded-3xl border-2 border-dashed border-black/15 py-6 text-sm font-medium text-[#6B6A65] transition-colors hover:border-[#3B82F6]/50 hover:text-[#3B82F6] dark:border-white/15 dark:text-[#94938D] dark:hover:border-[#3B82F6]/50">
-                        Add another category
+                        {t('addAnotherCategory')}
                     </motion.button>
                 </motion.div>
             )}
@@ -162,8 +166,9 @@ export function MenuBoard({ slug, createCategoryOpen, onCreateCategoryOpenChange
 
             <ConfirmDialog
                 open={!!deletingItem}
-                title="Delete dish"
-                description={`“${deletingItem?.name ?? ''}” will be permanently removed from your menu. This can’t be undone.`}
+                title={t('deleteDishTitle')}
+                description={t('deleteDishDesc', { name: deletingItem?.name ?? '' })}
+                confirmLabel={t('delete')}
                 loading={isDeletingItem}
                 error={deleteError}
                 onConfirm={handleDeleteItem}
@@ -175,14 +180,16 @@ export function MenuBoard({ slug, createCategoryOpen, onCreateCategoryOpenChange
 
             <ConfirmDialog
                 open={!!deletingCategory}
-                title="Delete category"
+                title={t('deleteCategoryTitle')}
                 description={
                     blockedByItems
-                        ? `“${deletingCategory?.name ?? ''}” still contains ${deletingCategory?.items.length} ${
-                              deletingCategory?.items.length === 1 ? 'dish' : 'dishes'
-                          }. Remove them first, then delete the category.`
-                        : `“${deletingCategory?.name ?? ''}” will be permanently removed from your menu. This can’t be undone.`
+                        ? t('deleteCategoryBlocked', {
+                              name: deletingCategory?.name ?? '',
+                              count: deletingCategory?.items.length ?? 0,
+                          })
+                        : t('deleteCategoryDesc', { name: deletingCategory?.name ?? '' })
                 }
+                confirmLabel={t('delete')}
                 confirmDisabled={blockedByItems}
                 loading={isDeletingCategory}
                 error={deleteError}

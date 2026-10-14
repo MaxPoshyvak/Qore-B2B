@@ -9,6 +9,7 @@ import { EASE } from '@/shared/config/animations';
 import { formatPrice } from '@/shared/lib/utils';
 import { useAnalyticsOverview } from '../hooks/useAnalytics';
 import { MetricCard } from './MetricCard';
+import { useTranslations } from 'next-intl';
 
 // Перетворює ключ YYYY-MM-DD на компактний лейбл осі (напр. "Aug 21")
 function formatChartDate(dateKey: string): string {
@@ -32,6 +33,7 @@ function GlassTooltip({ active, payload, label, currency = 'USD' }: any) {
 }
 
 export function OverviewView({ tenantId, currency = 'USD' }: { tenantId: string; currency?: string }) {
+    const t = useTranslations('analytics');
     const { data, isLoading } = useAnalyticsOverview(tenantId);
 
     const totalRevenue = data?.totalRevenue ?? 0;
@@ -50,25 +52,25 @@ export function OverviewView({ tenantId, currency = 'USD' }: { tenantId: string;
         <div className="space-y-6">
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 <MetricCard
-                    label="Total Revenue"
+                    label={t('totalRevenue')}
                     value={isLoading ? '—' : formatPrice(totalRevenue, currency)}
                     icon={DollarSign}
                     accent="blue"
                 />
                 <MetricCard
-                    label="Total Orders"
+                    label={t('totalOrders')}
                     value={isLoading ? '—' : totalOrders.toLocaleString('en-US')}
                     icon={Receipt}
                     accent="violet"
                 />
                 <MetricCard
-                    label="Avg Order Value"
+                    label={t('avgOrderValue')}
                     value={isLoading ? '—' : formatPrice(averageOrderValue, currency)}
                     icon={Calculator}
                     accent="green"
                 />
                 <MetricCard
-                    label="Menu Views"
+                    label={t('menuViews')}
                     value={isLoading ? '—' : menuViews.toLocaleString('en-US')}
                     icon={Eye}
                     accent="amber"
@@ -84,16 +86,16 @@ export function OverviewView({ tenantId, currency = 'USD' }: { tenantId: string;
                     <div>
                         <p
                             className={`${mono.className} text-[10.5px] uppercase tracking-wider text-[#6B6A65]/70 dark:text-[#94938D]/70`}>
-                            Revenue trend
+                            {t('revenueTrend')}
                         </p>
                         <h3
                             className={`${display.className} mt-1 text-[18px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                            This week
+                            {t('thisWeek')}
                         </h3>
                     </div>
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-[#04916C]/10 px-3 py-1 text-[12px] font-medium text-[#04916C] dark:text-[#10B981]">
                         <span className="h-1.5 w-1.5 rounded-full bg-current" />
-                        Live
+                        {t('live')}
                     </span>
                 </div>
 
@@ -122,7 +124,7 @@ export function OverviewView({ tenantId, currency = 'USD' }: { tenantId: string;
                             axisLine={false}
                             tickLine={false}
                             width={48}
-                            tickFormatter={(v) => `$${v}`}
+                            tickFormatter={(v) => formatPrice(v, currency)}
                         />
                         <Tooltip content={<GlassTooltip currency={currency} />} cursor={{ stroke: '#3B82F6', strokeOpacity: 0.2 }} />
                         <Area

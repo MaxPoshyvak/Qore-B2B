@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
@@ -17,6 +18,7 @@ import { AuthInput } from '@/shared/ui/AuthInput';
 import { AuthButton } from '@/shared/ui/AuthButton';
 
 export function RegisterForm() {
+    const t = useTranslations('auth');
     const router = useRouter();
     const [loading, setLoading] = useState(false);
 
@@ -40,7 +42,7 @@ export function RegisterForm() {
                 redirect: false,
             });
             if (res?.error) {
-                setError('root', { message: 'Account created, but sign-in failed. Try logging in.' });
+                setError('root', { message: t('regFailedSignIn') });
                 setLoading(false);
                 return;
             }
@@ -48,7 +50,7 @@ export function RegisterForm() {
             router.refresh();
         } catch (err) {
             setError('root', {
-                message: err instanceof Error ? err.message : 'Registration failed. Please try again.',
+                message: err instanceof Error ? err.message : t('regFailed'),
             });
             setLoading(false);
         }
@@ -61,18 +63,18 @@ export function RegisterForm() {
             transition={{ duration: 0.5, ease: EASE }}>
             <h1
                 className={`${display.className} text-[30px] font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                Create your account
+                {t('registerTitle')}
             </h1>
             <p className="mb-7 mt-1.5 text-[14.5px] text-[#6B6A65] dark:text-[#94938D]">
-                Launch your first venue in under a minute.
+                {t('registerSubtitle')}
             </p>
 
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
                 <AuthInput
                     id="name"
                     type="text"
-                    label="Name"
-                    placeholder="Jane Doe"
+                    label={t('name')}
+                    placeholder={t('namePlaceholder')}
                     error={errors.name?.message}
                     autoComplete="name"
                     {...register('name')}
@@ -80,8 +82,8 @@ export function RegisterForm() {
                 <AuthInput
                     id="email"
                     type="email"
-                    label="Email"
-                    placeholder="you@venue.com"
+                    label={t('email')}
+                    placeholder={t('emailPlaceholder')}
                     error={errors.email?.message}
                     autoComplete="email"
                     {...register('email')}
@@ -89,8 +91,8 @@ export function RegisterForm() {
                 <AuthInput
                     id="password"
                     type="password"
-                    label="Password"
-                    placeholder="At least 6 characters"
+                    label={t('password')}
+                    placeholder={t('passwordMinPlaceholder')}
                     error={errors.password?.message}
                     autoComplete="new-password"
                     {...register('password')}
@@ -103,15 +105,15 @@ export function RegisterForm() {
                     </div>
                 )}
 
-                <AuthButton loading={loading || isSubmitting}>Create account</AuthButton>
+                <AuthButton loading={loading || isSubmitting}>{t('createAccount')}</AuthButton>
             </form>
 
             <p className="mt-6 text-center text-[13.5px] text-[#6B6A65] dark:text-[#94938D]">
-                Already have an account?{' '}
+                {t('alreadyHaveAccount')}{' '}
                 <Link
                     href="/login"
                     className="font-medium text-[#0A0A0C] transition-colors hover:text-[#3B82F6] dark:text-[#F5F4F2] dark:hover:text-[#3B82F6]">
-                    Log in
+                    {t('logIn')}
                 </Link>
             </p>
         </motion.div>

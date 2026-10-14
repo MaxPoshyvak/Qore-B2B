@@ -5,9 +5,12 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, UtensilsCrossed, Store } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
+
 import { AmbientBackground } from '@/shared/ui/AmbientBackground';
 import { BaseHeader } from '@/shared/ui/BaseHeader';
 import { ThemeToggle } from '@/shared/ui/ThemeToggle';
+import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
 import { display } from '@/shared/lib/fonts';
 import { useTheme } from '@/shared/hooks/useTheme';
 import { useGetPublicTenant } from '@/entities/tenant/hooks/useGetPublicTenant';
@@ -16,6 +19,8 @@ import { BookingForm } from '@/features/reservations/components/BookingForm';
 import { ReservationConfirmation } from '@/features/reservations/components/ReservationConfirmation';
 
 export default function GuestBookingPage() {
+    const t = useTranslations('reservations');
+    const tCommon = useTranslations('common');
     const { slug } = useParams<{ slug: string }>();
     const resolvedSlug = slug ?? '';
     const { theme, toggle, mounted } = useTheme();
@@ -30,23 +35,24 @@ export default function GuestBookingPage() {
             <BaseHeader
                 centerContent={
                     <span className="text-[13px] font-semibold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]">
-                        {tenantLoading ? 'Loading…' : venueName}
+                        {tenantLoading ? tCommon('loading') : venueName}
                     </span>
                 }>
                 <Link
                     href={`/${resolvedSlug}`}
                     className="inline-flex items-center gap-1.5 rounded-full border border-[#E7E5E0]/80 bg-white/60 px-3 py-1.5 text-[12px] font-medium text-[#6B6A65] transition-colors hover:border-[#3B82F6]/40 hover:text-[#3B82F6] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D] dark:hover:text-[#60A5FA]">
                     <ArrowLeft size={13} />
-                    <span className="hidden sm:inline">Back to {venueName}</span>
-                    <span className="sm:hidden">Back</span>
+                    <span className="hidden sm:inline">{t('backTo', { venue: venueName })}</span>
+                    <span className="sm:hidden">{t('back')}</span>
                 </Link>
                 <Link
                     href={`/${resolvedSlug}/menu`}
                     className="inline-flex items-center gap-1.5 rounded-full border border-[#E7E5E0]/80 bg-white/60 px-3 py-1.5 text-[12px] font-medium text-[#6B6A65] transition-colors hover:border-[#3B82F6]/40 hover:text-[#3B82F6] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D] dark:hover:text-[#60A5FA]">
                     <UtensilsCrossed size={13} />
-                    <span className="hidden sm:inline">View Menu</span>
-                    <span className="sm:hidden">Menu</span>
+                    <span className="hidden sm:inline">{t('viewMenu')}</span>
+                    <span className="sm:hidden">{t('menu')}</span>
                 </Link>
+                <LanguageSwitcher />
                 {mounted && <ThemeToggle theme={theme} toggle={toggle} />}
             </BaseHeader>
 
@@ -54,7 +60,7 @@ export default function GuestBookingPage() {
                 {/* Venue context (mobile) — desktop relies on the glass header above */}
                 <div className="mb-6 md:hidden">
                     <span className="inline-flex items-center gap-1.5 text-[12px] font-medium uppercase tracking-wider text-[#9C9B95] dark:text-[#6E6D68]">
-                        <Store size={12} /> Booking for
+                        <Store size={12} /> {t('bookingFor')}
                     </span>
                     <h2 className={`${display.className} mt-1 text-[22px] font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]`}>
                         {venueName}

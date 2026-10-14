@@ -12,6 +12,8 @@ import {
     type UpdateTenantSettingsDto,
 } from '@my-app/types';
 
+import { useTranslations } from 'next-intl';
+
 import { display, body, mono } from '@/shared/lib/fonts';
 import { AuthInput } from '@/shared/ui/AuthInput';
 import { FormTextarea, FormSelect } from '@/shared/ui/FormControls';
@@ -23,6 +25,7 @@ type GeneralTabProps = {
 };
 
 export function GeneralTab({ initialCurrency = 'USD' }: GeneralTabProps) {
+    const t = useTranslations('dashboard.settings');
     const {
         register,
         watch,
@@ -59,11 +62,11 @@ export function GeneralTab({ initialCurrency = 'USD' }: GeneralTabProps) {
             <div className="mb-8">
                 <h2
                     className={`${display.className} text-[26px] font-bold leading-tight text-[#0A0A0C] dark:text-[#F5F4F2] sm:text-[34px]`}>
-                    General Settings
+                    {t('generalTitle')}
                 </h2>
                 <p
                     className={`${body.className} mt-2 text-[14.5px] leading-relaxed text-[#6B6A65] dark:text-[#94938D]`}>
-                    Manage your venue's core identity, branding, and contact details.
+                    {t('generalDesc')}
                 </p>
             </div>
 
@@ -76,10 +79,10 @@ export function GeneralTab({ initialCurrency = 'USD' }: GeneralTabProps) {
                     </div>
                     <div>
                         <h3 className={`${display.className} text-[17px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                            Basic Information
+                            {t('basicInfo')}
                         </h3>
                         <p className={`${body.className} mt-1 text-[13.5px] text-[#6B6A65] dark:text-[#94938D]`}>
-                            The core details of your venue that guests will see.
+                            {t('basicInfoDesc')}
                         </p>
                     </div>
                 </div>
@@ -87,23 +90,23 @@ export function GeneralTab({ initialCurrency = 'USD' }: GeneralTabProps) {
                 <div className="flex flex-col gap-6 pl-0 sm:pl-[60px]">
                     <AuthInput
                         id="venue-name"
-                        label="Venue name"
-                        placeholder="e.g. Qore Cafe"
+                        label={t('venueNameLabel')}
+                        placeholder={t('venueNamePlaceholder')}
                         error={errors.name?.message}
                         {...register('name')}
                     />
                     <FormTextarea
                         id="venue-description"
-                        label="Description"
+                        label={t('descriptionLabel')}
                         rows={3}
-                        placeholder="Tell guests what makes your venue special..."
+                        placeholder={t('descriptionPlaceholder')}
                         error={errors.description?.message}
                         {...register('description')}
                     />
                     <FormSelect
                         id="venue-currency"
-                        label="Venue Currency"
-                        description="Default currency used across your menus, checkout, and Stripe payments."
+                        label={t('venueCurrency')}
+                        description={t('currencyRegionDesc')}
                         error={errors.currency?.message}
                         {...register('currency')}>
                         {SUPPORTED_CURRENCIES.map((c) => (
@@ -128,20 +131,13 @@ export function GeneralTab({ initialCurrency = 'USD' }: GeneralTabProps) {
                                         </div>
                                         <div className="space-y-1">
                                             <h4 className="text-sm font-bold text-amber-900 dark:text-amber-200">
-                                                Currency Change Notice
+                                                {t('currencyNoticeTitle')}
                                             </h4>
                                             <p className="text-xs leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
-                                                You are switching your venue currency from{' '}
-                                                <strong className="text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                                    {oldConfig.code} ({oldConfig.symbol})
-                                                </strong>{' '}
-                                                to{' '}
-                                                <strong className="text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                                    {newConfig.code} ({newConfig.symbol})
-                                                </strong>
-                                                . Existing menu items will keep their current numerical values (e.g.{' '}
-                                                {formatCurrencyPrice(10, oldConfig.code)} will become{' '}
-                                                {formatCurrencyPrice(10, newConfig.code)}) unless converted.
+                                                {t('currencyNoticeDesc', {
+                                                    from: `${oldConfig.code} (${oldConfig.symbol})`,
+                                                    to: `${newConfig.code} (${newConfig.symbol})`,
+                                                })}
                                             </p>
                                         </div>
                                     </div>
@@ -155,10 +151,10 @@ export function GeneralTab({ initialCurrency = 'USD' }: GeneralTabProps) {
                                             />
                                             <div className="flex flex-col">
                                                 <span className="text-xs font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                                    Recalculate existing menu item prices to {newConfig.code}
+                                                    {t('convertPricesCheckbox', { to: newConfig.code })}
                                                 </span>
                                                 <span className="text-[11px] text-[#6B6A65] dark:text-[#94938D]">
-                                                    Automatically scales dish prices, Happy Hour deals, and modifier options with an exchange rate.
+                                                    {t('convertPricesDesc')}
                                                 </span>
                                             </div>
                                         </label>
@@ -176,7 +172,7 @@ export function GeneralTab({ initialCurrency = 'USD' }: GeneralTabProps) {
                                                             <label
                                                                 htmlFor="conversionRateInput"
                                                                 className="text-xs font-medium text-[#6B6A65] dark:text-[#94938D]">
-                                                                Conversion rate (1 {oldConfig.code} = ? {newConfig.code}):
+                                                                {t('exchangeRateLabel', { from: oldConfig.code, to: newConfig.code })}
                                                             </label>
                                                             <div className="flex items-center gap-2">
                                                                 <span className="text-xs font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
@@ -199,7 +195,7 @@ export function GeneralTab({ initialCurrency = 'USD' }: GeneralTabProps) {
                                                         {/* Live calculation preview */}
                                                         <div className="flex items-center justify-between rounded-lg border border-black/5 bg-black/[0.02] px-3 py-2 text-xs dark:border-white/5 dark:bg-white/[0.02]">
                                                             <span className="text-[#6B6A65] dark:text-[#94938D]">
-                                                                Sample price preview:
+                                                                {t('previewLabel')}
                                                             </span>
                                                             <div className="flex items-center gap-2 font-semibold">
                                                                 <span className="text-[#6B6A65] line-through dark:text-[#94938D]">
@@ -225,10 +221,10 @@ export function GeneralTab({ initialCurrency = 'USD' }: GeneralTabProps) {
                     <div className="flex flex-col gap-2 rounded-2xl border border-black/5 bg-black/[0.02] p-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/5 dark:bg-white/[0.02]">
                         <div>
                             <span className="text-[13.5px] font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                Workspace & Menu Language
+                                {t('venueLanguage')}
                             </span>
                             <p className="text-[12px] text-[#6B6A65] dark:text-[#94938D]">
-                                Select the display language for this venue and guest views.
+                                {t('currencyRegionDesc')}
                             </p>
                         </div>
                         <LanguageSwitcher />
@@ -245,10 +241,10 @@ export function GeneralTab({ initialCurrency = 'USD' }: GeneralTabProps) {
                     </div>
                     <div>
                         <h3 className={`${display.className} text-[17px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                            Branding
+                            {t('brandVisuals')}
                         </h3>
                         <p className={`${body.className} mt-1 text-[13.5px] text-[#6B6A65] dark:text-[#94938D]`}>
-                            Upload your logo and cover image to make your menu stand out.
+                            {t('brandVisualsDesc')}
                         </p>
                     </div>
                 </div>
@@ -259,7 +255,7 @@ export function GeneralTab({ initialCurrency = 'USD' }: GeneralTabProps) {
                     <div className="flex shrink-0 flex-col">
                         <span
                             className={`${mono.className} mb-3 block text-[11px] uppercase tracking-widest text-[#6B6A65]/70 dark:text-[#94938D]/70`}>
-                            Venue Logo
+                            {t('logo')}
                         </span>
                         <ImageUpload
                             value={logoUrl}
@@ -279,7 +275,7 @@ export function GeneralTab({ initialCurrency = 'USD' }: GeneralTabProps) {
                     <div className="flex flex-1 flex-col">
                         <span
                             className={`${mono.className} mb-3 block text-[11px] uppercase tracking-widest text-[#6B6A65]/70 dark:text-[#94938D]/70`}>
-                            Cover Image
+                            {t('coverImage')}
                         </span>
                         <ImageUpload
                             value={coverUrl}
@@ -306,10 +302,10 @@ export function GeneralTab({ initialCurrency = 'USD' }: GeneralTabProps) {
                     </div>
                     <div>
                         <h3 className={`${display.className} text-[17px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                            Location & Contacts
+                            {t('locationContacts')}
                         </h3>
                         <p className={`${body.className} mt-1 text-[13.5px] text-[#6B6A65] dark:text-[#94938D]`}>
-                            How guests and suppliers can find and reach your venue.
+                            {t('locationContactsDesc')}
                         </p>
                     </div>
                 </div>
@@ -317,32 +313,32 @@ export function GeneralTab({ initialCurrency = 'USD' }: GeneralTabProps) {
                 <div className="grid grid-cols-1 gap-6 pl-0 sm:grid-cols-2 sm:pl-[60px]">
                     <AuthInput
                         id="phone"
-                        label="Phone"
+                        label={t('phone')}
                         type="tel"
-                        placeholder="+1 (555) 012-3456"
+                        placeholder={t('phonePlaceholder')}
                         error={errors.phone?.message}
                         {...register('phone')}
                     />
                     <AuthInput
                         id="address"
-                        label="Address"
-                        placeholder="123 Market Street, Downtown"
+                        label={t('address')}
+                        placeholder={t('addressPlaceholder')}
                         error={errors.address?.message}
                         {...register('address')}
                     />
                     <AuthInput
                         id="instagramUrl"
-                        label="Instagram URL"
+                        label={t('instagram')}
                         type="url"
-                        placeholder="https://instagram.com/yourvenue"
+                        placeholder={t('instagramPlaceholder')}
                         error={errors.instagramUrl?.message}
                         {...register('instagramUrl')}
                     />
                     <AuthInput
                         id="googleMapsUrl"
-                        label="Google Maps URL"
+                        label={t('maps')}
                         type="url"
-                        placeholder="https://maps.app.goo.gl/…"
+                        placeholder={t('mapsPlaceholder')}
                         error={errors.googleMapsUrl?.message}
                         {...register('googleMapsUrl')}
                     />
@@ -358,10 +354,10 @@ export function GeneralTab({ initialCurrency = 'USD' }: GeneralTabProps) {
                     </div>
                     <div>
                         <h3 className={`${display.className} text-[17px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                            Guest Services
+                            {t('wifi')}
                         </h3>
                         <p className={`${body.className} mt-1 text-[13.5px] text-[#6B6A65] dark:text-[#94938D]`}>
-                            Details provided to your guests while they are at the venue.
+                            {t('wifiDesc')}
                         </p>
                     </div>
                 </div>
@@ -369,16 +365,16 @@ export function GeneralTab({ initialCurrency = 'USD' }: GeneralTabProps) {
                 <div className="grid grid-cols-1 gap-6 pl-0 sm:grid-cols-2 sm:pl-[60px]">
                     <AuthInput
                         id="wifiSsid"
-                        label="Wi-Fi name (SSID)"
-                        placeholder="CafeBoard-Guest"
+                        label={t('wifiSsid')}
+                        placeholder={t('wifiSsidPlaceholder')}
                         error={errors.wifiSsid?.message}
                         {...register('wifiSsid')}
                     />
                     <AuthInput
                         id="wifiPassword"
-                        label="Wi-Fi password"
+                        label={t('wifiPassword')}
                         type="text"
-                        placeholder="Password123"
+                        placeholder={t('wifiPasswordPlaceholder')}
                         error={errors.wifiPassword?.message}
                         {...register('wifiPassword')}
                     />

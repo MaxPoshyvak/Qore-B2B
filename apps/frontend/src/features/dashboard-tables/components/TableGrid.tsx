@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Loader2, Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { type Table } from '@my-app/database';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
@@ -19,6 +20,7 @@ type TableGridProps = {
 };
 
 export function TableGrid({ slug, venueName }: TableGridProps) {
+    const t = useTranslations('tablesFloor');
     const { data: tables, isLoading } = useTables(slug);
     const updateTable = useUpdateTable(slug);
     const deleteTable = useDeleteTable(slug);
@@ -55,8 +57,8 @@ export function TableGrid({ slug, venueName }: TableGridProps) {
             <div className="mb-6 flex items-center justify-between">
                 <p className="text-sm text-[#6B6A65] dark:text-[#94938D]">
                     {tables && tables.length > 0
-                        ? `${tables.length} table${tables.length === 1 ? '' : 's'}`
-                        : 'Manage seating and guest QR codes'}
+                        ? t('tableCount', { count: tables.length })
+                        : t('manageSeating')}
                 </p>
                 {tables && tables.length > 0 && (
                     <button
@@ -64,7 +66,7 @@ export function TableGrid({ slug, venueName }: TableGridProps) {
                         onClick={openAdd}
                         className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#3B82F6]/20 transition-opacity hover:opacity-95">
                         <Plus size={16} strokeWidth={2.4} />
-                        Add table
+                        {t('addTable')}
                     </button>
                 )}
             </div>

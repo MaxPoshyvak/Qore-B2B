@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useScroll } from 'framer-motion';
 import { Menu, X, LayoutDashboard, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
 
 import { body } from '@/shared/lib/fonts';
 import { EASE } from '@/shared/config/animations';
@@ -16,6 +17,7 @@ import { MagneticButton } from '../ui/MagneticButton';
 import { BaseHeader } from '@/shared/ui/BaseHeader';
 
 export function Navbar({ theme, toggleTheme }: { theme: Theme; toggleTheme: () => void }) {
+    const t = useTranslations('landing');
     const { status } = useSession();
     const [hovered, setHovered] = useState<string | null>(null);
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -27,6 +29,13 @@ export function Navbar({ theme, toggleTheme }: { theme: Theme; toggleTheme: () =
 
     const isAuthenticated = status === 'authenticated';
 
+    const getNavLabel = (href: string, fallback: string) => {
+        if (href === '#features') return t('nav.features');
+        if (href === '#how') return t('nav.howItWorks');
+        if (href === '#pricing') return t('nav.pricing');
+        return fallback;
+    };
+
     const centerNav = (
         <nav className={`${body.className} flex items-center gap-7 text-[13.5px] text-[#6B6A65] dark:text-[#94938D]`}>
             {NAV_LINKS.map((l) => (
@@ -36,7 +45,7 @@ export function Navbar({ theme, toggleTheme }: { theme: Theme; toggleTheme: () =
                     onMouseEnter={() => setHovered(l.href)}
                     onMouseLeave={() => setHovered(null)}
                     className="relative py-1 transition-colors hover:text-[#0A0A0C] dark:hover:text-[#F5F4F2]">
-                    {l.label}
+                    {getNavLabel(l.href, l.label)}
                     {hovered === l.href && (
                         <motion.span
                             layoutId="nav-hover"
@@ -64,7 +73,7 @@ export function Navbar({ theme, toggleTheme }: { theme: Theme; toggleTheme: () =
                                 href={l.href}
                                 onClick={() => setMobileOpen(false)}
                                 className={`${body.className} rounded-xl px-2 py-2.5 text-[14.5px] text-[#6B6A65] hover:bg-[#0A0A0C]/5 hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:bg-white/5 dark:hover:text-[#F5F4F2]`}>
-                                {l.label}
+                                {getNavLabel(l.href, l.label)}
                             </Link>
                         ))}
 
@@ -80,13 +89,13 @@ export function Navbar({ theme, toggleTheme }: { theme: Theme; toggleTheme: () =
                                     onClick={() => setMobileOpen(false)}
                                     className={`${body.className} flex items-center gap-1.5 text-[14px] font-medium text-[#3B82F6]`}>
                                     <LayoutDashboard size={15} />
-                                    <span>Dashboard</span>
+                                    <span>{t('dashboard')}</span>
                                 </Link>
                             ) : (
                                 <Link
                                     href="/login"
                                     className={`${body.className} text-[14px] font-medium text-[#6B6A65] dark:text-[#94938D]`}>
-                                    Log in
+                                    {t('logIn')}
                                 </Link>
                             )}
                         </div>
@@ -97,7 +106,7 @@ export function Navbar({ theme, toggleTheme }: { theme: Theme; toggleTheme: () =
                             href="/register"
                             onClick={() => setMobileOpen(false)}
                             className={`${body.className} mt-3 flex cursor-pointer items-center justify-center rounded-full bg-[#0A0A0C] px-4 py-3 text-[14px] font-medium text-white dark:bg-[#F5F4F2] dark:text-[#0A0A0C]`}>
-                            Start for free
+                            {t('startForFree')}
                         </MagneticButton>
                     </div>
                 </motion.div>
@@ -115,7 +124,7 @@ export function Navbar({ theme, toggleTheme }: { theme: Theme; toggleTheme: () =
                     href="/dashboard"
                     className={`${body.className} hidden items-center gap-1.5 rounded-full border border-black/10 bg-black/5 px-3 py-1.5 text-[13px] font-medium text-[#0A0A0C] transition-all hover:bg-black/10 dark:border-white/15 dark:bg-white/10 dark:text-[#F5F4F2] dark:hover:bg-white/15 sm:inline-flex`}>
                     <LayoutDashboard size={14} className="text-[#3B82F6]" />
-                    <span>Dashboard</span>
+                    <span>{t('dashboard')}</span>
                 </Link>
             )}
 
@@ -123,7 +132,7 @@ export function Navbar({ theme, toggleTheme }: { theme: Theme; toggleTheme: () =
                 <Link
                     href="/login"
                     className={`${body.className} hidden text-[13.5px] text-[#6B6A65] hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:text-[#F5F4F2] lg:block`}>
-                    Log in
+                    {t('logIn')}
                 </Link>
             )}
 
@@ -132,7 +141,7 @@ export function Navbar({ theme, toggleTheme }: { theme: Theme; toggleTheme: () =
                 showSparks
                 href="/register"
                 className={`${body.className} hidden cursor-pointer rounded-full bg-[#0A0A0C] px-4 py-2 text-[13.5px] font-medium text-white transition-colors hover:bg-[#232327] dark:bg-[#F5F4F2] dark:text-[#0A0A0C] dark:hover:bg-white sm:inline-block`}>
-                Start for free
+                {t('startForFree')}
             </MagneticButton>
 
             <button

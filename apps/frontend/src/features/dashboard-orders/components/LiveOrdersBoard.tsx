@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, ChefHat, Check, CheckCircle2, Clock, ShoppingBag, ArrowLeft } from 'lucide-react';
 
 import { type OrderResponse, type OrderStatusType } from '@my-app/types';
+import { useTranslations } from 'next-intl';
 import { display, mono } from '@/shared/lib/fonts';
 import { cn } from '@/shared/lib/utils';
 import { useActiveOrders, useUpdateOrderStatus, useKdsOrders, useUpdateKdsOrderStatus } from '../hooks/useOrders';
@@ -77,13 +78,14 @@ function OrderCardView({
     onUpdate: (vars: { orderId: string; status: OrderStatusType }) => void;
     isUpdating: boolean;
 }) {
+    const t = useTranslations('liveOrders');
     const next = NEXT_STATUS[column];
     const prev = PREV_STATUS[column];
-    const actionLabel = ACTION_LABEL[column];
-    const deliverLabel = DELIVER_LABEL[column];
+    const actionLabel = column === 'new' ? t('startPreparing') : column === 'preparing' ? t('markAsReady') : undefined;
+    const deliverLabel = column === 'ready' ? t('markAsDelivered') : undefined;
 
     const guestName = order.items.find((i) => i.guestName)?.guestName ?? null;
-    const tableLabel = order.table?.name ? `Table: ${order.table.name}` : null;
+    const tableLabel = order.table?.name ? t('table', { name: order.table.name }) : null;
 
     return (
         <motion.div
@@ -102,7 +104,7 @@ function OrderCardView({
                     </span>
                     {order.isOrderAhead ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-[#8B5CF6]/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#8B5CF6] dark:text-[#C4B5FD]">
-                            <ShoppingBag size={10} /> Takeaway
+                            <ShoppingBag size={10} /> {t('takeaway')}
                         </span>
                     ) : (
                         tableLabel && (
@@ -119,7 +121,7 @@ function OrderCardView({
 
             {order.isOrderAhead && order.pickupAt && (
                 <div className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-[#F59E0B]/15 px-2 py-1 text-[11px] font-semibold text-[#B45309] dark:text-[#FBBF24]">
-                    <Clock size={11} /> Pick up at {formatPickupTime(order.pickupAt)}
+                    <Clock size={11} /> {t('pickupAt', { time: formatPickupTime(order.pickupAt) })}
                 </div>
             )}
 
@@ -134,7 +136,7 @@ function OrderCardView({
                             {item.quantity}×
                         </span>
                         <span className="text-[#0A0A0C] dark:text-[#F5F4F2]">
-                            {item.menuItem?.name ?? 'Unavailable item'}
+                            {item.menuItem?.name ?? t('unavailableItem')}
                         </span>
                     </li>
                 ))}
@@ -173,8 +175,8 @@ function OrderCardView({
                             type="button"
                             onClick={() => onUpdate({ orderId: order.id, status: prev })}
                             disabled={isUpdating}
-                            aria-label="Undo status change"
-                            title="Undo"
+                            aria-label={t('undo')}
+                            title={t('undo')}
                             className="ml-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-black/10 text-[#6B6A65] transition-all hover:border-[#3B82F6]/40 hover:text-[#3B82F6] disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/15 dark:text-[#94938D] dark:hover:text-[#60A5FA]">
                             <ArrowLeft size={18} />
                         </button>
@@ -222,6 +224,7 @@ export function LiveOrdersBoard({
     kdsToken?: string;
     isKds?: boolean;
 }) {
+    const t = useTranslations('liveOrders');
     const pin = useKdsStore((s) => s.pin);
 
     const dashboard = useActiveOrders(tenantId);
@@ -240,25 +243,27 @@ export function LiveOrdersBoard({
                     <AlertTriangle size={18} className="mt-0.5 shrink-0 text-[#F59E0B]" />
                     <p className="text-[13px] leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
                         <span className="font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                            ⚠️ Do not use this page on shared kitchen tablets.
+                            {t('kitchenWarningTitle')}
                         </span>{' '}
-                        Generate a secure KDS link in{' '}
+                        {t('kitchenWarningDesc', {
+                            link: '',
+                        }).replace('{link}', '')}
                         <Link
                             href={`/dashboard/${slug}/settings?section=kds`}
                             className="font-semibold text-[#3B82F6] underline-offset-2 hover:underline dark:text-[#60A5FA]">
-                            Settings
+                            {t('settingsLink')}
                         </Link>{' '}
-                        for your kitchen staff.
                     </p>
                 </div>
             )}
 
             {isLoading ? (
-                <p className="text-sm text-[#6B6A65] dark:text-[#94938D]">Loading live orders…</p>
+                <p className="text-sm text-[#6B6A65] dark:text-[#94938D]">{t('loading')}</p>
             ) : (
                 <div className="hide-scrollbar flex gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-3 md:overflow-visible">
                     {COLUMNS.map((col) => {
                         const items = byColumn(col.key);
+                        const columnLabel = t(`columns.${col.key}` as any);
                         return (
                             <section key={col.key} className="flex min-w-72 flex-1 flex-col">
                                 <div className="mb-3 flex items-center gap-2">
@@ -269,7 +274,7 @@ export function LiveOrdersBoard({
                                             'text-[15px] font-bold tracking-tight',
                                             col.accent,
                                         )}>
-                                        {col.label}
+                                        {columnLabel}
                                     </h2>
                                     <span className="ml-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-black/5 px-1.5 text-[11px] font-semibold tabular-nums text-[#6B6A65] dark:bg-white/10 dark:text-[#94938D]">
                                         {items.length}
@@ -284,7 +289,7 @@ export function LiveOrdersBoard({
                                     </AnimatePresence>
                                     {items.length === 0 && (
                                         <p className="rounded-2xl border border-dashed border-black/10 px-4 py-6 text-center text-[12.5px] text-[#9C9B95] dark:border-white/10 dark:text-[#6E6D68]">
-                                            No orders
+                                            {t('noOrders')}
                                         </p>
                                     )}
                                 </div>

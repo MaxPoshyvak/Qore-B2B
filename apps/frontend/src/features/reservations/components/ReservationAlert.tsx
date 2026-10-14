@@ -5,6 +5,7 @@ import { Info, Clock } from 'lucide-react';
 
 import { type ReservationResponse } from '@my-app/types';
 import { useTableUpcomingReservation } from '../hooks/useReservations';
+import { useTranslations } from 'next-intl';
 
 function formatTime(iso: string): string {
     const d = new Date(iso);
@@ -16,6 +17,7 @@ function formatTime(iso: string): string {
  * starting within the next 45 minutes. Non-blocking — the menu stays fully usable.
  */
 export function ReservationAlert({ slug, tableId }: { slug: string; tableId: string | null }) {
+    const t = useTranslations('publicMenu');
     const { data: upcoming } = useTableUpcomingReservation(slug, tableId);
     const reservation: ReservationResponse | null = upcoming ?? null;
 
@@ -32,9 +34,9 @@ export function ReservationAlert({ slug, tableId }: { slug: string; tableId: str
                         <Info size={18} className="mt-0.5 shrink-0 text-[#F59E0B]" />
                         <p className="text-[13px] leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
                             <span className="font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                Attention: This table is reserved for {formatTime(reservation.reservedAt)}.
+                                {t('attentionTableReserved', { time: formatTime(reservation.reservedAt) })}
                             </span>{' '}
-                            Please keep this in mind, or kindly move to a free table.
+                            {t('keepInMindMove')}
                         </p>
                     </div>
                 </motion.div>

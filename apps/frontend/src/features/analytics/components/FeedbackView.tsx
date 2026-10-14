@@ -16,6 +16,7 @@ import {
     ThumbsUp,
     Target,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { display, mono } from '@/shared/lib/fonts';
 import { EASE } from '@/shared/config/animations';
 import { MagneticButton } from '@/shared/ui/MagneticButton';
@@ -52,9 +53,9 @@ function formatDate(iso: string): string {
 }
 
 const SENTIMENT_CONFIG = {
-    positive: { icon: TrendingUp, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', label: 'Positive' },
-    mixed: { icon: AlertCircle, color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/30', label: 'Mixed' },
-    negative: { icon: TrendingDown, color: 'text-red-600 dark:text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/30', label: 'Negative' },
+    positive: { icon: TrendingUp, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30' },
+    mixed: { icon: AlertCircle, color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/30' },
+    negative: { icon: TrendingDown, color: 'text-red-600 dark:text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/30' },
 } as const;
 
 const TOPIC_SENTIMENT_STYLE = {
@@ -65,6 +66,8 @@ const TOPIC_SENTIMENT_STYLE = {
 
 /** AI Digest section — real data from backend */
 function AiDigestSection({ data, isLoading }: { data?: ReviewDigestResponse; isLoading: boolean }) {
+    const t = useTranslations('analytics');
+
     if (isLoading) {
         return (
             <motion.div
@@ -75,10 +78,10 @@ function AiDigestSection({ data, isLoading }: { data?: ReviewDigestResponse; isL
                 <div className="mb-3 flex items-center gap-2">
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-[#8B5CF6]/15 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-[#8B5CF6]">
                         <Sparkles size={11} />
-                        AI Pro
+                        {t('aiPro')}
                     </span>
                     <h3 className={`${display.className} text-[20px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                        AI Sentiment Analysis
+                        {t('aiSentimentTitle')}
                     </h3>
                 </div>
                 <div className="space-y-3">
@@ -104,10 +107,10 @@ function AiDigestSection({ data, isLoading }: { data?: ReviewDigestResponse; isL
                 <div className="mb-3 flex items-center gap-2">
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-[#8B5CF6]/15 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-[#8B5CF6]">
                         <Sparkles size={11} />
-                        AI Pro
+                        {t('aiPro')}
                     </span>
                     <h3 className={`${display.className} text-[20px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                        AI Sentiment Analysis
+                        {t('aiSentimentTitle')}
                     </h3>
                 </div>
                 <div className="flex flex-col items-center gap-3 py-6 text-center">
@@ -115,12 +118,10 @@ function AiDigestSection({ data, isLoading }: { data?: ReviewDigestResponse; isL
                         <MessageSquareHeart size={20} strokeWidth={1.9} />
                     </span>
                     <p className="max-w-sm text-[13.5px] leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
-                        Not enough text reviews to generate an AI digest yet. You need at least{' '}
-                        <span className="font-medium text-[#0A0A0C] dark:text-[#F5F4F2]">3 reviews with comments</span>{' '}
-                        to unlock insights.
+                        {t('notEnoughReviewsDesc')}
                     </p>
                     <p className={`${mono.className} text-[11px] uppercase tracking-wider text-[#9C9B95]`}>
-                        {data?.reviewCount ?? 0} of 3 reviews collected
+                        {t('reviewsCollected', { count: data?.reviewCount ?? 0 })}
                     </p>
                 </div>
             </motion.div>
@@ -132,6 +133,13 @@ function AiDigestSection({ data, isLoading }: { data?: ReviewDigestResponse; isL
 
     const sentimentCfg = SENTIMENT_CONFIG[digest.overallSentiment];
     const SentimentIcon = sentimentCfg.icon;
+    const sentimentLabel = t(
+        digest.overallSentiment === 'positive'
+            ? 'sentimentPositive'
+            : digest.overallSentiment === 'mixed'
+              ? 'sentimentMixed'
+              : 'sentimentNegative'
+    );
 
     return (
         <motion.div
@@ -144,17 +152,17 @@ function AiDigestSection({ data, isLoading }: { data?: ReviewDigestResponse; isL
                 <div className="flex items-center gap-2">
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-[#8B5CF6]/15 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-[#8B5CF6]">
                         <Sparkles size={11} />
-                        AI Pro
+                        {t('aiPro')}
                     </span>
                     <h3 className={`${display.className} text-[20px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                        AI Sentiment Analysis
+                        {t('aiSentimentTitle')}
                     </h3>
                 </div>
                 <div className="flex items-center gap-3">
                     {/* Sentiment badge */}
                     <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${sentimentCfg.bg} ${sentimentCfg.border} ${sentimentCfg.color}`}>
                         <SentimentIcon size={13} />
-                        {sentimentCfg.label}
+                        {sentimentLabel}
                     </span>
                     {/* Score */}
                     <span className={`${display.className} text-2xl font-bold tabular-nums text-[#0A0A0C] dark:text-[#F5F4F2]`}>
@@ -186,7 +194,7 @@ function AiDigestSection({ data, isLoading }: { data?: ReviewDigestResponse; isL
                     <div className="mb-2.5 flex items-center gap-1.5">
                         <ThumbsUp size={14} className="text-emerald-600 dark:text-emerald-400" />
                         <span className={`${mono.className} text-[10.5px] uppercase tracking-wider text-emerald-700 dark:text-emerald-400`}>
-                            Strengths
+                            {t('strengths')}
                         </span>
                     </div>
                     <ul className="space-y-1.5">
@@ -203,7 +211,7 @@ function AiDigestSection({ data, isLoading }: { data?: ReviewDigestResponse; isL
                     <div className="mb-2.5 flex items-center gap-1.5">
                         <Target size={14} className="text-amber-600 dark:text-amber-400" />
                         <span className={`${mono.className} text-[10.5px] uppercase tracking-wider text-amber-700 dark:text-amber-400`}>
-                            Areas to Improve
+                            {t('areasToImprove')}
                         </span>
                     </div>
                     <ul className="space-y-1.5">
@@ -221,7 +229,7 @@ function AiDigestSection({ data, isLoading }: { data?: ReviewDigestResponse; isL
                 <Lightbulb size={16} className="mt-0.5 shrink-0 text-[#3B82F6]" />
                 <div>
                     <span className={`${mono.className} text-[10.5px] uppercase tracking-wider text-[#3B82F6]`}>
-                        Actionable Tip
+                        {t('actionableTip')}
                     </span>
                     <p className="mt-1 text-[13px] leading-snug text-[#6B6A65] dark:text-[#94938D]">
                         {digest.actionableTip}
@@ -232,14 +240,14 @@ function AiDigestSection({ data, isLoading }: { data?: ReviewDigestResponse; isL
             {/* Meta */}
             <div className="mt-4 flex flex-wrap items-center gap-4">
                 <span className={`${mono.className} text-[10.5px] uppercase tracking-wider text-[#9C9B95]`}>
-                    Based on {data.reviewCount} reviews
+                    {t('basedOnReviews', { count: data.reviewCount })}
                 </span>
                 <span className={`${mono.className} text-[10.5px] uppercase tracking-wider text-[#9C9B95]`}>
-                    Avg. rating: {data.averageRating.toFixed(1)}/5
+                    {t('avgRating', { rating: data.averageRating.toFixed(1) })}
                 </span>
                 {data.analyzedAt && (
                     <span className={`${mono.className} text-[10.5px] uppercase tracking-wider text-[#9C9B95]`}>
-                        Analyzed {formatDate(data.analyzedAt)}
+                        {t('analyzedAt', { date: formatDate(data.analyzedAt) })}
                     </span>
                 )}
             </div>
@@ -249,6 +257,7 @@ function AiDigestSection({ data, isLoading }: { data?: ReviewDigestResponse; isL
 
 /** Pro teaser — lock overlay for free-tier users */
 function ProTeaser({ slug }: { slug: string }) {
+    const t = useTranslations('analytics');
     return (
         <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -258,10 +267,10 @@ function ProTeaser({ slug }: { slug: string }) {
             <div className="mb-3 flex items-center gap-2">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-[#8B5CF6]/15 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-widest text-[#8B5CF6]">
                     <Sparkles size={11} />
-                    AI Pro
+                    {t('aiPro')}
                 </span>
                 <h3 className={`${display.className} text-[20px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                    AI Sentiment Analysis
+                    {t('aiSentimentTitle')}
                 </h3>
             </div>
 
@@ -292,7 +301,7 @@ function ProTeaser({ slug }: { slug: string }) {
                     href={`/dashboard/${slug}/settings?section=billing`}
                     className={`${display.className} flex items-center gap-2 rounded-full bg-[#8B5CF6] px-6 py-3.5 text-[14px] font-medium text-white shadow-lg shadow-[#8B5CF6]/30 transition-colors hover:bg-[#A78BFA]`}>
                     <Sparkles size={15} />
-                    Unlock AI Analytics with Pro
+                    {t('unlockAiAnalytics')}
                 </MagneticButton>
             </div>
         </motion.div>
@@ -300,6 +309,7 @@ function ProTeaser({ slug }: { slug: string }) {
 }
 
 export function FeedbackView({ tenantId, slug, subscriptionPlan }: { tenantId: string; slug: string; subscriptionPlan?: string }) {
+    const t = useTranslations('analytics');
     const isPro = subscriptionPlan === 'pro' || subscriptionPlan === 'business';
     const { data: feedbacks, isLoading } = useDashboardFeedbacks(tenantId);
     const approveMutation = useApproveFeedback(tenantId);
@@ -308,9 +318,9 @@ export function FeedbackView({ tenantId, slug, subscriptionPlan }: { tenantId: s
     const handleApprove = async (feedbackId: string) => {
         try {
             await approveMutation.mutateAsync(feedbackId);
-            toast.success('Review approved and published');
+            toast.success(t('reviewApprovedToast'));
         } catch (error) {
-            toast.error(error instanceof Error ? error.message : 'Failed to approve review');
+            toast.error(error instanceof Error ? error.message : t('failedToApproveToast'));
         }
     };
 
@@ -336,10 +346,10 @@ export function FeedbackView({ tenantId, slug, subscriptionPlan }: { tenantId: s
                     <div>
                         <p
                             className={`${mono.className} text-[10.5px] uppercase tracking-wider text-[#6B6A65]/70 dark:text-[#94938D]/70`}>
-                            Recent
+                            {t('recent')}
                         </p>
                         <h3 className={`${display.className} text-[18px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                            Customer Ratings
+                            {t('customerRatings')}
                         </h3>
                     </div>
                 </div>
@@ -348,7 +358,7 @@ export function FeedbackView({ tenantId, slug, subscriptionPlan }: { tenantId: s
                     <div className="h-32 animate-pulse rounded-2xl bg-black/5 dark:bg-white/5" />
                 ) : !feedbacks || feedbacks.length === 0 ? (
                     <p className="text-[13.5px] text-[#6B6A65] dark:text-[#94938D]">
-                        No reviews yet. Share your QR code to start collecting feedback.
+                        {t('noReviewsYet')}
                     </p>
                 ) : (
                     <ul className="space-y-3">
@@ -365,17 +375,16 @@ export function FeedbackView({ tenantId, slug, subscriptionPlan }: { tenantId: s
                                     <div className="flex flex-wrap items-center justify-between gap-2">
                                         <div className="flex items-center gap-2">
                                             <span className="text-[14px] font-medium text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                                {review.guestName ?? 'Anonymous'}
+                                                {review.guestName ?? t('anonymous')}
                                             </span>
 
                                             {/* Перевірено через замовлення */}
                                             {review.order && (
                                                 <span className="inline-flex items-center gap-1 rounded-full border border-[#04916C]/30 bg-[#04916C]/10 px-2 py-0.5 text-[10.5px] font-medium text-[#04916C] dark:text-[#10B981]">
                                                     <BadgeCheck size={12} />
-                                                    Verified Order:{' '}
-                                                    <span className={`${display.className} tabular-nums`}>
-                                                        ${review.order.totalAmount.toFixed(2)}
-                                                    </span>
+                                                    {t('verifiedOrder', {
+                                                        amount: `$${review.order.totalAmount.toFixed(2)}`,
+                                                    })}
                                                 </span>
                                             )}
 
@@ -383,7 +392,7 @@ export function FeedbackView({ tenantId, slug, subscriptionPlan }: { tenantId: s
                                             {isFlagged && (
                                                 <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-400/15 px-2 py-0.5 text-[10.5px] font-medium text-amber-600 dark:text-amber-400">
                                                     <ShieldAlert size={12} />
-                                                    Flagged
+                                                    {t('flagged')}
                                                 </span>
                                             )}
                                         </div>
@@ -411,7 +420,7 @@ export function FeedbackView({ tenantId, slug, subscriptionPlan }: { tenantId: s
                                             disabled={approveMutation.isPending}
                                             className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#0A0A0C] px-4 py-2 text-[12.5px] font-medium text-white shadow-sm transition-colors hover:bg-[#232327] disabled:opacity-60 dark:bg-[#F5F4F2] dark:text-[#0A0A0C] dark:hover:bg-white">
                                             <Check size={14} />
-                                            Approve Review
+                                            {t('approveReview')}
                                         </button>
                                     )}
                                 </li>

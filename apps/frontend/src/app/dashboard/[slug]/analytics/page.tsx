@@ -11,12 +11,13 @@ import { cn } from '@/shared/lib/utils';
 import { useGetTenantBySlug } from '@/entities/tenant/hooks/useTenants';
 import { Eyebrow } from '@/shared/ui/Eyebrow';
 import { FeedbackView, GuestsView, OverviewView, SalesView } from '@/features/analytics';
+import { useTranslations } from 'next-intl';
 
 const TABS = [
-    { value: 'overview', label: 'Overview', icon: LayoutDashboard },
-    { value: 'sales', label: 'Sales & Menu', icon: ShoppingBag },
-    { value: 'guests', label: 'Guests & Traffic', icon: Users },
-    { value: 'feedback', label: 'Feedback & AI', icon: MessageSquareHeart },
+    { value: 'overview', labelKey: 'overview', icon: LayoutDashboard },
+    { value: 'sales', labelKey: 'sales', icon: ShoppingBag },
+    { value: 'guests', labelKey: 'guests', icon: Users },
+    { value: 'feedback', labelKey: 'feedback', icon: MessageSquareHeart },
 ] as const;
 
 type TabValue = (typeof TABS)[number]['value'];
@@ -26,6 +27,8 @@ function isTabValue(value: string | null): value is TabValue {
 }
 
 export default function AnalyticsPage() {
+    const tSidebar = useTranslations('dashboard.sidebar');
+    const tAnalytics = useTranslations('dashboard.analytics');
     const { slug } = useParams<{ slug: string }>();
     const resolvedSlug = slug ?? '';
     const router = useRouter();
@@ -57,7 +60,7 @@ export default function AnalyticsPage() {
                 transition={{ duration: 0.5, ease: EASE }}
                 className="flex flex-wrap items-end justify-between gap-4">
                 <div>
-                    <Eyebrow>Analytics</Eyebrow>
+                    <Eyebrow>{tAnalytics('title')}</Eyebrow>
                     <h1
                         className={`${display.className} mt-3 text-3xl font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2] sm:text-4xl`}>
                         Venue{' '}
@@ -66,21 +69,21 @@ export default function AnalyticsPage() {
                         </span>
                     </h1>
                     <p className="mt-2 max-w-xl text-sm leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
-                        Track revenue, best-selling dishes, and how your guests choose to order.
+                        {tAnalytics('subtitle')}
                     </p>
                 </div>
             </motion.header>
 
             {/* Top tab navigation */}
             <div className="hide-scrollbar md:hidden -mx-1 mt-8 flex gap-2 overflow-x-auto px-1">
-                {TABS.map((t) => {
-                    const active = tab === t.value;
-                    const Icon = t.icon;
+                {TABS.map((tTab) => {
+                    const active = tab === tTab.value;
+                    const Icon = tTab.icon;
                     return (
                         <button
-                            key={t.value}
+                            key={tTab.value}
                             type="button"
-                            onClick={() => changeTab(t.value)}
+                            onClick={() => changeTab(tTab.value)}
                             className={cn(
                                 'flex shrink-0 items-center gap-2 rounded-2xl border px-4 py-2.5 text-[14px] font-medium transition-colors',
                                 active
@@ -88,7 +91,7 @@ export default function AnalyticsPage() {
                                     : 'border-[#E7E5E0] bg-white/60 text-[#6B6A65] hover:border-[#3B82F6]/40 dark:border-white/10 dark:bg-white/5 dark:text-[#94938D]',
                             )}>
                             <Icon size={16} strokeWidth={1.9} />
-                            {t.label}
+                            {tSidebar(tTab.labelKey)}
                         </button>
                     );
                 })}

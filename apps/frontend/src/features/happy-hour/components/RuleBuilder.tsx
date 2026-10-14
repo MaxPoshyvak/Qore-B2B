@@ -1,6 +1,7 @@
 'use client';
 
 import { Layers, Plus, Trash2, UtensilsCrossed } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import type { MenuCategoryWithItemsResponse } from '@my-app/types';
 
@@ -28,6 +29,7 @@ const nextUid = () => `grp_${Date.now().toString(36)}_${(uidCounter++).toString(
  * Конструктор вибору категорій та страв для Happy Hour — оптимізований для мобільних та ПК.
  */
 export function RuleBuilder({ scope, onScopeChange, groups, onGroupsChange, categories }: RuleBuilderProps) {
+    const t = useTranslations('happyHour');
     const { availableCategories, itemsForGroup } = useRuleBuilder(groups, categories);
 
     function addGroup() {
@@ -69,7 +71,7 @@ export function RuleBuilder({ scope, onScopeChange, groups, onGroupsChange, cate
             {/* === SCOPE TOGGLE === */}
             <div
                 role="radiogroup"
-                aria-label="Apply rule to"
+                aria-label={t('pickCategoriesDishes')}
                 className="grid grid-cols-1 gap-2 rounded-2xl border border-[#E7E5E0] bg-black/[0.02] p-1.5 dark:border-[#232327] dark:bg-white/[0.02] sm:grid-cols-2">
                 <ScopeButton
                     active={scope === 'ENTIRE_MENU'}
@@ -78,8 +80,8 @@ export function RuleBuilder({ scope, onScopeChange, groups, onGroupsChange, cate
                         onGroupsChange([]);
                     }}
                     icon={<Layers size={15} />}
-                    label="Entire menu"
-                    description="All categories & items"
+                    label={t('entireMenu')}
+                    description={t('allCategoriesItems')}
                 />
                 <ScopeButton
                     active={scope === 'SPECIFIC'}
@@ -88,8 +90,8 @@ export function RuleBuilder({ scope, onScopeChange, groups, onGroupsChange, cate
                         if (groups.length === 0) addGroup();
                     }}
                     icon={<UtensilsCrossed size={15} />}
-                    label="Specific items"
-                    description="Pick categories & dishes"
+                    label={t('specificItems')}
+                    description={t('pickCategoriesDishes')}
                 />
             </div>
 
@@ -120,7 +122,7 @@ export function RuleBuilder({ scope, onScopeChange, groups, onGroupsChange, cate
                                         <button
                                             type="button"
                                             onClick={() => removeGroup(group.uid)}
-                                            aria-label="Remove category group"
+                                            aria-label={t('removeGroup')}
                                             className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-[#E7E5E0] text-[#6B6A65] transition-colors hover:border-red-400 hover:text-red-500 dark:border-[#232327] dark:text-[#94938D]">
                                             <Trash2 size={12} />
                                         </button>
@@ -135,6 +137,7 @@ export function RuleBuilder({ scope, onScopeChange, groups, onGroupsChange, cate
                                     <CategoryDropdown
                                         value={group.categoryId}
                                         options={options}
+                                        placeholder={t('selectCategory')}
                                         onChange={(categoryId) => updateGroup(group.uid, { categoryId, itemIds: [] })}
                                     />
                                 </div>
@@ -144,13 +147,12 @@ export function RuleBuilder({ scope, onScopeChange, groups, onGroupsChange, cate
                                     <div className="space-y-2">
                                         <div className="flex flex-wrap items-center justify-between gap-2">
                                             <span className="text-xs font-medium text-[#6B6A65] dark:text-[#94938D]">
-                                                Items{' '}
-                                                <span className="font-normal text-[#94938D]">
-                                                    ·{' '}
-                                                    {group.itemIds.length === 0
-                                                        ? `All ${selectedCategory?.name ?? ''} items`
-                                                        : `${group.itemIds.length} of ${items.length} selected`}
-                                                </span>
+                                                {group.itemIds.length === 0
+                                                    ? t('allItemsInCategory', { count: items.length })
+                                                    : t('customItemsSelected', {
+                                                          count: group.itemIds.length,
+                                                          total: items.length,
+                                                      })}
                                             </span>
                                             <div className="flex items-center gap-2">
                                                 {group.itemIds.length > 0 && (
@@ -158,7 +160,7 @@ export function RuleBuilder({ scope, onScopeChange, groups, onGroupsChange, cate
                                                         type="button"
                                                         onClick={() => clearItems(group.uid)}
                                                         className="text-[11px] font-medium text-[#6B6A65] underline-offset-2 hover:underline dark:text-[#94938D]">
-                                                        Reset
+                                                        {t('clear')}
                                                     </button>
                                                 )}
                                                 {items.length > 0 && group.itemIds.length !== items.length && (
@@ -166,7 +168,7 @@ export function RuleBuilder({ scope, onScopeChange, groups, onGroupsChange, cate
                                                         type="button"
                                                         onClick={() => selectAllItems(group.uid)}
                                                         className="text-[11px] font-medium text-[#2563EB] underline-offset-2 hover:underline dark:text-[#60A5FA]">
-                                                        Select all
+                                                        {t('selectAll')}
                                                     </button>
                                                 )}
                                             </div>
@@ -217,7 +219,7 @@ export function RuleBuilder({ scope, onScopeChange, groups, onGroupsChange, cate
                         disabled={availableCategories('__new__').length === 0}
                         className="w-full justify-center">
                         <Plus size={14} strokeWidth={2.4} className="mr-1.5" />
-                        Add another category
+                        {t('addCategoryGroup')}
                     </SecondaryButton>
                 </div>
             )}
@@ -262,10 +264,12 @@ function ScopeButton({
 function CategoryDropdown({
     value,
     options,
+    placeholder = 'Select a category…',
     onChange,
 }: {
     value: string;
     options: MenuCategoryWithItemsResponse[];
+    placeholder?: string;
     onChange: (id: string) => void;
 }) {
     const selected = options.find((o) => o.id === value);
@@ -277,7 +281,7 @@ function CategoryDropdown({
                 onChange={(e) => onChange(e.target.value)}
                 className="h-10 w-full appearance-none rounded-xl border border-[#E7E5E0] bg-white px-3 pr-9 text-xs text-[#0A0A0C] outline-none transition-colors hover:border-black/20 focus-visible:border-[#3B82F6]/60 focus-visible:ring-2 focus-visible:ring-[#3B82F6]/15 disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#232327] dark:bg-[#141417] dark:text-[#F5F4F2] sm:text-sm">
                 <option value="" disabled>
-                    {options.length === 0 ? 'No categories available' : 'Select a category…'}
+                    {options.length === 0 ? 'No categories available' : placeholder}
                 </option>
                 {options.map((option) => (
                     <option key={option.id} value={option.id}>

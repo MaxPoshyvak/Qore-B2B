@@ -10,6 +10,7 @@ import { cn, formatPrice } from '@/shared/lib/utils';
 import { toStringArray } from '@/shared/lib/menu-attributes';
 import { ToggleSwitch } from '@/shared/ui/ToggleSwitch';
 import { useToggleMenuItem } from '@/entities/menu/hooks/useMenuItems';
+import { useTranslations } from 'next-intl';
 
 type MenuItemCardProps = {
     item: MenuItemResponse;
@@ -19,6 +20,7 @@ type MenuItemCardProps = {
 };
 
 export function MenuItemCard({ item, currency, onEdit, onDelete }: MenuItemCardProps) {
+    const t = useTranslations('menuManagement');
     const toggleItem = useToggleMenuItem();
     const allergens = toStringArray(item.allergens);
     const tags = toStringArray(item.tags);
@@ -62,7 +64,7 @@ export function MenuItemCard({ item, currency, onEdit, onDelete }: MenuItemCardP
                             <UtensilsCrossed size={17} className="text-[#3B82F6] dark:text-[#8B5CF6]" />
                         </div>
                         <span className="relative mt-1.5 text-[10px] font-medium text-[#6B6A65]/80 dark:text-[#94938D]/80">
-                            No image
+                            {t('noImage')}
                         </span>
                     </div>
                 )}
@@ -75,12 +77,12 @@ export function MenuItemCard({ item, currency, onEdit, onDelete }: MenuItemCardP
                                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
                             </span>
-                            Live
+                            {t('liveBadge')}
                         </span>
                     ) : (
                         <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white/70 backdrop-blur-md shadow-xs">
                             <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
-                            Hidden
+                            {t('hiddenBadge')}
                         </span>
                     )}
 
@@ -142,7 +144,7 @@ export function MenuItemCard({ item, currency, onEdit, onDelete }: MenuItemCardP
 
                 {/* Description */}
                 <p className="mt-1.5 line-clamp-2 min-h-[32px] text-xs leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
-                    {item.description || 'No description provided.'}
+                    {item.description || t('noDescription')}
                 </p>
 
                 {/* Footer metadata: Dietary Tags, Modifiers, Allergens */}
@@ -163,7 +165,7 @@ export function MenuItemCard({ item, currency, onEdit, onDelete }: MenuItemCardP
                     {modifierCount > 0 && (
                         <span className="inline-flex items-center gap-1 rounded-md border border-[#3B82F6]/20 bg-[#3B82F6]/5 px-1.5 py-0.5 text-[10px] font-medium text-[#2563EB] dark:border-[#3B82F6]/30 dark:bg-[#3B82F6]/10 dark:text-[#60A5FA]">
                             <SlidersHorizontal size={9.5} />
-                            {modifierCount} {modifierCount === 1 ? 'group' : 'groups'}
+                            {t('modifierGroupsCount', { count: modifierCount })}
                         </span>
                     )}
 
@@ -178,7 +180,7 @@ export function MenuItemCard({ item, currency, onEdit, onDelete }: MenuItemCardP
 
                     {tags.length === 0 && modifierCount === 0 && allergens.length === 0 && (
                         <span className="text-[10px] text-[#A8A6A0] dark:text-[#5A5A56]">
-                            Standard item
+                            {t('standardItem')}
                         </span>
                     )}
                 </div>

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Check, ChevronDown, Clock, Copy, MapPin, Phone, Wifi } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { PublicTenantResponse } from '@my-app/types';
 
 import { EASE } from '@/shared/config/animations';
@@ -50,6 +51,7 @@ type VenueActionGridProps = {
 };
 
 export function VenueActionGrid({ tenant, mapsUrl }: VenueActionGridProps) {
+    const t = useTranslations('venue');
     const { copied, copy } = useCopyToClipboard();
     const { settings } = tenant;
 
@@ -73,7 +75,7 @@ export function VenueActionGrid({ tenant, mapsUrl }: VenueActionGridProps) {
                             <div className="min-w-0 flex-1">
                                 <h3
                                     className={`${body.className} text-[15px] font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                                    Guest Wi-Fi
+                                    {t('guestWifi')}
                                 </h3>
                                 <p className="mt-0.5 truncate text-[13px] text-[#6B6A65] dark:text-[#94938D]">
                                     {settings?.wifiSsid}
@@ -86,7 +88,7 @@ export function VenueActionGrid({ tenant, mapsUrl }: VenueActionGridProps) {
                                 onClick={() => copy(settings?.wifiPassword ?? '')}
                                 className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#3B82F6]/25 bg-[#3B82F6]/10 px-4 py-3 text-[13px] font-medium text-[#2563EB] transition-all hover:-translate-y-0.5 hover:border-[#3B82F6]/40 hover:bg-[#3B82F6]/15 dark:text-[#60A5FA]">
                                 {copied ? <Check size={15} /> : <Copy size={15} />}
-                                {copied ? 'Password copied!' : 'Copy Password'}
+                                {copied ? t('passwordCopied') : t('copyPassword')}
                             </button>
                         </div>
                     </GlowCard>
@@ -109,10 +111,10 @@ export function VenueActionGrid({ tenant, mapsUrl }: VenueActionGridProps) {
                         <div className="min-w-0 flex-1">
                             <h3
                                 className={`${body.className} text-[15px] font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                                Location & Contacts
+                                {t('locationContacts')}
                             </h3>
                             <p className="mt-0.5 text-[13px] text-[#6B6A65] dark:text-[#94938D]">
-                                {settings?.address ?? 'Address not set'}
+                                {settings?.address ?? t('addressNotSet')}
                             </p>
                             {phone && (
                                 <p className="mt-1 flex items-center gap-1.5 text-[13px] font-medium text-[#0A0A0C] dark:text-[#F5F4F2]">
@@ -129,7 +131,7 @@ export function VenueActionGrid({ tenant, mapsUrl }: VenueActionGridProps) {
                             rel="noopener noreferrer"
                             className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl border border-[#8B5CF6]/25 bg-[#8B5CF6]/10 px-4 py-3 text-[13px] font-medium text-[#7C3AED] transition-all hover:-translate-y-0.5 hover:border-[#8B5CF6]/40 hover:bg-[#8B5CF6]/15 dark:text-[#A78BFA]">
                             <MapPin size={15} />
-                            Get Directions
+                            {t('getDirections')}
                         </a>
 
                         <div className="flex gap-1.5">
@@ -138,7 +140,7 @@ export function VenueActionGrid({ tenant, mapsUrl }: VenueActionGridProps) {
                                     href={`tel:${phone.replace(/\s+/g, '')}`}
                                     className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl border border-black/10 bg-black/5 px-4 py-3 text-[13px] font-medium text-[#0A0A0C] transition-all hover:-translate-y-0.5 hover:border-black/20 dark:border-white/10 dark:bg-white/5 dark:text-[#F5F4F2] dark:hover:border-white/20 sm:flex-none">
                                     <Phone size={15} />
-                                    Call
+                                    {t('call')}
                                 </a>
                             )}
                             {instagramUrl && (
@@ -181,8 +183,7 @@ export function VenueActionGrid({ tenant, mapsUrl }: VenueActionGridProps) {
     );
 }
 
-// Компонент WorkingHoursCard і функція formatToday залишаються без змін
-// (в оригінальному коді вони вже мають гарну анімацію та логіку)
+// Компонент WorkingHoursCard і функція formatToday
 function WorkingHoursCard({
     schedule,
     todayLabel,
@@ -190,6 +191,7 @@ function WorkingHoursCard({
     schedule: ReturnType<typeof parseWorkingHours>;
     todayLabel: string | null;
 }) {
+    const t = useTranslations('venue');
     const [open, setOpen] = useState(false);
 
     if (!schedule) {
@@ -198,9 +200,9 @@ function WorkingHoursCard({
                 <CardIcon icon={<Clock size={20} strokeWidth={1.9} />} glow="16,185,129" />
                 <div>
                     <h3 className={`${body.className} text-[15px] font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                        Working Hours
+                        {t('workingHours')}
                     </h3>
-                    <p className="mt-0.5 text-[13px] text-[#6B6A65] dark:text-[#94938D]">Not set</p>
+                    <p className="mt-0.5 text-[13px] text-[#6B6A65] dark:text-[#94938D]">{t('notSet')}</p>
                 </div>
             </div>
         );
@@ -219,10 +221,10 @@ function WorkingHoursCard({
                     <div>
                         <h3
                             className={`${body.className} text-[15px] font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                            Working Hours
+                            {t('workingHours')}
                         </h3>
                         <p className="mt-0.5 text-[13px] text-[#6B6A65] dark:text-[#94938D]">
-                            {todayLabel ? `Today: ${formatToday(schedule)}` : 'Tap to view schedule'}
+                            {todayLabel ? t('today', { hours: formatToday(schedule, t('closed')) }) : t('tapToViewSchedule')}
                         </p>
                     </div>
                 </div>
@@ -248,7 +250,7 @@ function WorkingHoursCard({
                                                 ? 'font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]'
                                                 : 'text-[#6B6A65] dark:text-[#94938D]'
                                         }`}>
-                                        {day.label}
+                                        {t(`days.${day.key}` as any)}
                                     </span>
                                     <span
                                         className={`${mono.className} text-[12px] tabular-nums ${
@@ -256,7 +258,7 @@ function WorkingHoursCard({
                                         }`}>
                                         {day.isOpen && day.openTime && day.closeTime
                                             ? `${day.openTime} – ${day.closeTime}`
-                                            : 'Closed'}
+                                            : t('closed')}
                                     </span>
                                 </li>
                             ))}
@@ -268,8 +270,8 @@ function WorkingHoursCard({
     );
 }
 
-function formatToday(schedule: NonNullable<ReturnType<typeof parseWorkingHours>>): string {
+function formatToday(schedule: NonNullable<ReturnType<typeof parseWorkingHours>>, closedLabel: string): string {
     const today = Object.values(schedule).find((d) => d.isToday);
-    if (!today) return 'Closed';
-    return today.isOpen && today.openTime && today.closeTime ? `${today.openTime} – ${today.closeTime}` : 'Closed';
+    if (!today) return closedLabel;
+    return today.isOpen && today.openTime && today.closeTime ? `${today.openTime} – ${today.closeTime}` : closedLabel;
 }

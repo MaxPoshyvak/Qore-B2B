@@ -11,6 +11,8 @@ import { PublicMenuItem } from './PublicMenuItem';
 import { pickBestDiscount, type ActiveHappyHourRule } from '../hooks/usePublicHappyHour';
 import { useCartStore } from '../store/useCartStore';
 
+import { formatPrice } from '@/shared/lib/utils';
+
 type PublicMenuListProps = {
     categories: PublicMenuResponseDTO['categories'];
     tableId: string | null;
@@ -31,11 +33,11 @@ const listItem = {
 };
 
 /** Форматує бейдж знижки Happy Hour у людський вигляд. */
-function formatDiscountBadge(discount: ReturnType<typeof pickBestDiscount>): string | undefined {
+function formatDiscountBadge(discount: ReturnType<typeof pickBestDiscount>, currency = 'USD'): string | undefined {
     if (!discount) return undefined;
     return discount.rule.discountType === 'PERCENTAGE'
         ? `-${discount.rule.discountValue}%`
-        : `-$${discount.rule.discountValue}`;
+        : `-${formatPrice(discount.rule.discountValue, currency)}`;
 }
 
 export function PublicMenuList({
@@ -47,6 +49,7 @@ export function PublicMenuList({
     // Single source of truth in useCartStore so CartBanner knows when a dish modal is open.
     const selectedItem = useCartStore((s) => s.selectedDish);
     const setSelectedItem = useCartStore((s) => s.setSelectedDish);
+    const currency = useCartStore((s) => s.currency);
 
     return (
         <div className="mt-10 flex flex-col gap-12">
@@ -74,7 +77,7 @@ export function PublicMenuList({
                                         variants={listItem}
                                         onSelect={setSelectedItem}
                                         discountedPrice={discount?.finalPrice}
-                                        discountBadge={formatDiscountBadge(discount)}
+                                        discountBadge={formatDiscountBadge(discount, currency)}
                                     />
                                 );
                             })}

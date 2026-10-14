@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 
 import { bookingFormSchema, type BookingFormValues, type ReservationResponse } from '@my-app/types';
+import { useTranslations } from 'next-intl';
 import { display } from '@/shared/lib/fonts';
 import { EASE } from '@/shared/config/animations';
 import { useGetPublicTenant } from '@/entities/tenant/hooks/useGetPublicTenant';
@@ -39,6 +40,7 @@ export function BookingForm({
     slug: string;
     onSuccess: (reservation: ReservationResponse) => void;
 }) {
+    const t = useTranslations('reservations');
     const [apiError, setApiError] = useState<string | null>(null);
     const { register, handleSubmit, watch, setValue, formState } = useForm<BookingFormValues>({
         resolver: zodResolver(bookingFormSchema),
@@ -98,17 +100,17 @@ export function BookingForm({
             noValidate>
             <h1
                 className={`${display.className} text-[26px] font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                Reserve a table
+                {t('title')}
             </h1>
             <p className="mt-1.5 text-[13.5px] text-[#6B6A65] dark:text-[#94938D]">
-                Pick a date and time that works for you — we&apos;ll save your spot.
+                {t('subtitle')}
             </p>
 
             <div className="mt-6 space-y-5">
                 <div>
                     <label className={labelClass} htmlFor="date">
                         <span className="inline-flex items-center gap-1.5">
-                            <CalendarDays size={13} /> Date
+                            <CalendarDays size={13} /> {t('date')}
                         </span>
                     </label>
                     <input id="date" type="date" min={todayString()} className={inputClass} {...register('date')} />
@@ -118,20 +120,20 @@ export function BookingForm({
                 <div>
                     <label className={labelClass}>
                         <span className="inline-flex items-center gap-1.5">
-                            <Clock size={13} /> Time
+                            <Clock size={13} /> {t('time')}
                         </span>
                     </label>
 
                     {!date ? (
                         <p className="text-[13px] text-[#9C9B95] dark:text-[#6E6D68]">
-                            Select a date to see available times.
+                            {t('selectDateFirst')}
                         </p>
                     ) : !openToday ? (
-                        <p className="text-[13px] text-[#9C9B95] dark:text-[#6E6D68]">Venue is closed on this day.</p>
+                        <p className="text-[13px] text-[#9C9B95] dark:text-[#6E6D68]">{t('venueClosedDay')}</p>
                     ) : generatedTimes.length === 0 ? (
-                        <p className="text-[13px] text-[#9C9B95] dark:text-[#6E6D68]">No time slots available.</p>
+                        <p className="text-[13px] text-[#9C9B95] dark:text-[#6E6D68]">{t('noTimeSlots')}</p>
                     ) : availability.isLoading ? (
-                        <p className="text-[13px] text-[#9C9B95] dark:text-[#6E6D68]">Loading available times…</p>
+                        <p className="text-[13px] text-[#9C9B95] dark:text-[#6E6D68]">{t('loadingTimes')}</p>
                     ) : (
                         <div className="relative">
                             <select
@@ -139,7 +141,7 @@ export function BookingForm({
                                 onChange={(e) => setValue('time', e.target.value, { shouldValidate: true })}
                                 className="w-full appearance-none rounded-xl border border-[#E7E5E0] bg-white/70 px-4 py-3 text-[14px] font-medium tabular-nums text-[#0A0A0C] transition-all hover:border-[#3B82F6]/40 focus:border-[#3B82F6] focus:outline-none focus:ring-4 focus:ring-[#3B82F6]/10 dark:border-white/15 dark:bg-white/[0.04] dark:text-[#F5F4F2]">
                                 <option value="" disabled>
-                                    Select time...
+                                    {t('selectTime')}
                                 </option>
                                 {generatedTimes.map((slotTime) => {
                                     const slot = availability.data?.find((s) => s.time === slotTime);
@@ -147,7 +149,7 @@ export function BookingForm({
 
                                     return (
                                         <option key={slotTime} value={slotTime} disabled={!available}>
-                                            {slotTime} {!available ? '(full)' : ''}
+                                            {slotTime} {!available ? t('full') : ''}
                                         </option>
                                     );
                                 })}
@@ -165,7 +167,7 @@ export function BookingForm({
                 <div>
                     <label className={labelClass} htmlFor="guestsCount">
                         <span className="inline-flex items-center gap-1.5">
-                            <Users size={13} /> Guests
+                            <Users size={13} /> {t('guests')}
                         </span>
                     </label>
                     <div className="flex items-center gap-3">
@@ -205,13 +207,13 @@ export function BookingForm({
                 <div>
                     <label className={labelClass} htmlFor="guestName">
                         <span className="inline-flex items-center gap-1.5">
-                            <User size={13} /> Your name
+                            <User size={13} /> {t('yourName')}
                         </span>
                     </label>
                     <input
                         id="guestName"
                         type="text"
-                        placeholder="Jane Doe"
+                        placeholder={t('namePlaceholder')}
                         className={inputClass}
                         {...register('guestName')}
                     />
@@ -221,13 +223,13 @@ export function BookingForm({
                 <div>
                     <label className={labelClass} htmlFor="guestPhone">
                         <span className="inline-flex items-center gap-1.5">
-                            <Phone size={13} /> Phone
+                            <Phone size={13} /> {t('phone')}
                         </span>
                     </label>
                     <input
                         id="guestPhone"
                         type="tel"
-                        placeholder="+1 555 0100"
+                        placeholder={t('phonePlaceholder')}
                         className={inputClass}
                         {...register('guestPhone')}
                     />
@@ -239,14 +241,14 @@ export function BookingForm({
                 <div>
                     <label className={labelClass} htmlFor="notes">
                         <span className="inline-flex items-center gap-1.5">
-                            <MessageSquare size={13} /> Notes
-                            <span className="font-normal lowercase tracking-normal text-[#9C9B95]">(optional)</span>
+                            <MessageSquare size={13} /> {t('notes')}
+                            <span className="font-normal lowercase tracking-normal text-[#9C9B95]">{t('optional')}</span>
                         </span>
                     </label>
                     <textarea
                         id="notes"
                         rows={3}
-                        placeholder="Allergies, occasion, seating preference…"
+                        placeholder={t('notesPlaceholder')}
                         className={`${inputClass} resize-none`}
                         {...register('notes')}
                     />
@@ -269,7 +271,7 @@ export function BookingForm({
                 ) : (
                     <CalendarDays size={16} />
                 )}
-                Confirm reservation
+                {t('confirmReservation')}
             </button>
         </motion.form>
     );

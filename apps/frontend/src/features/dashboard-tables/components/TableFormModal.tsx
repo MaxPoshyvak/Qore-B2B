@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
@@ -37,6 +38,7 @@ type TableFormModalProps = {
 };
 
 export function TableFormModal({ open, onClose, slug, table }: TableFormModalProps) {
+    const t = useTranslations('tablesFloor');
     const isEdit = Boolean(table);
     const schema = isEdit ? updateTableSchema : createTableSchema;
 
@@ -83,7 +85,7 @@ export function TableFormModal({ open, onClose, slug, table }: TableFormModalPro
         } catch (err) {
             const message = err instanceof Error ? err.message : 'Something went wrong';
             if (/already exists/i.test(message)) {
-                setError('name', { message: 'A table with this name already exists' });
+                setError('name', { message: t('nameExistsError') });
             } else {
                 setError('root', { message });
             }
@@ -94,20 +96,20 @@ export function TableFormModal({ open, onClose, slug, table }: TableFormModalPro
         <Modal
             open={open}
             onClose={onClose}
-            title={isEdit ? 'Edit table' : 'Add table'}
+            title={isEdit ? t('editTable') : t('createTable')}
             description={
                 isEdit
-                    ? 'Update the details for this table.'
-                    : 'Give your table a name and seating capacity.'
+                    ? t('editTableDesc')
+                    : t('createTableDesc')
             }>
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
                 <label className="block">
                     <span className="mb-1.5 block text-sm font-medium text-[#6B6A65] dark:text-[#94938D]">
-                        Table name
+                        {t('tableName')}
                     </span>
                     <Input
                         type="text"
-                        placeholder="e.g. Window 1"
+                        placeholder={t('tableNamePlaceholder')}
                         className={errors.name ? 'border-red-400/70' : ''}
                         {...register('name')}
                     />
@@ -121,7 +123,7 @@ export function TableFormModal({ open, onClose, slug, table }: TableFormModalPro
 
                 <label className="block">
                     <span className="mb-1.5 block text-sm font-medium text-[#6B6A65] dark:text-[#94938D]">
-                        Capacity (seats)
+                        {t('capacitySeats')}
                     </span>
                     <Input
                         type="number"
@@ -133,8 +135,8 @@ export function TableFormModal({ open, onClose, slug, table }: TableFormModalPro
                 </label>
 
                 <FormToggle
-                    label="Active"
-                    description="Inactive tables cannot be opened by guests via QR."
+                    label={t('active')}
+                    description={t('activeDesc')}
                     {...register('isActive')}
                 />
 
@@ -147,11 +149,11 @@ export function TableFormModal({ open, onClose, slug, table }: TableFormModalPro
 
                 <div className="mt-2 flex justify-end gap-2">
                     <SecondaryButton type="button" onClick={onClose} disabled={isPending}>
-                        Cancel
+                        {t('cancel')}
                     </SecondaryButton>
                     <PrimaryButton type="submit" loading={isPending} icon={isPending ? undefined : undefined}>
                         {isPending && <Loader2 size={16} className="animate-spin" />}
-                        {isEdit ? 'Save changes' : 'Create table'}
+                        {isEdit ? t('saveChanges') : t('createTable')}
                     </PrimaryButton>
                 </div>
             </form>

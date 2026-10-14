@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Plus, Sparkles } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { type CreateHappyHourDto, type HappyHourRuleResponse, type UpdateHappyHourDto } from '@my-app/types';
 
@@ -27,6 +28,7 @@ type HappyHourViewProps = {
 };
 
 export function HappyHourView({ slug }: HappyHourViewProps) {
+    const t = useTranslations('happyHour');
     const { data: tenant } = useGetTenantBySlug(slug);
     const tenantId = tenant?.data.id;
 
@@ -92,16 +94,16 @@ export function HappyHourView({ slug }: HappyHourViewProps) {
                 <div>
                     <span className="inline-flex items-center gap-2 rounded-full border border-[#8B5CF6]/25 bg-[#8B5CF6]/5 px-3 py-1 text-xs font-medium text-[#6D28D9] dark:text-[#C4B5FD]">
                         <span className="flex h-1.5 w-1.5 rounded-full bg-[#8B5CF6]" />
-                        Happy Hour
+                        {t('badge')}
                     </span>
                     <h1 className="mt-4 text-2xl sm:text-3xl font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]">
-                        Promotions that{' '}
+                        {t('titlePrefix')}{' '}
                         <span className="bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] bg-clip-text text-transparent">
-                            fill the room
+                            {t('titleHighlight')}
                         </span>
                     </h1>
                     <p className="mt-2 max-w-xl text-sm leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
-                        Run time-boxed discounts on specific days and dishes to boost your off-peak sales.
+                        {t('subtitle')}
                     </p>
                 </div>
 
@@ -109,7 +111,7 @@ export function HappyHourView({ slug }: HappyHourViewProps) {
                     type="button"
                     onClick={openCreate}
                     icon={<Plus size={17} strokeWidth={2.4} />}>
-                    New Rule
+                    {t('newRule')}
                 </PrimaryButton>
             </motion.header>
 
@@ -153,9 +155,9 @@ export function HappyHourView({ slug }: HappyHourViewProps) {
 
             <ConfirmDialog
                 open={Boolean(deleteTarget)}
-                title="Delete Happy Hour rule"
-                description="This promotion will be permanently removed. This action cannot be undone."
-                confirmLabel="Delete rule"
+                title={t('deleteTitle')}
+                description={t('deleteDesc')}
+                confirmLabel={t('deleteConfirm')}
                 loading={deleteMut.isPending}
                 onConfirm={onConfirmDelete}
                 onClose={() => setDeleteTarget(null)}
@@ -165,6 +167,7 @@ export function HappyHourView({ slug }: HappyHourViewProps) {
 }
 
 function EmptyState({ onAction }: { onAction: () => void }) {
+    const t = useTranslations('happyHour');
     return (
         <motion.div
             initial={{ opacity: 0, y: 14 }}
@@ -175,18 +178,17 @@ function EmptyState({ onAction }: { onAction: () => void }) {
                 <Sparkles size={28} />
             </div>
             <h3 className="mt-5 text-lg sm:text-xl font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]">
-                Boost your off-peak sales
+                {t('emptyTitle')}
             </h3>
             <p className="mt-2 max-w-sm text-sm leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
-                Create your first Happy Hour to drive traffic when it&apos;s quiet — set the days, hours and discount
-                in seconds.
+                {t('emptyDesc')}
             </p>
             <PrimaryButton
                 type="button"
                 onClick={onAction}
                 className="mt-6"
                 icon={<Plus size={17} strokeWidth={2.4} />}>
-                Create your first Happy Hour
+                {t('createFirst')}
             </PrimaryButton>
         </motion.div>
     );

@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CalendarDays, CalendarX, Clock } from 'lucide-react';
 
@@ -48,6 +49,7 @@ function getDisabledTableIds(list: ReservationResponse[], currentId: string): st
 }
 
 export function ReservationsView({ slug }: { slug: string }) {
+    const t = useTranslations('reservations');
     const resolvedSlug = slug ?? '';
     const { data: tenant } = useGetTenantBySlug(resolvedSlug);
     const tenantId = tenant?.data.id;
@@ -97,14 +99,14 @@ export function ReservationsView({ slug }: { slug: string }) {
                     <CalendarDays size={18} className="text-[#3B82F6]" />
                     <h2
                         className={`${display.className} text-[18px] font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                        Today&apos;s Bookings
+                        {t('todaysBookings')}
                     </h2>
                     <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-black/5 px-1.5 text-[11px] font-semibold tabular-nums text-[#6B6A65] dark:bg-white/10 dark:text-[#94938D]">
                         {today.length}
                     </span>
                 </div>
                 {today.length === 0 ? (
-                    <EmptyState label="No reservations for today." />
+                    <EmptyState label={t('noReservationsToday')} />
                 ) : (
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         <AnimatePresence initial={false}>
@@ -131,7 +133,7 @@ export function ReservationsView({ slug }: { slug: string }) {
                     <CalendarDays size={18} className="text-[#8B5CF6]" />
                     <h2
                         className={`${display.className} text-[18px] font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                        Future Bookings
+                        {t('futureBookings')}
                     </h2>
                 </div>
 
@@ -152,7 +154,7 @@ export function ReservationsView({ slug }: { slug: string }) {
                                 <span className="text-[11px] font-medium uppercase tracking-wider">{d.weekday}</span>
                                 <span className="text-[18px] font-bold leading-none">{d.day}</span>
                                 {count > 0 && (
-                                    <span className="mt-1 text-[10px] font-semibold">{count} booked</span>
+                                    <span className="mt-1 text-[10px] font-semibold">{t('bookedCount', { count })}</span>
                                 )}
                             </button>
                         );
@@ -160,7 +162,7 @@ export function ReservationsView({ slug }: { slug: string }) {
                 </div>
 
                 {futureForSelected.length === 0 ? (
-                    <EmptyState label="No reservations on this day." />
+                    <EmptyState label={t('noReservationsDay')} />
                 ) : (
                     <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         <AnimatePresence initial={false}>

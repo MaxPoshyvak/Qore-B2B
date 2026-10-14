@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Calendar, Clock, Pencil, Tag, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import type { HappyHourRuleResponse } from '@my-app/types';
 
@@ -16,29 +17,41 @@ type HappyHourRuleCardProps = {
     onDelete: (rule: HappyHourRuleResponse) => void;
 };
 
-function formatDays(days: number[]): string {
-    if (!days.length) return 'No days';
-    if (days.length === 7) return 'Every day';
-    const labels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+function formatDays(days: number[], t: (k: any) => string): string {
+    if (!days.length) return t('noDays');
+    if (days.length === 7) return t('everyDay');
+    const dayKeys: Record<number, string> = {
+        0: 'days.sun',
+        1: 'days.mon',
+        2: 'days.tue',
+        3: 'days.wed',
+        4: 'days.thu',
+        5: 'days.fri',
+        6: 'days.sat',
+    };
     return [...days]
         .sort((a, b) => a - b)
-        .map((d) => labels[d] ?? '')
+        .map((d) => t(dayKeys[d] as any))
         .join(', ');
 }
 
-function formatDiscount(rule: HappyHourRuleResponse): string {
-    return rule.discountType === 'PERCENTAGE' ? `${rule.discountValue}% off` : `$${rule.discountValue} off`;
+function formatDiscount(rule: HappyHourRuleResponse, t: (k: any, p?: any) => string): string {
+    return rule.discountType === 'PERCENTAGE'
+        ? t('percentOff', { value: rule.discountValue })
+        : t('fixedOff', { value: rule.discountValue });
 }
 
-function formatAppliesTo(rule: HappyHourRuleResponse): string {
+function formatAppliesTo(rule: HappyHourRuleResponse, t: (k: any, p?: any) => string): string {
     const names = [...rule.categories.map((c) => c.name), ...rule.items.map((i) => i.name)];
-    if (names.length === 0) return 'All Menu';
+    if (names.length === 0) return t('allMenu');
     const shown = names.slice(0, 2).join(', ');
     const extra = names.length - 2;
-    return extra > 0 ? `${shown} +${extra} more` : shown;
+    return extra > 0 ? `${shown} ${t('moreItems', { count: extra })}` : shown;
 }
 
 export function HappyHourRuleCard({ rule, onToggleActive, onEdit, onDelete }: HappyHourRuleCardProps) {
+    const t = useTranslations('happyHour');
+
     return (
         <motion.div
             layout
@@ -63,11 +76,11 @@ export function HappyHourRuleCard({ rule, onToggleActive, onEdit, onDelete }: Ha
                                 {rule.name}
                             </h3>
                             <span className="shrink-0 rounded-full bg-[#8B5CF6]/10 px-2 py-0.5 text-xs font-medium text-[#7C3AED] dark:bg-[#8B5CF6]/20 dark:text-[#C4B5FD]">
-                                {formatDiscount(rule)}
+                                {formatDiscount(rule, t)}
                             </span>
                             {!rule.isActive && (
                                 <span className="shrink-0 rounded-full bg-black/5 px-2 py-0.5 text-[10px] font-medium text-[#A8A6A0] dark:bg-white/5 dark:text-[#5A5A56]">
-                                    Inactive
+                                    {t('inactive')}
                                 </span>
                             )}
                         </div>
@@ -77,7 +90,7 @@ export function HappyHourRuleCard({ rule, onToggleActive, onEdit, onDelete }: Ha
                 {/* Status Toggle Switch */}
                 <div className="flex shrink-0 items-center gap-2">
                     <span className="hidden text-xs text-[#6B6A65] dark:text-[#94938D] sm:inline">
-                        {rule.isActive ? 'Active' : 'Paused'}
+                        {rule.isActive ? t('active') : t('paused')}
                     </span>
                     <Switch
                         checked={rule.isActive}
@@ -96,7 +109,7 @@ export function HappyHourRuleCard({ rule, onToggleActive, onEdit, onDelete }: Ha
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[#6B6A65] dark:text-[#94938D]">
                     <div className="inline-flex items-center gap-1.5">
                         <Calendar size={13} className="shrink-0 text-[#3B82F6]" />
-                        <span>{formatDays(rule.daysOfWeek)}</span>
+                        <span>{formatDays(rule.daysOfWeek, t)}</span>
                     </div>
                     <div className="inline-flex items-center gap-1.5">
                         <Clock size={13} className="shrink-0 text-[#8B5CF6]" />
@@ -119,7 +132,7 @@ export function HappyHourRuleCard({ rule, onToggleActive, onEdit, onDelete }: Ha
                                     ? 'font-medium text-emerald-600 dark:text-emerald-400'
                                     : 'font-medium text-[#0A0A0C] dark:text-[#F5F4F2]'
                             }>
-                            {formatAppliesTo(rule)}
+                            {formatAppliesTo(rule, t)}
                         </span>
                     </div>
                 </div>
@@ -131,14 +144,14 @@ export function HappyHourRuleCard({ rule, onToggleActive, onEdit, onDelete }: Ha
                         onClick={() => onEdit(rule)}
                         className="inline-flex items-center gap-1 rounded-lg border border-[#E7E5E0] bg-white px-2.5 py-1.5 text-xs font-medium text-[#6B6A65] shadow-xs transition-colors hover:border-[#3B82F6]/40 hover:text-[#3B82F6] dark:border-[#232327] dark:bg-[#1A1A1E] dark:text-[#94938D] dark:hover:text-[#60A5FA]">
                         <Pencil size={12} />
-                        <span>Edit</span>
+                        <span>{t('edit')}</span>
                     </button>
                     <button
                         type="button"
                         onClick={() => onDelete(rule)}
                         className="inline-flex items-center gap-1 rounded-lg border border-red-200 bg-red-50/50 px-2.5 py-1.5 text-xs font-medium text-red-600 shadow-xs transition-colors hover:bg-red-100/60 dark:border-red-900/30 dark:bg-red-950/20 dark:text-red-400">
                         <Trash2 size={12} />
-                        <span>Delete</span>
+                        <span>{t('delete')}</span>
                     </button>
                 </div>
             </div>

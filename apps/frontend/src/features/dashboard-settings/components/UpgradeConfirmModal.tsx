@@ -8,6 +8,7 @@ import { CreditCard, Loader2, X } from 'lucide-react';
 import { display, body } from '@/shared/lib/fonts';
 import { EASE } from '@/shared/config/animations';
 import { cn } from '@/shared/lib/utils';
+import { useTranslations } from 'next-intl';
 
 export type UpgradeConfirmModalProps = {
     open: boolean;
@@ -30,6 +31,8 @@ export function UpgradeConfirmModal({
     targetPlanTier = 'Business',
     targetPlanPrice = '$79/mo',
 }: UpgradeConfirmModalProps) {
+    const t = useTranslations('dashboard.settings');
+    const tCommon = useTranslations('common');
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -97,34 +100,39 @@ export function UpgradeConfirmModal({
                             <h2
                                 id="upgrade-modal-title"
                                 className={`${display.className} text-xl font-bold tracking-tight text-[#F5F4F2] sm:text-2xl`}>
-                                Upgrade to {targetPlanTier}
+                                {t('upgradeTo', { tier: targetPlanTier })}
                             </h2>
                             <p className={`${body.className} mt-2 text-[13.5px] leading-relaxed text-[#94938D] sm:text-sm`}>
-                                You are upgrading from {currentPlanTier} ({currentPlanPrice}) to {targetPlanTier} ({targetPlanPrice}). Your card on file will be charged the prorated difference for the remainder of your current billing cycle. Starting next cycle, your subscription will renew at {targetPlanPrice}.
+                                {t('upgradeDesc', {
+                                    currentTier: currentPlanTier,
+                                    currentPrice: currentPlanPrice,
+                                    targetTier: targetPlanTier,
+                                    targetPrice: targetPlanPrice,
+                                })}
                             </p>
                         </div>
 
                         {/* Breakdown Box */}
                         <div className="mt-6 flex flex-col divide-y divide-white/10 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-[13.5px] sm:text-sm">
                             <div className="flex items-center justify-between pb-3">
-                                <span className="text-[#94938D]">Current plan</span>
+                                <span className="text-[#94938D]">{t('currentPlanLabel')}</span>
                                 <span className="font-medium text-[#F5F4F2]">
                                     {currentPlanTier} ({currentPlanPrice})
                                 </span>
                             </div>
 
                             <div className="flex items-center justify-between py-3">
-                                <span className="text-[#94938D]">New plan</span>
+                                <span className="text-[#94938D]">{t('newPlanLabel')}</span>
                                 <span className="font-semibold text-blue-400">
                                     {targetPlanTier} ({targetPlanPrice})
                                 </span>
                             </div>
 
                             <div className="flex items-center justify-between pt-3">
-                                <span className="text-[#94938D]">Payment method</span>
+                                <span className="text-[#94938D]">{t('paymentMethodLabel')}</span>
                                 <span className="flex items-center gap-1.5 font-medium text-[#F5F4F2]">
                                     <CreditCard size={15} className="text-blue-400" />
-                                    Card on file (Stripe)
+                                    {t('cardOnFileStripe')}
                                 </span>
                             </div>
                         </div>
@@ -140,7 +148,7 @@ export function UpgradeConfirmModal({
                                     'w-full rounded-xl border border-white/10 px-5 py-2.5 text-center text-sm font-medium text-[#F5F4F2] transition-colors md:hover:bg-white/5 sm:w-auto',
                                     isLoading && 'cursor-not-allowed opacity-50',
                                 )}>
-                                Cancel
+                                {tCommon('cancel')}
                             </button>
 
                             <button
@@ -153,7 +161,7 @@ export function UpgradeConfirmModal({
                                     isLoading && 'cursor-not-allowed opacity-75',
                                 )}>
                                 {isLoading && <Loader2 size={15} className="animate-spin" />}
-                                Confirm &amp; Upgrade
+                                {t('confirmAndUpgrade')}
                             </button>
                         </div>
                     </motion.div>

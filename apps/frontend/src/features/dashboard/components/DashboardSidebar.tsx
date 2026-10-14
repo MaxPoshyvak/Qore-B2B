@@ -51,35 +51,35 @@ const NAV: NavItem[] = [
 ];
 
 const SETTINGS_SECTIONS = [
-    { label: 'General', value: 'general' },
-    { label: 'Working Hours', value: 'hours' },
-    { label: 'Staff & KDS', value: 'kds' },
-    { label: 'Billing & Plan', value: 'billing' },
+    { key: 'general', value: 'general', ns: 'settings' },
+    { key: 'hours', value: 'hours', ns: 'settings' },
+    { key: 'staffKds', value: 'kds', ns: 'settings' },
+    { key: 'billing', value: 'billing', ns: 'settings' },
 ] as const;
 
 const MENU_SECTIONS = [
-    { label: 'Menu Builder', value: 'builder' },
-    { label: 'Happy Hour', value: 'promotions' },
+    { key: 'builder', value: 'builder', ns: 'sidebar' },
+    { key: 'promotions', value: 'promotions', ns: 'sidebar' },
 ] as const;
 
 const TABLES_SECTIONS = [
-    { label: 'Table Management', value: 'tables' },
-    { label: 'Reservations', value: 'reservations' },
+    { key: 'tabTables', value: 'tables', ns: 'tablesFloor' },
+    { key: 'tabReservations', value: 'reservations', ns: 'tablesFloor' },
 ] as const;
 
 const ANALYTICS_SECTIONS = [
-    { label: 'Overview', value: 'overview' },
-    { label: 'Sales & Menu', value: 'sales' },
-    { label: 'Guests & Traffic', value: 'guests' },
-    { label: 'Feedback & AI', value: 'feedback' },
+    { key: 'overview', value: 'overview', ns: 'sidebar' },
+    { key: 'sales', value: 'sales', ns: 'sidebar' },
+    { key: 'guests', value: 'guests', ns: 'sidebar' },
+    { key: 'feedback', value: 'feedback', ns: 'sidebar' },
 ] as const;
 
-function getPlanDetails(plan?: string | null) {
+function getPlanDetails(plan: string | null | undefined, tSidebar: (key: any) => string) {
     const normalizedPlan = plan?.toLowerCase();
 
     if (normalizedPlan === 'business') {
         return {
-            label: 'Business Plan',
+            label: tSidebar('businessPlan'),
             icon: Crown,
             badgeClassName:
                 'border-[#8B5CF6]/30 bg-gradient-to-r from-[#3B82F6]/15 to-[#8B5CF6]/15 text-[#6D28D9] dark:text-[#C4B5FD]',
@@ -89,7 +89,7 @@ function getPlanDetails(plan?: string | null) {
 
     if (normalizedPlan === 'pro') {
         return {
-            label: 'Pro Plan',
+            label: tSidebar('proPlan'),
             icon: Sparkles,
             badgeClassName: 'border-[#3B82F6]/25 bg-[#3B82F6]/10 text-[#2563EB] dark:text-[#60A5FA]',
             isBusiness: false,
@@ -97,7 +97,7 @@ function getPlanDetails(plan?: string | null) {
     }
 
     return {
-        label: 'Free Plan',
+        label: tSidebar('freePlan'),
         icon: Sparkles,
         badgeClassName:
             'border-[#E7E5E0] bg-black/[0.03] text-[#6B6A65] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D]',
@@ -107,6 +107,8 @@ function getPlanDetails(plan?: string | null) {
 
 function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () => void }) {
     const tSidebar = useTranslations('dashboard.sidebar');
+    const tSettings = useTranslations('dashboard.settings');
+    const tTables = useTranslations('tablesFloor');
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const { theme, toggle, mounted } = useTheme();
@@ -120,7 +122,7 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
 
     const others = (myTenants?.data ?? []).filter((t) => t.slug !== slug);
     const hasMultipleVenues = (myTenants?.data?.length || 0) > 1;
-    const plan = getPlanDetails(tenant?.data.subscriptionPlan);
+    const plan = getPlanDetails(tenant?.data.subscriptionPlan, tSidebar);
     const PlanIcon = plan.icon;
 
     return (
@@ -266,13 +268,19 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                                             const sectionActive =
                                                 active &&
                                                 (searchParams.get('section') ?? defaultSection) === section.value;
+                                            const sectionLabel =
+                                                section.ns === 'settings'
+                                                    ? tSettings(section.key as any)
+                                                    : section.ns === 'tablesFloor'
+                                                      ? tTables(section.key as any)
+                                                      : tSidebar(section.key as any);
                                             return (
                                                 <Link
                                                     key={section.value}
                                                     href={`${baseHref}?section=${section.value}`}
                                                     onClick={onNavigate}
                                                     className={`rounded-lg px-3 py-1.5 text-[13px] transition-colors ${sectionActive ? 'bg-[#3B82F6]/10 font-medium text-[#2563EB] dark:text-[#60A5FA]' : 'text-[#6B6A65] hover:bg-black/5 hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:bg-white/5 dark:hover:text-[#F5F4F2]'}`}>
-                                                    {section.label}
+                                                    {sectionLabel}
                                                 </Link>
                                             );
                                         })}
@@ -295,7 +303,7 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                     {plan.isBusiness && (
                         <span className="inline-flex items-center gap-1 text-[10px] font-medium text-[#16A34A] dark:text-[#4ADE80]">
                             <span className="h-1.5 w-1.5 rounded-full bg-current" />
-                            Active
+                            {tSidebar('activeBadge')}
                         </span>
                     )}
                     {!plan.isBusiness && (

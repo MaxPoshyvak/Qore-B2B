@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Car, UtensilsCrossed, Eye, ShoppingBag, CalendarCheck, CalendarX } from 'lucide-react';
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 
+import { useTranslations } from 'next-intl';
 import { display, mono } from '@/shared/lib/fonts';
 import { EASE } from '@/shared/config/animations';
 import { useAnalyticsTraffic } from '../hooks/useAnalytics';
@@ -22,6 +23,7 @@ function SliceTooltip({ active, payload }: any) {
 }
 
 export function GuestsView({ tenantId }: { tenantId: string }) {
+    const t = useTranslations('analytics');
     const { data, isLoading } = useAnalyticsTraffic(tenantId);
 
     const takeaway = data?.takeawayCount ?? 0;
@@ -36,21 +38,21 @@ export function GuestsView({ tenantId }: { tenantId: string }) {
     const conversionRate = totalViews > 0 ? (totalOrders / totalViews) * 100 : 0;
 
     const chartData = [
-        { name: 'Takeaway', value: takeaway, color: '#8B5CF6' },
-        { name: 'Dine-in', value: dineIn, color: '#3B82F6' },
+        { name: t('takeaway'), value: takeaway, color: '#8B5CF6' },
+        { name: t('dineIn'), value: dineIn, color: '#3B82F6' },
     ];
 
     return (
         <div className="space-y-6">
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                 <MetricCard
-                    label="Takeaway Orders"
+                    label={t('takeawayOrders')}
                     value={isLoading ? '—' : takeaway.toLocaleString('en-US')}
                     icon={Car}
                     accent="violet"
                 />
                 <MetricCard
-                    label="Dine-in Orders"
+                    label={t('dineInOrders')}
                     value={isLoading ? '—' : dineIn.toLocaleString('en-US')}
                     icon={UtensilsCrossed}
                     accent="blue"
@@ -64,10 +66,10 @@ export function GuestsView({ tenantId }: { tenantId: string }) {
                 className="rounded-[28px] border border-white/60 bg-white/80 px-6 pb-7 pt-8 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-2xl">
                 <p
                     className={`${mono.className} text-[10.5px] uppercase tracking-wider text-[#6B6A65]/70 dark:text-[#94938D]/70`}>
-                    Order type split
+                    {t('orderTypeSplit')}
                 </p>
                 <h3 className={`${display.className} mt-1 text-[18px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                    Guests & Traffic
+                    {t('guestsTraffic')}
                 </h3>
 
                 <div className="mt-4 flex flex-col items-center gap-6 sm:flex-row sm:gap-10">
@@ -96,7 +98,7 @@ export function GuestsView({ tenantId }: { tenantId: string }) {
                             </span>
                             <span
                                 className={`${mono.className} text-[10px] uppercase tracking-wider text-[#9C9B95]`}>
-                                Total orders
+                                {t('totalOrdersLabel')}
                             </span>
                         </div>
                     </div>
@@ -137,10 +139,10 @@ export function GuestsView({ tenantId }: { tenantId: string }) {
                 className="rounded-[28px] border border-white/60 bg-white/80 px-6 pb-7 pt-8 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-2xl">
                 <p
                     className={`${mono.className} text-[10.5px] uppercase tracking-wider text-[#6B6A65]/70 dark:text-[#94938D]/70`}>
-                    Conversion
+                    {t('conversion')}
                 </p>
                 <h3 className={`${display.className} mt-1 text-[18px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                    Menu Views → Orders
+                    {t('menuViewsOrders')}
                 </h3>
 
                 <div className="mt-5 grid grid-cols-2 gap-4">
@@ -148,7 +150,7 @@ export function GuestsView({ tenantId }: { tenantId: string }) {
                         <div className="flex items-center gap-2 text-[#3B82F6]">
                             <Eye size={15} strokeWidth={1.9} />
                             <span className={`${mono.className} text-[10.5px] uppercase tracking-wider text-[#6B6A65] dark:text-[#94938D]`}>
-                                Menu Views
+                                {t('menuViews')}
                             </span>
                         </div>
                         <p className={`${display.className} mt-1 text-[22px] font-bold tabular-nums text-[#0A0A0C] dark:text-[#F5F4F2]`}>
@@ -159,7 +161,7 @@ export function GuestsView({ tenantId }: { tenantId: string }) {
                         <div className="flex items-center gap-2 text-[#8B5CF6]">
                             <ShoppingBag size={15} strokeWidth={1.9} />
                             <span className={`${mono.className} text-[10.5px] uppercase tracking-wider text-[#6B6A65] dark:text-[#94938D]`}>
-                                Orders Placed
+                                {t('ordersPlaced')}
                             </span>
                         </div>
                         <p className={`${display.className} mt-1 text-[22px] font-bold tabular-nums text-[#0A0A0C] dark:text-[#F5F4F2]`}>
@@ -170,7 +172,7 @@ export function GuestsView({ tenantId }: { tenantId: string }) {
 
                 <div className="mt-5">
                     <div className="mb-1.5 flex items-center justify-between">
-                        <span className="text-[13px] text-[#6B6A65] dark:text-[#94938D]">Conversion rate</span>
+                        <span className="text-[13px] text-[#6B6A65] dark:text-[#94938D]">{t('conversionRate')}</span>
                         <span className={`${display.className} text-[14px] font-bold tabular-nums text-[#04916C] dark:text-[#10B981]`}>
                             {conversionRate.toFixed(1)}%
                         </span>
@@ -194,10 +196,10 @@ export function GuestsView({ tenantId }: { tenantId: string }) {
                 className="rounded-[28px] border border-white/60 bg-white/80 px-6 pb-7 pt-8 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-2xl">
                 <p
                     className={`${mono.className} text-[10.5px] uppercase tracking-wider text-[#6B6A65]/70 dark:text-[#94938D]/70`}>
-                    Bookings
+                    {t('bookings')}
                 </p>
                 <h3 className={`${display.className} mt-1 text-[18px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                    Reservations
+                    {t('reservations')}
                 </h3>
 
                 <div className="mt-5 grid grid-cols-2 gap-4">
@@ -205,7 +207,7 @@ export function GuestsView({ tenantId }: { tenantId: string }) {
                         <div className="flex items-center gap-2 text-[#04916C] dark:text-[#10B981]">
                             <CalendarCheck size={15} strokeWidth={1.9} />
                             <span className={`${mono.className} text-[10.5px] uppercase tracking-wider text-[#6B6A65] dark:text-[#94938D]`}>
-                                Completed
+                                {t('completed')}
                             </span>
                         </div>
                         <p className={`${display.className} mt-1 text-[22px] font-bold tabular-nums text-[#0A0A0C] dark:text-[#F5F4F2]`}>
@@ -216,7 +218,7 @@ export function GuestsView({ tenantId }: { tenantId: string }) {
                         <div className="flex items-center gap-2 text-[#F59E0B]">
                             <CalendarX size={15} strokeWidth={1.9} />
                             <span className={`${mono.className} text-[10.5px] uppercase tracking-wider text-[#6B6A65] dark:text-[#94938D]`}>
-                                Cancelled
+                                {t('cancelled')}
                             </span>
                         </div>
                         <p className={`${display.className} mt-1 text-[22px] font-bold tabular-nums text-[#0A0A0C] dark:text-[#F5F4F2]`}>

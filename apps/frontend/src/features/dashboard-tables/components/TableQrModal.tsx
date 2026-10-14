@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { QRCodeCanvas, QRCodeSVG } from 'qrcode.react';
 import { Download, Printer, RefreshCw, Loader2 } from 'lucide-react';
 
@@ -21,6 +22,7 @@ type TableQrModalProps = {
 };
 
 export function TableQrModal({ open, onClose, slug, table, venueName, onRegenerated }: TableQrModalProps) {
+    const t = useTranslations('tablesFloor');
     const [currentTable, setCurrentTable] = useState<Table>(table);
     const [confirmOpen, setConfirmOpen] = useState(false);
 
@@ -62,8 +64,8 @@ export function TableQrModal({ open, onClose, slug, table, venueName, onRegenera
             <Modal
                 open={open}
                 onClose={onClose}
-                title="Table QR code"
-                description="Guests scan this code to open your menu and start a session.">
+                title={t('qrModalTitle')}
+                description={t('qrModalDesc')}>
                 <div className="print:hidden">
                     <div className="flex flex-col items-center">
                         <div className="rounded-3xl border border-[#E7E5E0] bg-white p-5 dark:border-[#232327] dark:bg-[#141417]">
@@ -74,7 +76,7 @@ export function TableQrModal({ open, onClose, slug, table, venueName, onRegenera
                             {currentTable.name}
                         </p>
                         <p className="mt-0.5 font-mono text-[11px] uppercase tracking-widest text-[#9C9B95] dark:text-[#6E6D68]">
-                            {currentTable.capacity} seats · {currentTable.isActive ? 'Active' : 'Inactive'}
+                            {t('seatsCount', { count: currentTable.capacity })} · {currentTable.isActive ? t('active') : t('inactive')}
                         </p>
                     </div>
 
@@ -84,11 +86,11 @@ export function TableQrModal({ open, onClose, slug, table, venueName, onRegenera
                             className="flex-1"
                             onClick={handleDownload}
                             icon={<Download size={16} />}>
-                            Download PNG
+                            {t('downloadPng')}
                         </PrimaryButton>
                         <SecondaryButton type="button" className="flex-1" onClick={() => window.print()}>
                             <Printer size={16} className="mr-1.5" />
-                            Print QR
+                            {t('printQr')}
                         </SecondaryButton>
                         <SecondaryButton
                             type="button"
@@ -100,7 +102,7 @@ export function TableQrModal({ open, onClose, slug, table, venueName, onRegenera
                             ) : (
                                 <RefreshCw size={16} className="mr-1.5" />
                             )}
-                            Regenerate
+                            {t('regenerate')}
                         </SecondaryButton>
                     </div>
                 </div>
@@ -121,9 +123,9 @@ export function TableQrModal({ open, onClose, slug, table, venueName, onRegenera
 
             <ConfirmDialog
                 open={confirmOpen}
-                title="Regenerate QR token?"
-                description="The current QR code will stop working immediately. Printed or displayed codes using the old token will no longer resolve to this table."
-                confirmLabel="Regenerate"
+                title={t('regenDialogTitle')}
+                description={t('regenDialogDesc')}
+                confirmLabel={t('regenerate')}
                 loading={refreshMutation.isPending}
                 onConfirm={handleRefresh}
                 onClose={() => setConfirmOpen(false)}

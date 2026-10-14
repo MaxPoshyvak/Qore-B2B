@@ -4,12 +4,14 @@ import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { MessageSquareHeart, Star, PencilLine } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { AmbientBackground } from '@/shared/ui/AmbientBackground';
 import { BaseHeader } from '@/shared/ui/BaseHeader';
 import { Modal } from '@/shared/ui/Modal';
 import { Reveal } from '@/shared/ui/Reveal';
 import { ThemeToggle } from '@/shared/ui/ThemeToggle';
+import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
 import { Toaster } from '@/shared/ui/Toaster';
 import { EASE } from '@/shared/config/animations';
 import { display } from '@/shared/lib/fonts';
@@ -37,7 +39,7 @@ function DisplayStars({ rating }: { rating: number }) {
 
 function formatDate(iso: string): string {
     try {
-        return new Date(iso).toLocaleDateString('en-US', {
+        return new Date(iso).toLocaleDateString(undefined, {
             year: 'numeric',
             month: 'short',
             day: 'numeric',
@@ -48,6 +50,7 @@ function formatDate(iso: string): string {
 }
 
 export default function PublicReviewsPage() {
+    const t = useTranslations('reviews');
     const { slug } = useParams<{ slug: string }>();
     const resolvedSlug = slug ?? '';
     const { theme, toggle, mounted } = useTheme();
@@ -67,6 +70,7 @@ export default function PublicReviewsPage() {
                         </span>
                     ) : null
                 }>
+                <LanguageSwitcher />
                 {mounted && <ThemeToggle theme={theme} toggle={toggle} />}
             </BaseHeader>
 
@@ -85,17 +89,17 @@ export default function PublicReviewsPage() {
                                     </span>
                                     <div>
                                         <p className="text-[10.5px] uppercase tracking-wider text-[#6B6A65]/70 dark:text-[#94938D]/70">
-                                            Guest Reviews
+                                            {t('badge')}
                                         </p>
                                         <h1
                                             className={`${display.className} text-2xl font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                                            What guests are saying
+                                            {t('title')}
                                         </h1>
                                     </div>
                                 </div>
 
                                 <p className="mt-3 text-sm leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
-                                    Real feedback from visitors at {tenant.name}.
+                                    {t('subtitle', { venue: tenant.name })}
                                 </p>
 
                                 <button
@@ -103,7 +107,7 @@ export default function PublicReviewsPage() {
                                     onClick={() => setModalOpen(true)}
                                     className="mt-5 flex w-full items-center justify-center gap-2 rounded-full border border-[#E7E5E0] px-6 py-3.5 text-[14px] font-medium text-[#0A0A0C] transition-colors hover:border-[#3B82F6]/40 dark:border-[#232327] dark:text-[#F5F4F2]">
                                     <PencilLine size={17} strokeWidth={1.9} />
-                                    Leave a Review
+                                    {t('leaveReview')}
                                 </button>
                             </div>
                         </Reveal>
@@ -123,7 +127,7 @@ export default function PublicReviewsPage() {
                                             className="rounded-[1.75rem] border border-white/60 bg-white/80 px-5 py-4 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-2xl">
                                             <div className="flex items-center justify-between gap-3">
                                                 <span className="text-[14px] font-medium text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                                    {review.guestName ?? 'Anonymous'}
+                                                    {review.guestName ?? t('anonymous')}
                                                 </span>
                                                 <span className="text-[10.5px] uppercase tracking-wider text-[#9C9B95]">
                                                     {formatDate(review.createdAt)}
@@ -142,7 +146,7 @@ export default function PublicReviewsPage() {
                                 ) : (
                                     <div className="rounded-[1.75rem] border border-white/60 bg-white/80 px-5 py-8 text-center shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04]">
                                         <p className="text-sm text-[#6B6A65] dark:text-[#94938D]">
-                                            No reviews yet. Be the first to share your experience!
+                                            {t('noReviews')}
                                         </p>
                                     </div>
                                 )}
@@ -164,8 +168,8 @@ export default function PublicReviewsPage() {
             <Modal
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
-                title="Leave a Review"
-                description={`Share your experience at ${tenant?.name ?? 'this venue'}`}>
+                title={t('leaveReview')}
+                description={t('shareExperience', { venue: tenant?.name ?? 'this venue' })}>
                 <PostOrderFeedback slug={resolvedSlug} onSubmitted={() => setModalOpen(false)} />
             </Modal>
 

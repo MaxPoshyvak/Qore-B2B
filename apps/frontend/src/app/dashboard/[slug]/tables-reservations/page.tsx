@@ -5,6 +5,8 @@ import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigat
 import { AnimatePresence, motion } from 'framer-motion';
 import { LayoutGrid, CalendarDays } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
+
 import { display } from '@/shared/lib/fonts';
 import { EASE } from '@/shared/config/animations';
 import { cn } from '@/shared/lib/utils';
@@ -12,18 +14,19 @@ import { TableGrid } from '@/features/dashboard-tables/components/TableGrid';
 import { Toaster } from '@/features/dashboard-tables/components/Toaster';
 import { ReservationsView } from '@/features/dashboard-reservations/components/ReservationsView';
 
-const TABS = [
-    { value: 'tables', label: 'Table Management', icon: LayoutGrid },
-    { value: 'reservations', label: 'Reservations', icon: CalendarDays },
+const TAB_KEYS = [
+    { value: 'tables', labelKey: 'tabTables', icon: LayoutGrid },
+    { value: 'reservations', labelKey: 'tabReservations', icon: CalendarDays },
 ] as const;
 
-type TabValue = (typeof TABS)[number]['value'];
+type TabValue = (typeof TAB_KEYS)[number]['value'];
 
 function isTabValue(value: string | null): value is TabValue {
-    return TABS.some((tab) => tab.value === value);
+    return TAB_KEYS.some((tab) => tab.value === value);
 }
 
 export default function TablesQrPage() {
+    const t = useTranslations('tablesFloor');
     const { slug } = useParams<{ slug: string }>();
     const resolvedSlug = slug ?? '';
     const router = useRouter();
@@ -55,31 +58,31 @@ export default function TablesQrPage() {
                 <div>
                     <span className="inline-flex items-center gap-2 rounded-full border border-[#3B82F6]/25 bg-[#3B82F6]/5 px-3 py-1 text-xs font-medium text-[#2563EB] dark:text-[#93C5FD]">
                         <span className="flex h-1.5 w-1.5 rounded-full bg-[#3B82F6]" />
-                        Venue Floor
+                        {t('badge')}
                     </span>
                     <h1
                         className={`${display.className} mt-4 text-3xl font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2] sm:text-4xl`}>
-                        Tables &{' '}
+                        {t('title')}{' '}
                         <span className="bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] bg-clip-text text-transparent">
-                            Reservations
+                            {t('titleHighlight')}
                         </span>
                     </h1>
                     <p className="mt-2 max-w-xl text-sm leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
-                        Manage your physical tables and QR codes, and assign upcoming bookings to seats.
+                        {t('subtitle')}
                     </p>
                 </div>
             </motion.header>
 
             {/* Tab navigation - mobile only */}
             <div className="hide-scrollbar -mx-1 mt-8 flex gap-2 overflow-x-auto px-1 md:hidden">
-                {TABS.map((t) => {
-                    const active = tab === t.value;
-                    const Icon = t.icon;
+                {TAB_KEYS.map((item) => {
+                    const active = tab === item.value;
+                    const Icon = item.icon;
                     return (
                         <button
-                            key={t.value}
+                            key={item.value}
                             type="button"
-                            onClick={() => changeTab(t.value)}
+                            onClick={() => changeTab(item.value)}
                             className={cn(
                                 'flex shrink-0 items-center gap-2 rounded-2xl border px-4 py-2.5 text-[14px] font-medium transition-colors',
                                 active
@@ -87,7 +90,7 @@ export default function TablesQrPage() {
                                     : 'border-[#E7E5E0] bg-white/60 text-[#6B6A65] hover:border-[#3B82F6]/40 dark:border-white/10 dark:bg-white/5 dark:text-[#94938D]',
                             )}>
                             <Icon size={16} strokeWidth={1.9} />
-                            {t.label}
+                            {t(item.labelKey as any)}
                         </button>
                     );
                 })}

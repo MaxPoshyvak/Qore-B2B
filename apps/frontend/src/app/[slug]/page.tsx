@@ -6,6 +6,8 @@ import { useParams } from 'next/navigation';
 import { CalendarDays, Star, UtensilsCrossed } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+import { useTranslations } from 'next-intl';
+
 import { useGetPublicTenant } from '@/entities/tenant/hooks/useGetPublicTenant';
 import { useCartStore } from '@/features/public-menu/store/useCartStore';
 import { AmbientBackground } from '@/shared/ui/AmbientBackground';
@@ -36,6 +38,7 @@ const RESERVED_SLUGS = new Set([
 ]);
 
 export default function PublicVenuePage() {
+    const tVenue = useTranslations('venue');
     const { slug } = useParams<{ slug: string }>();
     const resolvedSlug = slug ?? '';
     // Defensive guard: reserved paths (e.g. an auth flow) must not trigger
@@ -98,7 +101,7 @@ export default function PublicVenuePage() {
                                     <span
                                         className={`${body.className} flex w-full items-center justify-center gap-2.5`}>
                                         <UtensilsCrossed size={20} strokeWidth={2.5} />
-                                        View Menu
+                                        {tVenue('viewMenu')}
                                     </span>
                                 </MagneticButton>
 
@@ -112,7 +115,7 @@ export default function PublicVenuePage() {
                                             className="text-[#3B82F6] transition-transform duration-150 group-hover:scale-110 dark:text-[#60A5FA]"
                                         />
                                         <span className="text-[13.5px] font-medium text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                            Book Table
+                                            {tVenue('bookTable')}
                                         </span>
                                     </Link>
 
@@ -124,7 +127,7 @@ export default function PublicVenuePage() {
                                             className="text-[#F59E0B] transition-transform duration-150 group-hover:scale-110 dark:text-[#FBBF24]"
                                         />
                                         <span className="text-[13.5px] font-medium text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                            Reviews
+                                            {tVenue('reviews')}
                                         </span>
                                     </Link>
                                 </div>

@@ -10,6 +10,8 @@ import {
     type UpdateCategoryDTO,
 } from '@my-app/types';
 
+import { useTranslations } from 'next-intl';
+
 import { useUpdateCategory } from '@/entities/menu/hooks/useCategories';
 import { AuthInput } from '@/shared/ui/AuthInput';
 import { Modal } from '@/shared/ui/Modal';
@@ -22,6 +24,8 @@ type EditCategoryFormProps = {
 };
 
 export function EditCategoryForm({ category, onClose }: EditCategoryFormProps) {
+    const t = useTranslations('menuManagement');
+    const tCommon = useTranslations('common');
     const { mutateAsync: updateCategory } = useUpdateCategory();
 
     const {
@@ -51,12 +55,12 @@ export function EditCategoryForm({ category, onClose }: EditCategoryFormProps) {
     }
 
     return (
-        <Modal open={!!category} onClose={onClose} title="Rename category">
+        <Modal open={!!category} onClose={onClose} title={t('renameCategoryTitle')}>
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
                 <AuthInput
                     id="edit-category-name"
-                    label="Category name"
-                    placeholder="e.g. Breakfast"
+                    label={t('categoryNameLabel')}
+                    placeholder={t('categoryNamePlaceholder')}
                     error={errors.name?.message}
                     autoFocus
                     {...register('name')}
@@ -66,10 +70,10 @@ export function EditCategoryForm({ category, onClose }: EditCategoryFormProps) {
 
                 <div className="mt-1 flex justify-end gap-2">
                     <SecondaryButton type="button" onClick={onClose} disabled={isSubmitting}>
-                        Cancel
+                        {tCommon('cancel')}
                     </SecondaryButton>
                     <PrimaryButton type="submit" loading={isSubmitting}>
-                        Save changes
+                        {t('saveChanges')}
                     </PrimaryButton>
                 </div>
             </form>

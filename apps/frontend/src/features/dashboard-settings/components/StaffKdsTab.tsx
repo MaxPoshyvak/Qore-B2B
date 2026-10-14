@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Check, Copy, KeyRound, Link2, Loader2, RotateCcw, ShieldCheck } from 'lucide-react';
 
 import { type TenantSettingsResponse } from '@my-app/types';
@@ -9,6 +10,7 @@ import { mono } from '@/shared/lib/fonts';
 import { useKdsAuth } from '../hooks/use-kds-auth';
 
 export function StaffKdsTab({ slug, settings }: { slug: string; settings?: TenantSettingsResponse | null }) {
+    const t = useTranslations('dashboard.settings');
     const { generate, revoke } = useKdsAuth(slug);
 
     // Local mirror so the PIN/token show immediately after generate, before the
@@ -74,10 +76,10 @@ export function StaffKdsTab({ slug, settings }: { slug: string; settings?: Tenan
         <div className="space-y-6">
             <div>
                 <h2 className="text-lg font-semibold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]">
-                    Staff &amp; Kitchen Display
+                    {t('staffKdsTitle')}
                 </h2>
                 <p className="mt-1 text-sm text-[#6B6A65] dark:text-[#94938D]">
-                    Give your kitchen secure, isolated access to live orders.
+                    {t('staffKdsDesc')}
                 </p>
             </div>
 
@@ -88,11 +90,10 @@ export function StaffKdsTab({ slug, settings }: { slug: string; settings?: Tenan
                     </span>
                     <div>
                         <p className="text-[14px] font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                            Secure Kitchen Link
+                            {t('secureKitchenLink')}
                         </p>
                         <p className="mt-1 max-w-xl text-[13px] leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
-                            Generate a secure, isolated link for your kitchen staff. This link gives access to
-                            Live Orders without exposing your dashboard settings, billing, or venue controls.
+                            {t('secureKitchenLinkDesc')}
                         </p>
                     </div>
                 </div>
@@ -110,13 +111,13 @@ export function StaffKdsTab({ slug, settings }: { slug: string; settings?: Tenan
                         loading={busy === 'generate'}
                         icon={<Link2 size={16} />}
                         className="mt-5">
-                        Generate Kitchen Link
+                        {t('generateKitchenLink')}
                     </PrimaryButton>
                 ) : (
                     <div className="mt-5 space-y-4">
                         <label className="block">
                             <span className="mb-1.5 block text-[12px] font-medium uppercase tracking-wider text-[#6B6A65] dark:text-[#94938D]">
-                                Kitchen link
+                                {t('kitchenLink')}
                             </span>
                             <div className="flex items-center gap-2">
                                 <input
@@ -130,14 +131,14 @@ export function StaffKdsTab({ slug, settings }: { slug: string; settings?: Tenan
                                     onClick={copy}
                                     className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-[#3B82F6]/30 bg-[#3B82F6]/10 px-3 py-2.5 text-[13px] font-medium text-[#2563EB] transition-colors hover:border-[#3B82F6]/50 dark:text-[#60A5FA]">
                                     {copied ? <Check size={14} /> : <Copy size={14} />}
-                                    {copied ? 'Copied' : 'Copy'}
+                                    {copied ? t('copied') : t('copy')}
                                 </button>
                             </div>
                         </label>
 
                         <div>
                             <span className="mb-1.5 block text-[12px] font-medium uppercase tracking-wider text-[#6B6A65] dark:text-[#94938D]">
-                                4-digit PIN
+                                {t('pin')}
                             </span>
                             <div className="flex items-center gap-2">
                                 <div className="flex items-center gap-1.5 rounded-xl border border-[#8B5CF6]/30 bg-[#8B5CF6]/10 px-3 py-2.5">
@@ -157,12 +158,11 @@ export function StaffKdsTab({ slug, settings }: { slug: string; settings?: Tenan
                                     ) : (
                                         <RotateCcw size={14} />
                                     )}
-                                    Regenerate PIN
+                                    {t('regeneratePin')}
                                 </button>
                             </div>
                             <p className="mt-2 text-[12px] leading-relaxed text-[#9C9B95] dark:text-[#6E6D68]">
-                                Share the link and PIN with kitchen staff. Regenerating rotates both credentials and
-                                locks any open board.
+                                {t('pinDesc')}
                             </p>
                         </div>
 
@@ -172,7 +172,7 @@ export function StaffKdsTab({ slug, settings }: { slug: string; settings?: Tenan
                             disabled={busy === 'revoke'}
                             className="inline-flex items-center gap-1.5 rounded-xl border border-red-400/30 px-3 py-2 text-[13px] font-medium text-red-500 transition-colors hover:bg-red-500/10 disabled:opacity-60">
                             {busy === 'revoke' ? <Loader2 size={14} className="animate-spin" /> : <RotateCcw size={14} />}
-                            Revoke Access
+                            {t('revokeAccess')}
                         </button>
                     </div>
                 )}

@@ -6,8 +6,10 @@ import { display, mono } from '@/shared/lib/fonts';
 import { EASE } from '@/shared/config/animations';
 import { formatPrice } from '@/shared/lib/utils';
 import { useAnalyticsSales } from '../hooks/useAnalytics';
+import { useTranslations } from 'next-intl';
 
 export function SalesView({ tenantId, currency = 'USD' }: { tenantId: string; currency?: string }) {
+    const t = useTranslations('dashboard.analytics');
     const { data, isLoading } = useAnalyticsSales(tenantId);
 
     const topItems = data?.topItems ?? [];
@@ -29,10 +31,10 @@ export function SalesView({ tenantId, currency = 'USD' }: { tenantId: string; cu
                         <div>
                             <p
                                 className={`${mono.className} text-[10.5px] uppercase tracking-wider text-[#6B6A65]/70 dark:text-[#94938D]/70`}>
-                                Best sellers
+                                {t('bestSellers')}
                             </p>
                             <h3 className={`${display.className} text-[18px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                                Top Performers
+                                {t('topPerformers')}
                             </h3>
                         </div>
                     </div>
@@ -69,7 +71,7 @@ export function SalesView({ tenantId, currency = 'USD' }: { tenantId: string; cu
                                         </div>
                                         <p
                                             className={`${mono.className} mt-1 text-[10.5px] uppercase tracking-wider text-[#9C9B95] dark:text-[#6E6D68]`}>
-                                            {item.quantity} sold · {share.toFixed(0)}% of revenue
+                                            {item.quantity} {t('sold')} · {share.toFixed(0)}% {t('ofRevenue')}
                                         </p>
                                     </div>
                                 );
@@ -92,10 +94,10 @@ export function SalesView({ tenantId, currency = 'USD' }: { tenantId: string; cu
                         <div>
                             <p
                                 className={`${mono.className} text-[10.5px] uppercase tracking-wider text-[#6B6A65]/70 dark:text-[#94938D]/70`}>
-                                Needs attention
+                                {t('deadStock')}
                             </p>
                             <h3 className={`${display.className} text-[18px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                                Dead Stock
+                                {t('deadStock')}
                             </h3>
                         </div>
                     </div>
@@ -115,7 +117,7 @@ export function SalesView({ tenantId, currency = 'USD' }: { tenantId: string; cu
                                     </span>
                                     <span
                                         className={`${mono.className} text-[10.5px] uppercase tracking-wider text-[#F59E0B] dark:text-[#FBBF24]`}>
-                                        {formatPrice(item.price, currency)} · No sales
+                                        {formatPrice(item.price, currency)} · {t('noSales')}
                                     </span>
                                 </li>
                             ))}

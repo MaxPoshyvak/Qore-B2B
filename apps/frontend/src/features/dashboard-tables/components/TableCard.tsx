@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { Pencil, QrCode, Trash2, Users } from 'lucide-react';
 
 import { type Table } from '@my-app/database';
@@ -17,6 +18,8 @@ type TableCardProps = {
 };
 
 export function TableCard({ table, onViewQr, onEdit, onDelete, onToggleActive }: TableCardProps) {
+    const t = useTranslations('tablesFloor');
+
     return (
         <motion.div
             initial={{ opacity: 0, scale: 0.97 }}
@@ -42,7 +45,7 @@ export function TableCard({ table, onViewQr, onEdit, onDelete, onToggleActive }:
                     <div className="mt-2 flex flex-wrap items-center gap-2">
                         <Badge variant="secondary" className="gap-1">
                             <Users size={12} />
-                            {table.capacity} seats
+                            {t('seatsCount', { count: table.capacity })}
                         </Badge>
                         <span
                             className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${
@@ -55,7 +58,7 @@ export function TableCard({ table, onViewQr, onEdit, onDelete, onToggleActive }:
                                     table.isActive ? 'bg-[#10B981]' : 'bg-[#9C9B95]'
                                 }`}
                             />
-                            {table.isActive ? 'Active' : 'Inactive'}
+                            {table.isActive ? t('active') : t('inactive')}
                         </span>
                     </div>
                 </div>
@@ -73,7 +76,7 @@ export function TableCard({ table, onViewQr, onEdit, onDelete, onToggleActive }:
                     onClick={() => onViewQr(table)}
                     className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#3B82F6]/20 transition-opacity hover:opacity-95">
                     <QrCode size={16} />
-                    View QR
+                    {t('viewQr')}
                 </button>
                 <button
                     type="button"

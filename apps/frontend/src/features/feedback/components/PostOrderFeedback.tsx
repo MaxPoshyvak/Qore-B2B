@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Star } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { EASE } from '@/shared/config/animations';
 import { display } from '@/shared/lib/fonts';
@@ -21,14 +22,6 @@ type PostOrderFeedbackProps = {
 // Увага: у ТЗ фігурував `core_cart_session`, проте в кодовій базі він має назву `qore-cart-session`.
 const CART_SESSION_STORAGE_KEY = 'qore-cart-session';
 
-function getPrompt(rating: number): string {
-    // За низького рейтингу змінюємо текст на співчутливий
-    if (rating > 0 && rating <= 3) {
-        return "We're sorry! What went wrong?";
-    }
-    return 'Tell us more (optional)';
-}
-
 export function PostOrderFeedback({
     slug,
     orderId,
@@ -36,6 +29,7 @@ export function PostOrderFeedback({
     className,
     onSubmitted,
 }: PostOrderFeedbackProps) {
+    const t = useTranslations('reviews');
     const [rating, setRating] = useState(0);
     const [hoverRating, setHoverRating] = useState(0);
     const [comment, setComment] = useState('');
@@ -99,10 +93,10 @@ export function PostOrderFeedback({
                     <Star size={26} className="fill-[#10B981] text-[#10B981]" />
                 </motion.span>
                 <p className={`${display.className} text-lg font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                    Thank you for your feedback!
+                    {t('thankYouTitle')}
                 </p>
                 <p className="text-sm text-[#6B6A65] dark:text-[#94938D]">
-                    Your review helps us serve you better.
+                    {t('thankYouDesc')}
                 </p>
             </motion.div>
         );
@@ -111,7 +105,7 @@ export function PostOrderFeedback({
     return (
         <div className={`${className ?? ''}`}>
             <h3 className={`${display.className} text-center text-lg font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                How was your experience?
+                {t('howWasExperience')}
             </h3>
 
             {/* Великі інтерактивні зірки */}
@@ -157,28 +151,28 @@ export function PostOrderFeedback({
                         <div className="space-y-4 pt-5">
                             <label className="block">
                                 <span className="mb-1.5 block text-[13px] font-medium text-[#6B6A65] dark:text-[#94938D]">
-                                    Your Name (optional)
+                                    {t('yourName')}
                                 </span>
                                 <input
                                     type="text"
                                     value={guestName}
                                     onChange={(e) => setGuestName(e.target.value)}
                                     maxLength={60}
-                                    placeholder="e.g. Alex"
+                                    placeholder={t('namePlaceholder')}
                                     className="w-full rounded-2xl border border-black/10 bg-white/70 px-4 py-3 text-sm text-[#0A0A0C] outline-none transition-colors placeholder:text-[#9C9B95] focus:border-[#3B82F6]/50 dark:border-white/10 dark:bg-white/5 dark:text-[#F5F4F2]"
                                 />
                             </label>
 
                             <div>
                                 <label className="mb-2 block text-[13px] font-medium text-[#6B6A65] dark:text-[#94938D]">
-                                    {getPrompt(rating)}
+                                    {rating <= 3 ? t('promptNegative') : t('promptGeneral')}
                                 </label>
                                 <textarea
                                     value={comment}
                                     onChange={(e) => setComment(e.target.value)}
                                     rows={3}
                                     maxLength={500}
-                                    placeholder="Share the details of your visit…"
+                                    placeholder={t('shareDetailsPlaceholder')}
                                     className="w-full resize-none rounded-2xl border border-black/10 bg-white/70 px-4 py-3 text-sm text-[#0A0A0C] outline-none transition-colors placeholder:text-[#9C9B95] focus:border-[#3B82F6]/50 dark:border-white/10 dark:bg-white/5 dark:text-[#F5F4F2]"
                                 />
                             </div>
@@ -189,7 +183,7 @@ export function PostOrderFeedback({
                                 onClick={handleSubmit}
                                 disabled={submitMutation.isPending}
                                 className="flex w-full items-center justify-center rounded-full bg-[#0A0A0C] px-6 py-3.5 text-[14px] font-medium text-white shadow-lg shadow-[#0A0A0C]/15 transition-colors hover:bg-[#232327] disabled:opacity-60 dark:bg-[#F5F4F2] dark:text-[#0A0A0C] dark:shadow-white/10 dark:hover:bg-white">
-                                {submitMutation.isPending ? 'Submitting…' : 'Submit'}
+                                {submitMutation.isPending ? t('submitting') : t('submit')}
                             </motion.button>
                         </div>
                     </motion.div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { Clock, Users, User, Phone, MessageSquare, Loader2, CheckCircle2 } from 'lucide-react';
 
 import { type ReservationResponse, type ReservationStatusType } from '@my-app/types';
@@ -39,6 +40,7 @@ export function ReservationCard({
     isCompleting?: boolean;
     disabledTableIds?: string[];
 }) {
+    const t = useTranslations('reservations');
     const isFinished = reservation.status === 'completed' || reservation.status === 'cancelled';
 
     return (
@@ -69,7 +71,7 @@ export function ReservationCard({
                     <Clock size={14} className="text-[#3B82F6]" /> {formatTime(reservation.reservedAt)}
                 </div>
                 <div className="flex items-center gap-2 text-[#0A0A0C] dark:text-[#F5F4F2]">
-                    <Users size={14} className="text-[#3B82F6]" /> {reservation.guestsCount} guests
+                    <Users size={14} className="text-[#3B82F6]" /> {t('guestsCount', { count: reservation.guestsCount })}
                 </div>
                 <div className="flex items-center gap-2 text-[#6B6A65] dark:text-[#94938D]">
                     <Phone size={14} /> {reservation.guestPhone}
@@ -105,7 +107,7 @@ export function ReservationCard({
                     ) : (
                         <CheckCircle2 size={14} />
                     )}
-                    Mark as Completed
+                    {t('markCompleted')}
                 </button>
             )}
         </motion.div>

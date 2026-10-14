@@ -2,20 +2,21 @@
 
 import { Controller, useFormContext, type Path } from 'react-hook-form';
 import { z } from 'zod';
+import { useTranslations } from 'next-intl';
 import type { UpdateTenantSettingsDto } from '@my-app/types';
 import { workingHoursSchema } from '@my-app/types';
 import { ToggleSwitch } from '@/shared/ui/ToggleSwitch';
 
 type WorkingHours = z.infer<typeof workingHoursSchema>;
 
-const DAYS: { key: keyof WorkingHours; label: string }[] = [
-    { key: 'monday', label: 'Monday' },
-    { key: 'tuesday', label: 'Tuesday' },
-    { key: 'wednesday', label: 'Wednesday' },
-    { key: 'thursday', label: 'Thursday' },
-    { key: 'friday', label: 'Friday' },
-    { key: 'saturday', label: 'Saturday' },
-    { key: 'sunday', label: 'Sunday' },
+const DAY_KEYS: (keyof WorkingHours)[] = [
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday',
+    'sunday',
 ];
 
 const TIME_OPTIONS = Array.from({ length: 32 }, (_, i) => {
@@ -28,24 +29,26 @@ const TIME_OPTIONS = Array.from({ length: 32 }, (_, i) => {
 const field = (name: string) => name as Path<UpdateTenantSettingsDto>;
 
 export function WorkingHoursTab() {
+    const t = useTranslations('dashboard.settings');
+    const tVenue = useTranslations('venue');
     const { control } = useFormContext<UpdateTenantSettingsDto>();
 
     return (
         <div className="space-y-6">
             <div>
                 <h2 className="text-lg font-semibold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]">
-                    Working Hours
+                    {t('hoursTitle')}
                 </h2>
                 <p className="mt-1 text-sm text-[#6B6A65] dark:text-[#94938D]">
-                    Toggle each day on to set your opening and closing times. Closed days are hidden
-                    from your guests&apos; schedule.
+                    {t('hoursDesc')}
                 </p>
             </div>
 
             <div>
-                {DAYS.map(({ key, label }) => (
-                    <DayRow key={key} dayKey={key} label={label} control={control} />
-                ))}
+                {DAY_KEYS.map((key) => {
+                    const label = tVenue(`days.${key}` as any);
+                    return <DayRow key={key} dayKey={key} label={label} control={control} />;
+                })}
             </div>
         </div>
     );
@@ -60,6 +63,8 @@ function DayRow({
     label: string;
     control: ReturnType<typeof useFormContext<UpdateTenantSettingsDto>>['control'];
 }) {
+    const t = useTranslations('dashboard.settings');
+
     return (
         <Controller
             control={control}
@@ -86,20 +91,20 @@ function DayRow({
                                     <TimeSelect
                                         control={control}
                                         name={field(`workingHours.${dayKey}.openTime`)}
-                                        placeholder="Open"
+                                        placeholder={t('openPlaceholder')}
                                         ariaLabel={`${label} opening time`}
                                     />
                                     <span className="text-sm text-[#6B6A65] dark:text-[#94938D]">—</span>
                                     <TimeSelect
                                         control={control}
                                         name={field(`workingHours.${dayKey}.closeTime`)}
-                                        placeholder="Close"
+                                        placeholder={t('closePlaceholder')}
                                         ariaLabel={`${label} closing time`}
                                     />
                                 </>
                             ) : (
                                 <span className="rounded-full border border-[#E7E5E0] bg-black/[0.03] px-3 py-1 text-xs font-medium text-[#6B6A65] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D]">
-                                    Closed
+                                    {t('closedBadge')}
                                 </span>
                             )}
                         </div>

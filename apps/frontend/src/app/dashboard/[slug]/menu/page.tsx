@@ -5,19 +5,22 @@ import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigat
 import { AnimatePresence, motion } from 'framer-motion';
 import { Clock, UtensilsCrossed } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
+
 import { MenuBuilderView } from '@/features/menu-management';
 import { HappyHourView } from '@/features/happy-hour';
 import { EASE } from '@/shared/config/animations';
 import { cn } from '@/shared/lib/utils';
 
 const SECTIONS = [
-    { value: 'builder', label: 'Menu Builder', icon: UtensilsCrossed },
-    { value: 'promotions', label: 'Happy Hour', icon: Clock },
+    { value: 'builder', key: 'builder', icon: UtensilsCrossed },
+    { value: 'promotions', key: 'promotions', icon: Clock },
 ] as const;
 
 type SectionValue = (typeof SECTIONS)[number]['value'];
 
 export default function MenuManagementPage() {
+    const tSidebar = useTranslations('dashboard.sidebar');
     const { slug } = useParams<{ slug: string }>();
     const resolvedSlug = slug ?? '';
     const router = useRouter();
@@ -61,7 +64,7 @@ export default function MenuManagementPage() {
                                     : 'border-[#E7E5E0] bg-white/60 text-[#6B6A65] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D]',
                             )}>
                             <Icon size={16} strokeWidth={1.9} />
-                            {s.label}
+                            {tSidebar(s.key)}
                         </button>
                     );
                 })}

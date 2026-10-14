@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import type { PublicTenantResponse } from '@my-app/types';
 
 import { EASE } from '@/shared/config/animations';
@@ -13,8 +14,9 @@ type VenueHeroProps = {
 };
 
 export function VenueHero({ venue }: VenueHeroProps) {
+    const t = useTranslations('venue');
     const initial = venue.name.trim().charAt(0).toUpperCase() || '?';
-    const description = venue.settings?.description || `Welcome to ${venue.name}`;
+    const description = venue.settings?.description || t('welcomeTo', { name: venue.name });
     const coverUrl = venue.settings?.coverUrl ?? undefined;
     const logoUrl = venue.settings?.logoUrl ?? undefined;
     const hasLogo = Boolean(logoUrl);

@@ -87,16 +87,24 @@ export function parseWorkingHours(value: unknown): Record<DayKey, DaySchedule> |
     );
 }
 
+export type VenueStatusInfo =
+    | { status: 'not_set' }
+    | { status: 'open_now'; time: string }
+    | { status: 'closed_today'; time: string }
+    | { status: 'closed_day'; dayKey: DayKey; time: string }
+    | { status: 'closed' };
+
 export type VenueStatus = {
     isOpen: boolean;
     label: string;
     hasHours: boolean;
+    info: VenueStatusInfo;
 };
 
 export function getVenueStatus(value: unknown): VenueStatus {
     const schedule = parseWorkingHours(value);
     if (!schedule) {
-        return { isOpen: false, label: 'Hours not set', hasHours: false };
+        return { isOpen: false, label: 'Hours not set', hasHours: false, info: { status: 'not_set' } };
     }
 
     const now = new Date();
@@ -118,18 +126,21 @@ export function getVenueStatus(value: unknown): VenueStatus {
             isOpen: true,
             label: `Open until ${today.closeTime}`,
             hasHours: true,
+            info: { status: 'open_now', time: today.closeTime ?? '' },
         };
     }
 
     for (let offset = 0; offset < 7; offset++) {
         const index = (WEEK_DAYS.indexOf(todayKey) + offset) % 7;
-        const day = schedule[WEEK_DAYS[index]];
+        const nextDayKey = WEEK_DAYS[index];
+        const day = schedule[nextDayKey];
         if (!day.isOpen || !day.openTime) continue;
         if (offset === 0 && todayOpen !== null && nowMinutes < todayOpen) {
             return {
                 isOpen: false,
                 label: `Opens today at ${day.openTime}`,
                 hasHours: true,
+                info: { status: 'closed_today', time: day.openTime },
             };
         }
         if (offset > 0) {
@@ -137,11 +148,12 @@ export function getVenueStatus(value: unknown): VenueStatus {
                 isOpen: false,
                 label: `Opens ${day.label} at ${day.openTime}`,
                 hasHours: true,
+                info: { status: 'closed_day', dayKey: nextDayKey, time: day.openTime },
             };
         }
     }
 
-    return { isOpen: false, label: 'Currently closed', hasHours: true };
+    return { isOpen: false, label: 'Currently closed', hasHours: true, info: { status: 'closed' } };
 }
 
 export function getTodaySchedule(

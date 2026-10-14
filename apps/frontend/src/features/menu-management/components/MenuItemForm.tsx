@@ -27,17 +27,13 @@ import { PrimaryButton, SecondaryButton } from '@/shared/ui/PrimaryButton';
 import { cn } from '@/shared/lib/utils';
 import { toStringArray } from '@/shared/lib/menu-attributes';
 import { humanizePriceError } from '../lib/humanize-price-error';
+import { useTranslations } from 'next-intl';
 import { FormRootError } from './FormRootError';
 
-// Повні довідники — критичні для майбутнього AI-консультанта, який має вміти
-// відповідати на "що у вас без глютену?" без ручного тегування кожної страви.
-// Тепер живуть у `lib/menu-constants`, щоб бар AI-генератора ділився ними без
-// циклічного імпорту між компонентами.
-
 const TABS = [
-    { id: 'general', label: 'General' },
-    { id: 'modifiers', label: 'Modifiers' },
-    { id: 'attributes', label: 'Attributes' },
+    { id: 'general', labelKey: 'tabGeneral' },
+    { id: 'modifiers', labelKey: 'tabModifiers' },
+    { id: 'attributes', labelKey: 'tabAttributes' },
 ] as const;
 
 type TabId = (typeof TABS)[number]['id'];
@@ -119,6 +115,8 @@ type MenuItemFormProps = {
  * сценарії йдуть через цей компонент, а режим визначає `initialData`.
  */
 export function MenuItemForm({ open, tenantId, category, initialData, isPro, onClose }: MenuItemFormProps) {
+    const t = useTranslations('menuManagement');
+    const tCommon = useTranslations('common');
     const { mutateAsync: createMenuItem } = useCreateMenuItem();
     const { mutateAsync: updateMenuItem } = useUpdateMenuItem();
     const { data: categories } = useGetCategories(tenantId);
@@ -251,9 +249,9 @@ export function MenuItemForm({ open, tenantId, category, initialData, isPro, onC
         <Modal
             open={open}
             onClose={onClose}
-            title={isEdit ? 'Edit dish' : 'New dish'}
+            title={isEdit ? t('editDishTitle') : t('newDishTitle')}
             description={
-                isEdit ? initialData?.name : category ? `Adding to “${category.name}”` : undefined
+                isEdit ? initialData?.name : category ? t('addingTo', { category: category.name }) : undefined
             }
             scrollable
             className="max-w-3xl">
@@ -268,18 +266,18 @@ export function MenuItemForm({ open, tenantId, category, initialData, isPro, onC
 
                 {/* Перемикач вкладок (піл-світч) */}
                 <div className="flex gap-1 rounded-xl bg-black/5 p-1 dark:bg-white/5">
-                    {TABS.map((t) => (
+                    {TABS.map((tabItem) => (
                         <button
-                            key={t.id}
+                            key={tabItem.id}
                             type="button"
-                            onClick={() => setTab(t.id)}
+                            onClick={() => setTab(tabItem.id)}
                             className={cn(
                                 'flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                                tab === t.id
+                                tab === tabItem.id
                                     ? 'bg-white text-[#0A0A0C] shadow-sm dark:bg-[#1A1A1A] dark:text-[#F5F4F2]'
                                     : 'text-[#6B6A65] hover:text-[#0A0A0C] dark:text-[#94938D]',
                             )}>
-                            {t.label}
+                            {t(tabItem.labelKey)}
                         </button>
                     ))}
                 </div>
@@ -304,7 +302,7 @@ export function MenuItemForm({ open, tenantId, category, initialData, isPro, onC
                                         The `secure_url` is written back into `imageUrl`. */}
                                     <div>
                                         <span className="mb-1.5 block text-sm font-medium text-[#6B6A65] dark:text-[#94938D]">
-                                            Dish photo
+                                            {t('dishPhoto')}
                                         </span>
                                         <ImageUpload
                                             value={imageUrl}
@@ -324,8 +322,8 @@ export function MenuItemForm({ open, tenantId, category, initialData, isPro, onC
                                     <div className={highlightCls(highlight)}>
                                         <AuthInput
                                             id="item-name"
-                                            label="Item name"
-                                            placeholder="e.g. Flat White"
+                                            label={t('itemName')}
+                                            placeholder={t('itemNamePlaceholder')}
                                             error={errors.name?.message}
                                             autoFocus
                                             {...register('name')}
@@ -338,7 +336,7 @@ export function MenuItemForm({ open, tenantId, category, initialData, isPro, onC
                                             type="number"
                                             step="0.01"
                                             min="0"
-                                            label="Base price"
+                                            label={t('basePrice')}
                                             placeholder="$0.00"
                                             error={humanizePriceError(errors.price?.message)}
                                             {...register('price', { valueAsNumber: true })}
@@ -346,11 +344,11 @@ export function MenuItemForm({ open, tenantId, category, initialData, isPro, onC
 
                                         <div className="block">
                                             <span className="mb-1.5 block text-sm font-medium text-[#6B6A65] dark:text-[#94938D]">
-                                                Category
+                                                {t('category')}
                                             </span>
                                             <select {...register('categoryId')} className={cn(inputCls, 'h-[42px]')}>
                                                 <option value="" disabled>
-                                                    Select a category
+                                                    {t('selectCategory')}
                                                 </option>
                                                 {(categories ?? []).map((c) => (
                                                     <option key={c.id} value={c.id}>
@@ -369,8 +367,8 @@ export function MenuItemForm({ open, tenantId, category, initialData, isPro, onC
                                     <div className={highlightCls(highlight)}>
                                         <FormTextarea
                                             id="item-description"
-                                            label="Description (optional)"
-                                            placeholder="Double shot, silky microfoam…"
+                                            label={t('descriptionOptional')}
+                                            placeholder={t('descriptionPlaceholder')}
                                             rows={3}
                                             error={errors.description?.message}
                                             {...register('description')}
@@ -380,10 +378,10 @@ export function MenuItemForm({ open, tenantId, category, initialData, isPro, onC
                                     <label className="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border border-black/10 bg-white/60 px-4 py-3 dark:border-white/10 dark:bg-white/5">
                                         <span>
                                             <span className="block text-sm font-medium text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                                Available
+                                                {t('available')}
                                             </span>
                                             <span className="mt-0.5 block text-xs text-[#6B6A65] dark:text-[#94938D]">
-                                                Hide it instantly when you run out.
+                                                {t('availableDesc')}
                                             </span>
                                         </span>
                                         <ToggleSwitch
@@ -399,8 +397,7 @@ export function MenuItemForm({ open, tenantId, category, initialData, isPro, onC
                                 <>
                                     {groups.length === 0 ? (
                                         <div className="rounded-2xl border border-dashed border-[#E7E5E0] bg-white/40 px-4 py-8 text-center text-sm text-[#6B6A65] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D]">
-                                            No modifiers yet. Add options like “Size”, “Extra Toppings”, or “Remove
-                                            ingredients”.
+                                            {t('noModifiers')}
                                         </div>
                                     ) : (
                                         <div className="flex flex-col gap-5">
@@ -413,6 +410,7 @@ export function MenuItemForm({ open, tenantId, category, initialData, isPro, onC
                                                     errors={errors}
                                                     inputCls={inputCls}
                                                     onRemove={() => removeGroup(gi)}
+                                                    t={t}
                                                 />
                                             ))}
                                         </div>
@@ -425,7 +423,7 @@ export function MenuItemForm({ open, tenantId, category, initialData, isPro, onC
                                         }
                                         className="flex w-full items-center justify-center gap-1.5 rounded-2xl border border-[#3B82F6]/25 bg-[#3B82F6]/10 px-3 py-3 text-sm font-semibold text-[#2563EB] transition-colors hover:border-[#3B82F6]/50 hover:bg-[#3B82F6]/15 dark:text-[#60A5FA]">
                                         <Plus size={15} />
-                                        Add modifier group
+                                        {t('addModifierGroup')}
                                     </button>
                                 </>
                                 </div>
@@ -435,16 +433,16 @@ export function MenuItemForm({ open, tenantId, category, initialData, isPro, onC
                                 <div className={highlightCls(highlight)}>
                                 <>
                                     <PillGroup
-                                        title="Allergens"
-                                        hint="Flag anything a guest might react to."
+                                        title={t('allergensTitle')}
+                                        hint={t('allergensHint')}
                                         values={ALLERGENS}
                                         selected={allergens}
                                         onToggle={(value) => togglePill('allergens', value)}
                                     />
 
                                     <PillGroup
-                                        title="Dietary tags"
-                                        hint="Used for guest filters and search."
+                                        title={t('dietaryTagsTitle')}
+                                        hint={t('dietaryTagsHint')}
                                         values={DIETARY_TAGS}
                                         selected={tags}
                                         onToggle={(value) => togglePill('tags', value)}
@@ -461,10 +459,10 @@ export function MenuItemForm({ open, tenantId, category, initialData, isPro, onC
                 {/* Липкий футер з діями */}
                 <div className="sticky bottom-0 -mx-6 -mb-6 mt-6 flex items-center justify-end gap-2 border-t border-[#E7E5E0] bg-white/80 px-6 py-4 backdrop-blur-2xl dark:border-white/10 dark:bg-[#121215]/80">
                     <SecondaryButton type="button" onClick={onClose} disabled={isSubmitting}>
-                        Cancel
+                        {tCommon('cancel')}
                     </SecondaryButton>
                     <PrimaryButton type="submit" loading={isSubmitting}>
-                        {isEdit ? 'Save changes' : 'Save Item'}
+                        {isEdit ? t('saveChanges') : t('saveItem')}
                     </PrimaryButton>
                 </div>
             </form>
@@ -526,6 +524,7 @@ type ModifierGroupCardProps = {
     errors: MenuItemFormHook['formState']['errors'];
     inputCls: string;
     onRemove: () => void;
+    t: (key: any) => string;
 };
 
 function ModifierGroupCard({
@@ -535,6 +534,7 @@ function ModifierGroupCard({
     errors,
     inputCls,
     onRemove,
+    t,
 }: ModifierGroupCardProps) {
     // Вкладений масив опцій конкретної групи.
     const {
@@ -551,7 +551,7 @@ function ModifierGroupCard({
                 <div className="flex-1">
                     <input
                         {...register(`modifiers.${groupIndex}.name`)}
-                        placeholder="Group name (e.g. Choice of Milk)"
+                        placeholder={t('groupNamePlaceholder')}
                         className={cn(inputCls, groupError?.name && 'border-red-400/70')}
                     />
                     {groupError?.name?.message && (
@@ -570,7 +570,7 @@ function ModifierGroupCard({
             <div className="mt-4 grid grid-cols-2 gap-4">
                 <label className="block">
                     <span className="mb-1 block text-xs font-medium text-[#6B6A65] dark:text-[#94938D]">
-                        Min selections
+                        {t('minSelections')}
                     </span>
                     <input
                         type="number"
@@ -581,7 +581,7 @@ function ModifierGroupCard({
                 </label>
                 <label className="block">
                     <span className="mb-1 block text-xs font-medium text-[#6B6A65] dark:text-[#94938D]">
-                        Max selections
+                        {t('maxSelections')}
                     </span>
                     <input
                         type="number"
@@ -600,7 +600,7 @@ function ModifierGroupCard({
                             <div key={option.id} className="flex items-center gap-3">
                                 <input
                                     {...register(`modifiers.${groupIndex}.options.${oi}.name`)}
-                                    placeholder="Option name (e.g. Almond Milk)"
+                                    placeholder={t('optionNamePlaceholder')}
                                     className={cn(inputCls, 'flex-1', optionError?.name && 'border-red-400/70')}
                                 />
                                 <input
@@ -630,7 +630,7 @@ function ModifierGroupCard({
                 onClick={() => appendOption({ name: '', priceAdjustment: 0 })}
                 className="mt-4 flex items-center gap-1.5 text-sm font-medium text-[#2563EB] transition-colors hover:underline dark:text-[#60A5FA]">
                 <Plus size={14} />
-                Add option
+                {t('addOption')}
             </button>
         </div>
     );

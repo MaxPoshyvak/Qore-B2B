@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Check, Table as TableIcon, X } from 'lucide-react';
 
 import { type Table } from '@my-app/database';
+import { useTranslations } from 'next-intl';
 
 export function TableAssignmentSelect({
     tables,
@@ -19,6 +20,7 @@ export function TableAssignmentSelect({
     disabled?: boolean;
     disabledTableIds?: string[];
 }) {
+    const t = useTranslations('reservations');
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
 
@@ -41,7 +43,7 @@ export function TableAssignmentSelect({
                 className="flex w-full items-center justify-between gap-2 rounded-xl border border-[#E7E5E0] bg-white/70 px-3 py-2 text-[13px] font-medium text-[#0A0A0C] transition-colors hover:border-[#3B82F6]/40 disabled:opacity-60 dark:border-white/15 dark:bg-white/[0.04] dark:text-[#F5F4F2]">
                 <span className="flex items-center gap-1.5 truncate">
                     <TableIcon size={14} className="text-[#6B6A65] dark:text-[#94938D]" />
-                    {current ? current.name : 'Assign table'}
+                    {current ? current.name : t('assignTable')}
                 </span>
                 <ChevronDown size={15} className={`shrink-0 text-[#9C9B95] transition-transform ${open ? 'rotate-180' : ''}`} />
             </button>
@@ -62,20 +64,20 @@ export function TableAssignmentSelect({
                                     setOpen(false);
                                 }}
                                 className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-[13px] text-[#6B6A65] transition-colors hover:bg-black/5 dark:text-[#94938D] dark:hover:bg-white/5">
-                                <X size={14} /> Unassign
+                                <X size={14} /> {t('unassign')}
                             </button>
                         )}
-                        {tables.map((t) => {
-                            const selected = t.id === currentTableId;
-                            const isDisabled = disabledTableIds?.includes(t.id) && !selected;
+                        {tables.map((tItem) => {
+                            const selected = tItem.id === currentTableId;
+                            const isDisabled = disabledTableIds?.includes(tItem.id) && !selected;
                             return (
                                 <button
-                                    key={t.id}
+                                    key={tItem.id}
                                     type="button"
                                     disabled={isDisabled}
                                     onClick={() => {
                                         if (isDisabled) return;
-                                        onAssign(t.id);
+                                        onAssign(tItem.id);
                                         setOpen(false);
                                     }}
                                     className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-[13px] transition-colors ${
@@ -86,10 +88,10 @@ export function TableAssignmentSelect({
                                               : 'text-[#0A0A0C] hover:bg-black/5 dark:text-[#F5F4F2] dark:hover:bg-white/5'
                                     }`}>
                                     <span className="flex items-center gap-2 truncate">
-                                        {t.name}
+                                        {tItem.name}
                                         {isDisabled && (
                                             <span className="rounded-full bg-black/5 px-1.5 py-0.5 text-[10px] font-medium text-[#9C9B95] dark:bg-white/10 dark:text-[#6E6D68]">
-                                                Booked
+                                                {t('booked')}
                                             </span>
                                         )}
                                     </span>

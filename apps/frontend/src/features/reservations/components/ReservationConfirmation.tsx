@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, CalendarDays, Users, User, Phone, RotateCcw, XCircle, Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { type ReservationResponse } from '@my-app/types';
 import { display, mono } from '@/shared/lib/fonts';
@@ -23,6 +24,7 @@ export function ReservationConfirmation({
     reservation: ReservationResponse;
     onReset: () => void;
 }) {
+    const t = useTranslations('reservations');
     const [cancelled, setCancelled] = useState(false);
     const cancel = useCancelReservation();
 
@@ -51,12 +53,10 @@ export function ReservationConfirmation({
                 </motion.div>
 
                 <h1 className={`${display.className} mt-5 text-[24px] font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                    {cancelled ? 'Reservation cancelled' : 'Reservation confirmed!'}
+                    {cancelled ? t('reservationCancelled') : t('reservationConfirmed')}
                 </h1>
                 <p className="mt-2 text-[13.5px] leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
-                    {cancelled
-                        ? 'Your table has been released. We hope to see you another time.'
-                        : 'We look forward to hosting you. A confirmation has been noted for your name.'}
+                    {cancelled ? t('cancelledDesc') : t('confirmedDesc')}
                 </p>
             </div>
 
@@ -68,7 +68,7 @@ export function ReservationConfirmation({
                     </div>
                     <div className="flex items-center gap-2.5 text-[13.5px] text-[#0A0A0C] dark:text-[#F5F4F2]">
                         <Users size={15} className="text-[#3B82F6]" />
-                        {reservation.guestsCount} {reservation.guestsCount === 1 ? 'guest' : 'guests'}
+                        {t('guestCount', { count: reservation.guestsCount })}
                     </div>
                     <div className="flex items-center gap-2.5 text-[13.5px] text-[#0A0A0C] dark:text-[#F5F4F2]">
                         <User size={15} className="text-[#3B82F6]" />
@@ -84,7 +84,7 @@ export function ReservationConfirmation({
                         </p>
                     )}
                     <p className={`${mono.className} mt-1 text-[11px] uppercase tracking-widest text-[#9C9B95] dark:text-[#6E6D68]`}>
-                        Ref {reservation.id.slice(-6).toUpperCase()}
+                        {t('ref', { code: reservation.id.slice(-6).toUpperCase() })}
                     </p>
                 </div>
             )}
@@ -97,7 +97,7 @@ export function ReservationConfirmation({
                         disabled={cancel.isPending}
                         className="flex w-full items-center justify-center gap-2 rounded-2xl border border-red-400/30 bg-red-500/5 px-5 py-3 text-[13.5px] font-semibold text-red-500 transition-colors hover:bg-red-500/10 disabled:opacity-60">
                         {cancel.isPending ? <Loader2 size={15} className="animate-spin" /> : <XCircle size={15} />}
-                        1-Click Cancel
+                        {cancel.isPending ? t('cancelling') : t('cancelOneClick')}
                     </button>
                 )}
                 <button
@@ -105,7 +105,7 @@ export function ReservationConfirmation({
                     onClick={onReset}
                     className="flex w-full items-center justify-center gap-2 rounded-2xl border border-[#E7E5E0] bg-white/70 px-5 py-3 text-[13.5px] font-semibold text-[#0A0A0C] transition-colors hover:border-[#3B82F6]/40 dark:border-white/15 dark:bg-white/[0.04] dark:text-[#F5F4F2]">
                     <RotateCcw size={15} />
-                    Make another reservation
+                    {t('bookAnother')}
                 </button>
             </div>
         </motion.div>

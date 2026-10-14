@@ -11,6 +11,7 @@ import { useTableSessionStore } from '@/shared/store/useTableSessionStore';
 import { useAddCartItem } from '../hooks/useSharedCart';
 import { useCartUpsell } from '../hooks/useCartUpsell';
 import { pickBestDiscount, type ActiveHappyHourRule } from '../hooks/usePublicHappyHour';
+import { useTranslations } from 'next-intl';
 
 export interface CartUpsellSectionProps {
     venueSlug: string;
@@ -31,6 +32,8 @@ export function CartUpsellSection({
     activeHappyHourRules = [],
     onSelectUpsellItem,
 }: CartUpsellSectionProps) {
+    const t = useTranslations('publicMenu');
+    const tCommon = useTranslations('common');
     const { recommendations, isLoading } = useCartUpsell({
         venueSlug,
         cartItemIds,
@@ -89,11 +92,11 @@ export function CartUpsellSection({
                         <Sparkles size={11} />
                     </span>
                     <span className="text-[11px] font-bold uppercase tracking-wider text-violet-700 dark:text-violet-300">
-                        Chef's Pairings
+                        {t('chefsPairings')}
                     </span>
                 </div>
                 <span className="text-[10px] font-medium text-[#6B6A65] dark:text-[#94938D]">
-                    AI Recommended
+                    {t('aiRecommended')}
                 </span>
             </div>
 
@@ -157,7 +160,7 @@ export function CartUpsellSection({
                                     onClick={() => onSelectUpsellItem(rec.item)}
                                     aria-label={`Customize and add ${rec.item.name}`}
                                     className="inline-flex shrink-0 items-center justify-center gap-1 rounded-xl border border-violet-500/30 bg-violet-500/10 px-2.5 py-1.5 text-xs font-semibold text-violet-700 transition-colors [@media(hover:hover)]:hover:bg-violet-500/20 dark:border-violet-500/40 dark:text-violet-300">
-                                    <span>Options</span>
+                                    <span>{t('options')}</span>
                                 </button>
                             ) : (
                                 <button
@@ -171,7 +174,7 @@ export function CartUpsellSection({
                                     ) : (
                                         <Plus size={13} strokeWidth={2.5} />
                                     )}
-                                    <span>Add</span>
+                                    <span>{tCommon('add')}</span>
                                 </button>
                             )}
                         </li>

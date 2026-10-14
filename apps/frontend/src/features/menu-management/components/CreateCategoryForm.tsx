@@ -5,6 +5,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateCategorySchema, getErrorMessage, type CreateCategoryDTO } from '@my-app/types';
 
+import { useTranslations } from 'next-intl';
+
 import { useCreateCategory } from '@/entities/menu/hooks/useCategories';
 import { AuthInput } from '@/shared/ui/AuthInput';
 import { Modal } from '@/shared/ui/Modal';
@@ -18,6 +20,8 @@ type CreateCategoryFormProps = {
 };
 
 export function CreateCategoryForm({ open, tenantId, onClose }: CreateCategoryFormProps) {
+    const t = useTranslations('menuManagement');
+    const tCommon = useTranslations('common');
     const { mutateAsync: createCategory } = useCreateCategory();
 
     const {
@@ -49,13 +53,13 @@ export function CreateCategoryForm({ open, tenantId, onClose }: CreateCategoryFo
         <Modal
             open={open}
             onClose={onClose}
-            title="New category"
-            description="Group related dishes so guests can scan your menu quickly.">
+            title={t('newCategoryTitle')}
+            description={t('newCategoryDesc')}>
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
                 <AuthInput
                     id="category-name"
-                    label="Category name"
-                    placeholder="e.g. Breakfast"
+                    label={t('categoryNameLabel')}
+                    placeholder={t('categoryNamePlaceholder')}
                     error={errors.name?.message}
                     autoFocus
                     {...register('name')}
@@ -65,10 +69,10 @@ export function CreateCategoryForm({ open, tenantId, onClose }: CreateCategoryFo
 
                 <div className="mt-1 flex justify-end gap-2">
                     <SecondaryButton type="button" onClick={onClose} disabled={isSubmitting}>
-                        Cancel
+                        {tCommon('cancel')}
                     </SecondaryButton>
                     <PrimaryButton type="submit" loading={isSubmitting}>
-                        Create category
+                        {t('createCategoryBtn')}
                     </PrimaryButton>
                 </div>
             </form>

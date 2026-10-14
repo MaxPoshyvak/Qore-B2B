@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
@@ -16,6 +17,7 @@ import { AuthInput } from '@/shared/ui/AuthInput';
 import { AuthButton } from '@/shared/ui/AuthButton';
 
 export function LoginForm() {
+    const t = useTranslations('auth');
     const router = useRouter();
     const [loading, setLoading] = useState(false);
 
@@ -34,13 +36,13 @@ export function LoginForm() {
         try {
             const res = await signIn('credentials', { ...values, redirect: false });
             if (res?.error) {
-                setError('root', { message: 'Invalid email or password.' });
+                setError('root', { message: t('invalidCredentials') });
                 return;
             }
             router.push('/dashboard');
             router.refresh();
         } catch {
-            setError('root', { message: 'Something went wrong. Please try again.' });
+            setError('root', { message: t('somethingWentWrong') });
         } finally {
             setLoading(false);
         }
@@ -53,18 +55,18 @@ export function LoginForm() {
             transition={{ duration: 0.5, ease: EASE }}>
             <h1
                 className={`${display.className} text-[30px] font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                Welcome back
+                {t('loginTitle')}
             </h1>
             <p className="mb-7 mt-1.5 text-[14.5px] text-[#6B6A65] dark:text-[#94938D]">
-                Log in to your Qore dashboard.
+                {t('loginSubtitle')}
             </p>
 
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
                 <AuthInput
                     id="email"
                     type="email"
-                    label="Email"
-                    placeholder="you@venue.com"
+                    label={t('email')}
+                    placeholder={t('emailPlaceholder')}
                     error={errors.email?.message}
                     autoComplete="email"
                     {...register('email')}
@@ -72,8 +74,8 @@ export function LoginForm() {
                 <AuthInput
                     id="password"
                     type="password"
-                    label="Password"
-                    placeholder="••••••••"
+                    label={t('password')}
+                    placeholder={t('passwordPlaceholder')}
                     error={errors.password?.message}
                     autoComplete="current-password"
                     {...register('password')}
@@ -88,19 +90,19 @@ export function LoginForm() {
 
                 <div className="mt-1 flex items-center justify-end">
                     <Link href="/auth/forgot-password" className="text-[13px] text-[#3B82F6] transition-colors hover:text-[#2563EB]">
-                        Forgot password?
+                        {t('forgotPassword')}
                     </Link>
                 </div>
 
-                <AuthButton loading={loading || isSubmitting}>Log in</AuthButton>
+                <AuthButton loading={loading || isSubmitting}>{t('logIn')}</AuthButton>
             </form>
 
             <p className="mt-6 text-center text-[13.5px] text-[#6B6A65] dark:text-[#94938D]">
-                New to Qore?{' '}
+                {t('newToQore')}{' '}
                 <Link
                     href="/register"
                     className="font-medium text-[#0A0A0C] transition-colors hover:text-[#3B82F6] dark:text-[#F5F4F2] dark:hover:text-[#3B82F6]">
-                    Create an account
+                    {t('createAccountLink')}
                 </Link>
             </p>
         </motion.div>

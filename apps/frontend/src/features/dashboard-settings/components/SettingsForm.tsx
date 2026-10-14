@@ -14,6 +14,8 @@ import {
     type UpdateTenantSettingsDto,
 } from '@my-app/types';
 
+import { useTranslations } from 'next-intl';
+
 import { display } from '@/shared/lib/fonts';
 import { cn } from '@/shared/lib/utils';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
@@ -36,10 +38,10 @@ function emptyWorkingHours(): WorkingHours {
 }
 
 const TABS = [
-    { value: 'general', label: 'General' },
-    { value: 'hours', label: 'Working Hours' },
-    { value: 'kds', label: 'Staff & KDS' },
-    { value: 'billing', label: 'Billing & Plan' },
+    { value: 'general', key: 'general' },
+    { value: 'hours', key: 'hours' },
+    { value: 'kds', key: 'staffKds' },
+    { value: 'billing', key: 'billing' },
 ] as const;
 
 type TabValue = (typeof TABS)[number]['value'];
@@ -54,6 +56,7 @@ type SettingsFormProps = {
 };
 
 export function SettingsForm({ slug, initialData }: SettingsFormProps) {
+    const t = useTranslations('dashboard.settings');
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -121,31 +124,31 @@ export function SettingsForm({ slug, initialData }: SettingsFormProps) {
                 <div className="pointer-events-none  absolute right-0 -top-20 h-72 w-72 rounded-full bg-[#3B82F6]/5 blur-3xl" />
                 <header className="mb-6 md:mb-8">
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-[#3B82F6]/20 bg-[#3B82F6]/10 px-3 py-1 text-xs font-medium text-[#2563EB] dark:text-[#60A5FA]">
-                        Venue Settings
+                        {t('title')}
                     </span>
                     <h1
                         className={cn(
                             display.className,
                             'text-2xl font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2] md:text-3xl',
                         )}>
-                        Manage your venue profile &amp; preferences
+                        {t('subtitle')}
                     </h1>
                     <p className="mt-1.5 text-sm text-[#6B6A65] dark:text-[#94938D]">
-                        Update public info, Wi-Fi access, contacts, and working schedules in real time.
+                        {t('generalDesc')}
                     </p>
                     <div className="hide-scrollbar -mx-4 mt-5 flex gap-2 overflow-x-auto px-4 md:hidden">
-                        {TABS.map((t) => (
+                        {TABS.map((tTab) => (
                             <button
-                                key={t.value}
+                                key={tTab.value}
                                 type="button"
-                                onClick={() => changeTab(t.value)}
+                                onClick={() => changeTab(tTab.value)}
                                 className={cn(
                                     'shrink-0 rounded-xl border px-3.5 py-2 text-sm font-medium transition-colors',
-                                    tab === t.value
+                                    tab === tTab.value
                                         ? 'border-[#3B82F6]/20 bg-[#3B82F6]/10 text-[#2563EB] dark:text-[#60A5FA]'
                                         : 'border-[#E7E5E0] bg-white/60 text-[#6B6A65] hover:border-[#3B82F6]/30 dark:border-white/10 dark:bg-white/5 dark:text-[#94938D]',
                                 )}>
-                                {t.label}
+                                {t(tTab.key)}
                             </button>
                         ))}
                     </div>
@@ -182,21 +185,21 @@ export function SettingsForm({ slug, initialData }: SettingsFormProps) {
                                         exit={{ opacity: 0, y: 24, x: '-50%' }}
                                         transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                                         className="fixed bottom-6 left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-lg items-center justify-between gap-4 rounded-full bg-zinc-900 px-4 py-3 text-white shadow-2xl sm:px-6">
-                                        <span className="text-sm font-medium">You have unsaved changes.</span>
+                                        <span className="text-sm font-medium">{t('unsavedChanges')}</span>
                                         <div className="flex shrink-0 items-center gap-2">
                                             <button
                                                 type="button"
                                                 onClick={() => methods.reset()}
                                                 disabled={isSubmitting || isPending}
                                                 className="rounded-full px-3 py-2 text-xs font-medium text-zinc-300 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-50">
-                                                Reset
+                                                {t('reset')}
                                             </button>
                                             <PrimaryButton
                                                 type="submit"
                                                 loading={isSubmitting || isPending}
                                                 size="sm"
                                                 className="rounded-full bg-white px-4 text-zinc-900 shadow-none hover:bg-zinc-100">
-                                                Save Changes
+                                                {isSubmitting || isPending ? t('saving') : t('saveChanges')}
                                             </PrimaryButton>
                                         </div>
                                     </motion.div>

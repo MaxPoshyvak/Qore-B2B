@@ -11,6 +11,8 @@ import { BaseHeader } from '@/shared/ui/BaseHeader';
 import { AmbientBackground } from '@/shared/ui/AmbientBackground';
 import { display } from '@/shared/lib/fonts';
 import { EASE } from '@/shared/config/animations';
+import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
+import { useTranslations } from 'next-intl';
 import type { Tenant } from '@my-app/database';
 
 const container = {
@@ -31,6 +33,7 @@ function planLabel(plan?: string | null): { text: string; business: boolean } {
 }
 
 export function DashboardHubView({ tenants, userName }: { tenants: Tenant[]; userName?: string }) {
+    const t = useTranslations('dashboard.hub');
     const { theme, toggle, mounted } = useTheme();
     const [copied, setCopied] = useState<string | null>(null);
     const isBusinessPlan = tenants.some((tenant) => tenant.subscriptionPlan?.toLowerCase() === 'business');
@@ -53,13 +56,16 @@ export function DashboardHubView({ tenants, userName }: { tenants: Tenant[]; use
 
             {/* Header */}
             <BaseHeader>
-                {mounted && <ThemeToggle theme={theme} toggle={toggle} />}
+                <div className="flex items-center gap-2">
+                    <LanguageSwitcher />
+                    {mounted && <ThemeToggle theme={theme} toggle={toggle} />}
+                </div>
                 {isBusinessPlan && (
                     <Link
                         href="/onboarding"
                         className="flex items-center gap-1.5 rounded-full bg-[#0A0A0C] px-4 py-2 text-[13.5px] font-medium text-white transition-colors hover:bg-[#232327] dark:bg-[#F5F4F2] dark:text-[#0A0A0C] dark:hover:bg-white">
                         <Plus size={15} strokeWidth={2.25} />
-                        Add venue
+                        {t('addVenue')}
                     </Link>
                 )}
             </BaseHeader>
@@ -69,14 +75,14 @@ export function DashboardHubView({ tenants, userName }: { tenants: Tenant[]; use
                 <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }}>
                     <span className="inline-flex items-center gap-2 rounded-full border border-[#8B5CF6]/25 bg-[#8B5CF6]/5 px-3 py-1 text-[12px] font-medium text-[#8B5CF6] dark:text-[#A78BFA]">
                         <Sparkles size={13} />
-                        Multi-Venue Active
+                        {t('multiVenueActive')}
                     </span>
                     <h1
                         className={`${display.className} mt-4 text-[36px] font-bold leading-[1.05] tracking-tight sm:text-[46px]`}>
-                        {userName ? `Welcome back, ${userName}` : 'Select a workspace'}
+                        {userName ? t('welcomeBack', { name: userName }) : t('selectWorkspace')}
                     </h1>
                     <p className="mt-2 max-w-xl text-[15px] text-[#6B6A65] dark:text-[#94938D]">
-                        You&apos;re managing {tenants.length} venues under your Business Network. Pick where you want to dive in.
+                        {t('managingVenues', { count: tenants.length })}
                     </p>
                 </motion.div>
 
@@ -128,9 +134,9 @@ export function DashboardHubView({ tenants, userName }: { tenants: Tenant[]; use
                                         </button>
                                     </div>
 
-                                    <div className="mt-auto flex items-center justify-end pt-6">
+                                     <div className="mt-auto flex items-center justify-end pt-6">
                                         <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#3B82F6] opacity-0 transition-all group-hover:translate-x-1 group-hover:opacity-100">
-                                            Open <ArrowRight size={14} />
+                                            {t('open')} <ArrowRight size={14} />
                                         </span>
                                     </div>
                                 </Link>
@@ -150,10 +156,10 @@ export function DashboardHubView({ tenants, userName }: { tenants: Tenant[]; use
                                     <Plus size={24} strokeWidth={2} />
                                 </motion.span>
                                 <h3 className="mt-4 text-[16px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                    New Venue
+                                    {t('newVenue')}
                                 </h3>
                                 <p className="mt-1 text-[13px] text-[#6B6A65] dark:text-[#94938D]">
-                                    Expand your network
+                                    {t('expandNetwork')}
                                 </p>
                             </Link>
                         </motion.div>

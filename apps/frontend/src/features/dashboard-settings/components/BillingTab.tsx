@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { Clock, Loader2 } from 'lucide-react';
@@ -28,6 +29,7 @@ export function BillingTab({
     subscriptionStatus: initialStatus = 'active',
     subscriptionExpiresAt: initialExpiresAt = null,
 }: BillingTabProps) {
+    const t = useTranslations('dashboard.settings');
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
@@ -230,9 +232,9 @@ export function BillingTab({
                 <div className="flex items-center gap-3 rounded-2xl border border-[#3B82F6]/30 bg-[#3B82F6]/10 px-5 py-4 text-sm text-[#2563EB] dark:border-[#3B82F6]/20 dark:bg-[#3B82F6]/15 dark:text-[#60A5FA]">
                     <Loader2 size={18} className="shrink-0 animate-spin" />
                     <div>
-                        <p className="font-semibold">Confirming your subscription with Stripe...</p>
+                        <p className="font-semibold">{t('confirmingStripe')}</p>
                         <p className="text-xs opacity-80">
-                            Activating your subscription. This takes just a moment...
+                            {t('activatingSub')}
                         </p>
                     </div>
                 </div>
@@ -243,23 +245,17 @@ export function BillingTab({
                 <div className="flex items-center gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-5 py-4 text-sm text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/15 dark:text-amber-400">
                     <Clock size={18} className="shrink-0 text-amber-500" />
                     <p className="font-medium">
-                        Plan cancels on{' '}
-                        <span className="font-semibold underline">{formattedCancelDate}</span>. You
-                        still have access until then.
+                        {t('planCancelsOn', { date: formattedCancelDate })}
                     </p>
                 </div>
             )}
 
             <div>
                 <h2 className="text-lg font-semibold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]">
-                    Billing &amp; Plan
+                    {t('billingTitle')}
                 </h2>
                 <p className="mt-1 text-sm text-[#6B6A65] dark:text-[#94938D]">
-                    Choose the plan that fits your venue. You are currently on the{' '}
-                    <span className="font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                        {currentPlanMeta?.tier ?? 'Free'}
-                    </span>{' '}
-                    plan.
+                    {t('billingDesc', { plan: currentPlanMeta?.tier ?? 'Free' })}
                 </p>
             </div>
 
@@ -274,7 +270,7 @@ export function BillingTab({
                     let disabled = isPolling;
 
                     if (isCurrent && effectivePlan !== 'free') {
-                        ctaText = 'Manage Subscription';
+                        ctaText = t('manageSubscription');
                         onCtaClick = () => handleManage(plan.id);
                     } else if (isCurrent && effectivePlan === 'free') {
                         disabled = true;

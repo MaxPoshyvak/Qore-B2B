@@ -2,12 +2,15 @@
 
 import { motion } from 'framer-motion';
 import { LayoutGrid, Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { EASE } from '@/shared/config/animations';
 import { display } from '@/shared/lib/fonts';
 
 /** Shown when a venue has no categories yet. */
 export function MenuEmptyState({ onAddCategory }: { onAddCategory: () => void }) {
+    const t = useTranslations('menuManagement');
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -26,11 +29,10 @@ export function MenuEmptyState({ onAddCategory }: { onAddCategory: () => void })
 
             <h3
                 className={`${display.className} relative mt-6 text-2xl font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                Your menu is a blank canvas
+                {t('emptyTitle')}
             </h3>
             <p className="relative mt-2 max-w-md text-sm leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
-                Categories group your dishes — think “Breakfast”, “Coffee” or “Desserts”. Create your first one to
-                start building the menu your guests will see.
+                {t('emptyDesc')}
             </p>
 
             <motion.button
@@ -41,7 +43,7 @@ export function MenuEmptyState({ onAddCategory }: { onAddCategory: () => void })
                 transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                 className="relative mt-7 inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#3B82F6]/25 transition-opacity hover:opacity-95">
                 <Plus size={17} strokeWidth={2.4} />
-                Add your first category
+                {t('addFirstCategory')}
             </motion.button>
         </motion.div>
     );

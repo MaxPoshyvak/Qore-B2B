@@ -4,12 +4,15 @@ import { motion } from 'framer-motion';
 import { LayoutGrid, Plus } from 'lucide-react';
 
 import { EASE } from '@/shared/config/animations';
+import { useTranslations } from 'next-intl';
 
 type TablesEmptyStateProps = {
     onAdd: () => void;
 };
 
 export function TablesEmptyState({ onAdd }: TablesEmptyStateProps) {
+    const t = useTranslations('tablesFloor');
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -20,18 +23,17 @@ export function TablesEmptyState({ onAdd }: TablesEmptyStateProps) {
                 <LayoutGrid size={24} />
             </div>
             <h3 className={`mt-5 text-lg font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                No tables yet
+                {t('emptyTitle')}
             </h3>
             <p className="mt-2 max-w-sm text-sm leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
-                Create your first table to generate a QR code. Guests scan it to open your menu and
-                start a shared session.
+                {t('emptyDesc')}
             </p>
             <button
                 type="button"
                 onClick={onAdd}
                 className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[#3B82F6]/20 transition-opacity hover:opacity-95">
                 <Plus size={17} strokeWidth={2.4} />
-                Add table
+                {t('addTable')}
             </button>
         </motion.div>
     );

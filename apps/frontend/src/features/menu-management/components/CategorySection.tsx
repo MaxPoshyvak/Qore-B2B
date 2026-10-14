@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
 import type { MenuCategoryWithItemsResponse, MenuItemResponse } from '@my-app/types';
+import { useTranslations } from 'next-intl';
 
 import { EASE } from '@/shared/config/animations';
 import { cn } from '@/shared/lib/utils';
@@ -28,6 +29,7 @@ export function CategorySection({
     onRenameCategory,
     onDeleteCategory,
 }: CategorySectionProps) {
+    const t = useTranslations('menuManagement');
     const [menuOpen, setMenuOpen] = useState(false);
     const itemCount = category.items.length;
 
@@ -48,7 +50,7 @@ export function CategorySection({
                             {category.name}
                         </h3>
                         <span className="rounded-full border border-black/5 bg-black/[0.04] px-2.5 py-0.5 text-xs font-medium text-[#6B6A65] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D]">
-                            {itemCount} {itemCount === 1 ? 'dish' : 'dishes'}
+                            {t('dishesCount', { count: itemCount })}
                         </span>
                     </div>
                 </div>
@@ -59,7 +61,7 @@ export function CategorySection({
                         onClick={() => onAddItem(category)}
                         className="inline-flex items-center gap-1.5 rounded-xl border border-[#3B82F6]/30 bg-[#3B82F6]/10 px-3.5 py-2 text-xs font-semibold text-[#2563EB] shadow-xs transition-all hover:border-[#3B82F6]/50 hover:bg-[#3B82F6]/15 active:scale-95 dark:text-[#60A5FA]">
                         <Plus size={14} />
-                        Add dish
+                        {t('addDish')}
                     </button>
 
                     <div className="relative">
@@ -89,7 +91,7 @@ export function CategorySection({
                                             }}
                                             className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs font-medium text-[#0A0A0C] transition-colors hover:bg-black/5 dark:text-[#F5F4F2] dark:hover:bg-white/5">
                                             <Pencil size={13} />
-                                            Rename
+                                            {t('rename')}
                                         </button>
                                         <button
                                             type="button"
@@ -99,7 +101,7 @@ export function CategorySection({
                                             }}
                                             className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs font-medium text-red-500 transition-colors hover:bg-red-500/10">
                                             <Trash2 size={13} />
-                                            Delete
+                                            {t('delete')}
                                         </button>
                                     </motion.div>
                                 </>
@@ -136,10 +138,10 @@ export function CategorySection({
                         </div>
                         <div>
                             <p className="text-sm font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                Add first dish
+                                {t('addFirstDish')}
                             </p>
                             <p className="mt-1 text-xs text-[#6B6A65] dark:text-[#94938D]">
-                                Create manually or draft with AI
+                                {t('createOrDraftAi')}
                             </p>
                         </div>
                     </motion.button>

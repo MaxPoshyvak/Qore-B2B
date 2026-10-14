@@ -6,6 +6,8 @@ import type { PublicMenuVenueResponse } from '@my-app/types';
 import { EASE } from '@/shared/config/animations';
 import { display } from '@/shared/lib/fonts';
 
+import { useTranslations } from 'next-intl';
+
 import { getTodaySchedule } from '../lib/venue-hours';
 import { LiveStatusBadge } from './LiveStatusBadge';
 
@@ -14,6 +16,7 @@ type VenueHeaderProps = {
 };
 
 export function VenueHeader({ venue }: VenueHeaderProps) {
+    const t = useTranslations('publicMenu');
     const workingHours = venue.workingHours;
     const todayInfo = getTodaySchedule(workingHours);
 
@@ -70,7 +73,7 @@ export function VenueHeader({ venue }: VenueHeaderProps) {
                     <LiveStatusBadge workingHours={workingHours} />
                     {todayInfo && (
                         <span className="text-[13px] text-[#6B6A65] dark:text-[#94938D]">
-                            {todayInfo.isOpen ? 'Open' : 'Closed'} • {todayInfo.schedule}
+                            {todayInfo.isOpen ? t('open') : t('closed')} • {todayInfo.schedule}
                         </span>
                     )}
                 </div>

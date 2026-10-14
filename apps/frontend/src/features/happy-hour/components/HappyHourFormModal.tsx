@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
 import { Percent, DollarSign, Power } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import {
     CreateHappyHourSchema,
@@ -22,21 +23,6 @@ import { cn } from '@/shared/lib/utils';
 
 import { RuleBuilder, type RuleScope } from './RuleBuilder';
 import type { RuleBuilderGroup } from '../hooks/useRuleBuilder';
-
-const DAY_OPTIONS = [
-    { value: 1, label: 'Mon' },
-    { value: 2, label: 'Tue' },
-    { value: 3, label: 'Wed' },
-    { value: 4, label: 'Thu' },
-    { value: 5, label: 'Fri' },
-    { value: 6, label: 'Sat' },
-    { value: 0, label: 'Sun' },
-] as const;
-
-const DISCOUNT_OPTIONS = [
-    { value: 'PERCENTAGE' as const, label: 'Percent %', icon: Percent },
-    { value: 'FIXED' as const, label: 'Fixed $', icon: DollarSign },
-];
 
 const EMPTY_FORM: CreateHappyHourDto = {
     name: '',
@@ -66,6 +52,23 @@ export function HappyHourFormModal({
     onSubmit,
     isPending,
 }: HappyHourFormModalProps) {
+    const t = useTranslations('happyHour');
+
+    const dayOptions = [
+        { value: 1, label: t('days.mon') },
+        { value: 2, label: t('days.tue') },
+        { value: 3, label: t('days.wed') },
+        { value: 4, label: t('days.thu') },
+        { value: 5, label: t('days.fri') },
+        { value: 6, label: t('days.sat') },
+        { value: 0, label: t('days.sun') },
+    ];
+
+    const discountOptions = [
+        { value: 'PERCENTAGE' as const, label: t('percent'), icon: Percent },
+        { value: 'FIXED' as const, label: t('fixed'), icon: DollarSign },
+    ];
+
     const form = useForm<CreateHappyHourDto>({
         resolver: zodResolver(CreateHappyHourSchema),
         defaultValues: EMPTY_FORM,
@@ -166,8 +169,8 @@ export function HappyHourFormModal({
         <Modal
             open={open}
             onClose={onClose}
-            title={editing ? 'Edit Happy Hour rule' : 'Create Happy Hour rule'}
-            description="Time-boxed discounts that boost your off-peak hours."
+            title={editing ? t('editTitle') : t('createTitle')}
+            description={t('modalDesc')}
             scrollable
             className="max-w-xl w-full"
             maxHeightClass="max-h-[85vh]">
@@ -175,8 +178,8 @@ export function HappyHourFormModal({
                 {/* === NAME === */}
                 <AuthInput
                     id="hh-name"
-                    label="Rule name"
-                    placeholder="e.g. Friday Cocktails"
+                    label={t('ruleName')}
+                    placeholder={t('ruleNamePlaceholder')}
                     error={form.formState.errors.name?.message}
                     {...form.register('name')}
                 />
@@ -184,10 +187,10 @@ export function HappyHourFormModal({
                 {/* === DAYS === */}
                 <div>
                     <span className="mb-2 block text-xs font-medium text-[#0A0A0C] dark:text-[#F5F4F2]">
-                        Days of week
+                        {t('daysOfWeek')}
                     </span>
                     <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                        {DAY_OPTIONS.map((day) => {
+                        {dayOptions.map((day) => {
                             const active = days.includes(day.value);
                             return (
                                 <button
@@ -217,14 +220,14 @@ export function HappyHourFormModal({
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
                     <AuthInput
                         id="hh-start"
-                        label="Start time"
+                        label={t('startTime')}
                         type="time"
                         error={form.formState.errors.startTime?.message}
                         {...form.register('startTime')}
                     />
                     <AuthInput
                         id="hh-end"
-                        label="End time"
+                        label={t('endTime')}
                         type="time"
                         error={form.formState.errors.endTime?.message}
                         {...form.register('endTime')}
@@ -235,10 +238,10 @@ export function HappyHourFormModal({
                 <div className="grid grid-cols-1 items-end gap-3 sm:grid-cols-2 sm:gap-4">
                     <div>
                         <span className="mb-1.5 block text-xs font-medium text-[#6B6A65] dark:text-[#94938D]">
-                            Discount Type
+                            {t('discountType')}
                         </span>
                         <div className="flex h-[42px] rounded-xl border border-[#E7E5E0] bg-white p-1 dark:border-[#232327] dark:bg-[#141417]">
-                            {DISCOUNT_OPTIONS.map((opt) => {
+                            {discountOptions.map((opt) => {
                                 const Icon = opt.icon;
                                 const active = discountType === opt.value;
                                 return (
@@ -266,7 +269,7 @@ export function HappyHourFormModal({
                     <div className="min-w-0">
                         <AuthInput
                             id="hh-value"
-                            label={discountType === 'PERCENTAGE' ? 'Discount (% off)' : 'Discount ($ off)'}
+                            label={discountType === 'PERCENTAGE' ? `${t('discountAmount')} (%)` : `${t('discountAmount')} ($)`}
                             type="number"
                             min={0}
                             step="0.01"
@@ -280,7 +283,7 @@ export function HappyHourFormModal({
                 {/* === RULE BUILDER === */}
                 <div className="border-t border-[#E7E5E0] pt-4 dark:border-[#232327]">
                     <span className="mb-2 block text-xs font-medium text-[#0A0A0C] dark:text-[#F5F4F2]">
-                        Apply rule to
+                        {t('pickCategoriesDishes')}
                     </span>
                     <RuleBuilder
                         scope={scope}
@@ -296,7 +299,7 @@ export function HappyHourFormModal({
                     <div className="flex items-center justify-between rounded-xl border border-[#E7E5E0] bg-white/60 px-4 py-3 dark:border-[#232327] dark:bg-[#141417]/60">
                         <span className="inline-flex items-center gap-2 text-xs font-medium text-[#0A0A0C] dark:text-[#F5F4F2]">
                             <Power size={14} className="text-[#6B6A65] dark:text-[#94938D]" />
-                            Promotion active
+                            {t('activeStatus')}
                         </span>
                         <Switch checked={isActive} onChange={setIsActive} />
                     </div>
@@ -305,10 +308,10 @@ export function HappyHourFormModal({
                 {/* === ACTIONS === */}
                 <div className="flex justify-end gap-2 border-t border-[#E7E5E0] pt-4 dark:border-[#232327]">
                     <SecondaryButton type="button" onClick={onClose} disabled={isPending}>
-                        Cancel
+                        {t('cancel')}
                     </SecondaryButton>
                     <PrimaryButton type="submit" loading={isPending}>
-                        {editing ? 'Save changes' : 'Create rule'}
+                        {editing ? t('saveChanges') : t('createRule')}
                     </PrimaryButton>
                 </div>
             </form>
