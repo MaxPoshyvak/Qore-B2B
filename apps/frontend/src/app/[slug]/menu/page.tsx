@@ -17,6 +17,8 @@ import { PublicMenuList } from '@/features/public-menu/components/PublicMenuList
 import { PublicMenuSkeleton } from '@/features/public-menu/components/PublicMenuSkeleton';
 import { StickyCategoryNav } from '@/features/public-menu/components/StickyCategoryNav';
 import { VenueHeader } from '@/features/public-menu/components/VenueHeader';
+import { MenuSearchAndFilter } from '@/features/public-menu/components/MenuSearchAndFilter';
+import { useMenuFilters } from '@/features/public-menu/hooks/useMenuFilters';
 import { CartBanner } from '@/features/public-menu/components/CartBanner';
 import { CartDrawer } from '@/features/public-menu/components/CartDrawer';
 import { OrderSuccessOverlay } from '@/features/public-menu/components/OrderSuccessOverlay';
@@ -130,6 +132,26 @@ export default function PublicMenuPage() {
     // (з урахуванням локального часу гостя та daysOfWeek).
     const { activeRules: activeHappyHourRules } = usePublicHappyHour({ slug: resolvedSlug });
 
+    const {
+        searchQuery,
+        setSearchQuery,
+        sortBy,
+        setSortBy,
+        selectedTags,
+        toggleTag,
+        onlyHappyHour,
+        setOnlyHappyHour,
+        resetFilters,
+        availableTags,
+        hasHappyHourDeals,
+        filteredCategories,
+        totalMatches,
+        isFiltered,
+    } = useMenuFilters({
+        categories: data?.categories,
+        activeHappyHourRules,
+    });
+
     // Реальний трекінг перегляду меню: спрацьовує рівно один раз при відкритті
     useEffect(() => {
         trackMenuViewOnce(resolvedSlug, tableId ?? undefined);
@@ -215,12 +237,30 @@ export default function PublicMenuPage() {
                 ) : (
                     <>
                         <VenueHeader venue={data.venue} />
-                        <StickyCategoryNav categories={data.categories} />
+                        <MenuSearchAndFilter
+                            searchQuery={searchQuery}
+                            onSearchChange={setSearchQuery}
+                            sortBy={sortBy}
+                            onSortChange={setSortBy}
+                            selectedTags={selectedTags}
+                            onTagToggle={toggleTag}
+                            availableTags={availableTags}
+                            onlyHappyHour={onlyHappyHour}
+                            onHappyHourToggle={() => setOnlyHappyHour((prev) => !prev)}
+                            hasHappyHourDeals={hasHappyHourDeals}
+                            isFiltered={isFiltered}
+                            onResetFilters={resetFilters}
+                            totalMatches={totalMatches}
+                        />
+                        {filteredCategories.length > 0 && (
+                            <StickyCategoryNav categories={filteredCategories} />
+                        )}
                         <PublicMenuList
-                            categories={data.categories}
+                            categories={filteredCategories}
                             tableId={tableId}
                             takeawaySessionId={takeawaySessionId}
                             activeHappyHourRules={activeHappyHourRules}
+                            onResetFilters={isFiltered ? resetFilters : undefined}
                         />
                     </>
                 )}
