@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, ConflictException, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException, ConflictException, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { MailerService } from '../mailer/mailer.service';
@@ -14,6 +14,8 @@ const VERIFICATION_TTL_MS = 15 * 60 * 1000;
 
 @Injectable()
 export class AuthService {
+    private readonly logger = new Logger(AuthService.name);
+
     constructor(
         private readonly prisma: PrismaService,
         private readonly jwtService: JwtService,
@@ -109,7 +111,10 @@ export class AuthService {
 
         const magicLink = `${env.FRONTEND_URL}/api/auth/verify-link?token=${token}`;
 
-        await this.mailer.sendVerificationEmail({ email, name, otp, magicLink });
+        // Fire-and-forget in background so register & resend-code HTTP responses return instantly
+        this.mailer.sendVerificationEmail({ email, name, otp, magicLink }).catch((err) => {
+            this.logger.error(`Failed to send verification email to ${email}: ${err.message}`);
+        });
     }
 
     async verifyOtp(dto: VerifyOtpDto): Promise<AuthSuccessResponse> {
@@ -219,7 +224,9 @@ export class AuthService {
             });
 
             const resetLink = `${env.FRONTEND_URL}/api/auth/reset-link?token=${rawToken}`;
-            await this.mailer.sendPasswordResetEmail({ email: user.email, name: user.name, resetLink });
+            this.mailer.sendPasswordResetEmail({ email: user.email, name: user.name, resetLink }).catch((err) => {
+                this.logger.error(`Failed to send password reset email to ${user.email}: ${err.message}`);
+            });
         }
 
         return {

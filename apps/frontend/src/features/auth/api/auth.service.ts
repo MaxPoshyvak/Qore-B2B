@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api-client';
-import { AuthSuccessResponse, RegisterDTO, VerifyOtpDTO, VerificationSentResponse, ForgotPasswordDTO, ResetPasswordDTO } from '@my-app/types/auth';
+import { AuthSuccessResponse, RegisterDTO, VerifyOtpDTO, VerificationSentResponse, ForgotPasswordDTO, ResetPasswordDTO } from '@my-app/types';
 
 export class AuthService {
     static async register(dto: RegisterDTO): Promise<AuthSuccessResponse> {

@@ -41,6 +41,7 @@ export function RegisterForm() {
             });
             if (res?.error) {
                 setError('root', { message: 'Account created, but sign-in failed. Try logging in.' });
+                setLoading(false);
                 return;
             }
             router.push(`/auth/verify-email?email=${encodeURIComponent(values.email)}`);
@@ -49,7 +50,6 @@ export function RegisterForm() {
             setError('root', {
                 message: err instanceof Error ? err.message : 'Registration failed. Please try again.',
             });
-        } finally {
             setLoading(false);
         }
     }

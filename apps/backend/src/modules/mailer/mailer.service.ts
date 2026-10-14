@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { env } from '../../config/env';
 
 @Injectable()
 export class MailerService {
+    private readonly logger = new Logger(MailerService.name);
     private readonly transporter: nodemailer.Transporter;
 
     constructor() {
@@ -15,10 +16,14 @@ export class MailerService {
                 user: env.SMTP_USER,
                 pass: env.SMTP_PASS,
             },
+            connectionTimeout: 5000,
+            greetingTimeout: 5000,
+            socketTimeout: 10000,
         });
     }
 
     async sendVerificationEmail(input: { email: string; name: string | null; otp: string; magicLink: string }) {
+        this.logger.log(`📧 [Verification] Code: ${input.otp} | Link: ${input.magicLink} -> To: ${input.email}`);
         const firstName = input.name?.split(' ')[0] ?? 'there';
 
         const html = this.buildVerificationTemplate({
@@ -27,15 +32,22 @@ export class MailerService {
             magicLink: input.magicLink,
         });
 
-        await this.transporter.sendMail({
-            from: env.MAIL_FROM,
-            to: input.email,
-            subject: 'Verify your Qore email',
-            html,
-        });
+        try {
+            await this.transporter.sendMail({
+                from: env.MAIL_FROM,
+                to: input.email,
+                subject: 'Verify your Qore email',
+                html,
+            });
+            this.logger.log(`✅ Verification email sent to ${input.email}`);
+        } catch (error) {
+            const msg = error instanceof Error ? error.message : String(error);
+            this.logger.error(`❌ Failed to send verification email to ${input.email}: ${msg}`);
+        }
     }
 
     async sendPasswordResetEmail(input: { email: string; name: string | null; resetLink: string }) {
+        this.logger.log(`🔑 [Password Reset] Link: ${input.resetLink} -> To: ${input.email}`);
         const firstName = input.name?.split(' ')[0] ?? 'there';
 
         const html = this.buildPasswordResetTemplate({
@@ -43,12 +55,18 @@ export class MailerService {
             resetLink: input.resetLink,
         });
 
-        await this.transporter.sendMail({
-            from: env.MAIL_FROM,
-            to: input.email,
-            subject: 'Reset your Qore password',
-            html,
-        });
+        try {
+            await this.transporter.sendMail({
+                from: env.MAIL_FROM,
+                to: input.email,
+                subject: 'Reset your Qore password',
+                html,
+            });
+            this.logger.log(`✅ Password reset email sent to ${input.email}`);
+        } catch (error) {
+            const msg = error instanceof Error ? error.message : String(error);
+            this.logger.error(`❌ Failed to send password reset email to ${input.email}: ${msg}`);
+        }
     }
 
     private buildVerificationTemplate(input: { firstName: string; otp: string; magicLink: string }) {
