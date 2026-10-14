@@ -32,6 +32,7 @@
     "priceDesc": "Cena: od nejvyšší",
     "happyHourOnly": "Akce Happy Hour",
     "clearFilters": "Resetovat filtry",
+    "close": "Zavřít",
     "dishesFound": "{count, plural, one {# jídlo} few {# jídla} many {# jídel} other {# jídel}}",
     "all": "Vše",
     "tags": {

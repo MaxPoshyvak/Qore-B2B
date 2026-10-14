@@ -32,6 +32,7 @@
     "priceDesc": "Price: High to Low",
     "happyHourOnly": "Happy Hour Deals",
     "clearFilters": "Reset filters",
+    "close": "Close",
     "dishesFound": "{count, plural, one {# dish} other {# dishes}}",
     "all": "All",
     "tags": {

@@ -17,7 +17,6 @@ import { useGetPublicTenant } from '@/entities/tenant/hooks/useGetPublicTenant';
 import { isReservedSlug, type ReservationResponse } from '@my-app/types';
 import { BookingForm } from '@/features/reservations/components/BookingForm';
 import { ReservationConfirmation } from '@/features/reservations/components/ReservationConfirmation';
-import { GuestNavTabs } from '@/features/public-menu/components/GuestNavTabs';
 
 export default function GuestBookingPage() {
     const t = useTranslations('reservations');
@@ -58,7 +57,6 @@ export default function GuestBookingPage() {
             </BaseHeader>
 
             <div className="mx-auto max-w-6xl px-6 pb-24 pt-4">
-                <GuestNavTabs slug={resolvedSlug} activeTab="book" className="mb-6 max-w-md" />
                 {/* Venue context (mobile) — desktop relies on the glass header above */}
                 <div className="mb-6 md:hidden">
                     <span className="inline-flex items-center gap-1.5 text-[12px] font-medium uppercase tracking-wider text-[#9C9B95] dark:text-[#6E6D68]">

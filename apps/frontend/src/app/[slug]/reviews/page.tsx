@@ -21,7 +21,6 @@ import { VenueFooter } from '@/features/public-venue/components';
 import { MenuNotFound } from '@/features/public-menu/components/MenuNotFound';
 import { isReservedSlug } from '@my-app/types';
 import { PostOrderFeedback, usePublicFeedbacks } from '@/features/feedback';
-import { GuestNavTabs } from '@/features/public-menu/components/GuestNavTabs';
 
 function DisplayStars({ rating }: { rating: number }) {
     return (
@@ -84,7 +83,6 @@ export default function PublicReviewsPage() {
                     <MenuNotFound slug={resolvedSlug} />
                 ) : (
                     <>
-                        <GuestNavTabs slug={resolvedSlug} activeTab="reviews" className="mt-4 mb-2" />
                         <Reveal>
                             <div className="mt-6">
                                 <div className="flex items-center gap-2">

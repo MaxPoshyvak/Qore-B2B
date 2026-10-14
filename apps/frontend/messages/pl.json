@@ -32,6 +32,7 @@
     "priceDesc": "Cena: malejąco",
     "happyHourOnly": "Promocje Happy Hour",
     "clearFilters": "Wyczyść filtry",
+    "close": "Zamknij",
     "dishesFound": "{count, plural, one {# danie} few {# dania} many {# dań} other {# dań}}",
     "all": "Wszystkie",
     "tags": {

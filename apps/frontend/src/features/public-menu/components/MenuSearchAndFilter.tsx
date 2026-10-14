@@ -260,7 +260,7 @@ export function MenuSearchAndFilter({
                                     type="button"
                                     onClick={() => setIsFilterOpen(false)}
                                     className="rounded-xl bg-[#3B82F6] px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-blue-600">
-                                    {t('close', { defaultValue: 'Done' })}
+                                    {t('close')}
                                 </button>
                             </div>
                         </div>

@@ -32,6 +32,7 @@
     "priceDesc": "Ціна: від високої",
     "happyHourOnly": "Знижки Happy Hour",
     "clearFilters": "Скинути фільтри",
+    "close": "Закрити",
     "dishesFound": "{count, plural, one {# страва} few {# страви} many {# страв} other {# страв}}",
     "all": "Усі",
     "tags": {

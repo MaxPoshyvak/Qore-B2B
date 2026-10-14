@@ -227,7 +227,7 @@ export default function PublicMenuPage() {
                 <TableSessionInitializer tenantSlug={resolvedSlug} />
             </Suspense>
 
-            <div className="mx-auto max-w-6xl px-6 pb-32">
+            <div className="mx-auto max-w-6xl px-4 pb-32 sm:px-6">
                 <ReservationAlert slug={resolvedSlug} tableId={tableId} />
 
                 {isLoading ? (

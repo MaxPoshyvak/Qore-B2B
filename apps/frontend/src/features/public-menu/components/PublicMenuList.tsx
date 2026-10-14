@@ -70,7 +70,7 @@ export function PublicMenuList({
     return (
         <div className="mt-8 flex flex-col gap-12">
             {categories.map((category: PublicMenuCategoryResponse) => (
-                <section key={category.id} id={`cat-${category.id}`} className="scroll-mt-36">
+                <section key={category.id} id={`cat-${category.id}`} className="scroll-mt-32 sm:scroll-mt-36">
                     <div className="mb-5 flex items-center justify-between border-b border-black/5 pb-3 dark:border-white/5">
                         <h2
                             className={`${display.className} text-[22px] font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2] sm:text-[28px]`}>

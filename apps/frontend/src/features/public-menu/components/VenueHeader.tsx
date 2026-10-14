@@ -6,14 +6,12 @@ import type { PublicMenuVenueResponse } from '@my-app/types';
 import { EASE } from '@/shared/config/animations';
 import { display } from '@/shared/lib/fonts';
 import { LiveStatusBadge } from './LiveStatusBadge';
-import { GuestNavTabs } from './GuestNavTabs';
 
 type VenueHeaderProps = {
     venue: PublicMenuVenueResponse;
-    activeTab?: 'menu' | 'book' | 'reviews' | 'overview';
 };
 
-export function VenueHeader({ venue, activeTab = 'menu' }: VenueHeaderProps) {
+export function VenueHeader({ venue }: VenueHeaderProps) {
     const workingHours = venue.workingHours;
     const coverUrl = venue.coverUrl ?? undefined;
     const hasCover = Boolean(coverUrl);
@@ -69,11 +67,6 @@ export function VenueHeader({ venue, activeTab = 'menu' }: VenueHeaderProps) {
                     <div className="shrink-0 self-start sm:self-end sm:pb-1">
                         <LiveStatusBadge workingHours={workingHours} />
                     </div>
-                </div>
-
-                {/* Apple-style segmented navigation tabs */}
-                <div className="mt-5">
-                    <GuestNavTabs slug={venue.slug} activeTab={activeTab} />
                 </div>
             </div>
         </motion.header>

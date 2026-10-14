@@ -32,6 +32,7 @@
     "priceDesc": "Preis: absteigend",
     "happyHourOnly": "Happy-Hour-Angebote",
     "clearFilters": "Filter zurücksetzen",
+    "close": "Schließen",
     "dishesFound": "{count, plural, one {# Gericht} other {# Gerichte}}",
     "all": "Alle",
     "tags": {
