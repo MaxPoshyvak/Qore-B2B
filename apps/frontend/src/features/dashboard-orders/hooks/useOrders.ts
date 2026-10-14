@@ -2,12 +2,13 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { type CreateOrderDto, type OrderResponse, type OrderStatusType } from '@my-app/types';
+import { type CreateOrderDto, type OrderHistoryQueryDto, type OrderResponse, type OrderStatusType } from '@my-app/types';
 import { OrdersApi } from '../api/orders.api';
 import { useKdsStore } from '@/shared/store/useKdsStore';
 import { ApiError } from '@/lib/api-client';
 
 const activeOrdersKey = (tenantId: string) => ['orders', 'active', tenantId] as const;
+const historyOrdersKey = (tenantId: string, query?: OrderHistoryQueryDto) => ['orders', 'history', tenantId, query] as const;
 
 /** Polls live orders every 5s for a near-real-time kitchen view. */
 export const useActiveOrders = (tenantId: string | undefined) => {
@@ -16,6 +17,15 @@ export const useActiveOrders = (tenantId: string | undefined) => {
         queryFn: () => OrdersApi.getActive(tenantId as string),
         enabled: Boolean(tenantId),
         refetchInterval: 5000,
+    });
+};
+
+/** Fetches historical orders with optional status, search, and date range filters. */
+export const useOrderHistory = (tenantId: string | undefined, query?: OrderHistoryQueryDto) => {
+    return useQuery({
+        queryKey: historyOrdersKey(tenantId ?? '', query),
+        queryFn: () => OrdersApi.getHistory(tenantId as string, query),
+        enabled: Boolean(tenantId),
     });
 };
 

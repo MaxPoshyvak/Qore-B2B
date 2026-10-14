@@ -4,6 +4,7 @@ import { PrismaService } from 'src/modules/prisma/prisma.service';
 import {
     CreateOrderDto,
     HappyHourRuleResponse,
+    OrderHistoryQueryDto,
     OrderResponse,
     PublicOrderResponse,
     UpdateOrderStatusDto,
@@ -232,6 +233,49 @@ export class OrdersService {
             },
             include: { items: { include: { menuItem: true } }, table: true },
             orderBy: { createdAt: 'desc' },
+        });
+
+        return orders as unknown as OrderResponse[];
+    }
+
+    async getOrderHistory(tenantId: string, query: OrderHistoryQueryDto): Promise<OrderResponse[]> {
+        const where: Prisma.OrderWhereInput = {
+            tenantId,
+        };
+
+        if (query.status && query.status !== 'all') {
+            where.status = query.status as OrderStatus;
+        }
+
+        if (query.search) {
+            const term = query.search.trim();
+            where.OR = [
+                { id: { contains: term, mode: 'insensitive' } },
+                { customerName: { contains: term, mode: 'insensitive' } },
+                { table: { name: { contains: term, mode: 'insensitive' } } },
+            ];
+        }
+
+        if (query.startDate || query.endDate) {
+            where.createdAt = {};
+            if (query.startDate) {
+                where.createdAt.gte = new Date(query.startDate);
+            }
+            if (query.endDate) {
+                const end = new Date(query.endDate);
+                end.setHours(23, 59, 59, 999);
+                where.createdAt.lte = end;
+            }
+        }
+
+        const orders = await this.prisma.order.findMany({
+            where,
+            include: {
+                items: { include: { menuItem: true } },
+                table: true,
+            },
+            orderBy: { createdAt: 'desc' },
+            take: query.limit || 50,
         });
 
         return orders as unknown as OrderResponse[];

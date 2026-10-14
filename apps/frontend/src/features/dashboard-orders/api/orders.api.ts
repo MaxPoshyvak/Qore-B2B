@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api-client';
-import { type CreateOrderDto, type OrderResponse, type OrderStatusType } from '@my-app/types';
+import { type CreateOrderDto, type OrderHistoryQueryDto, type OrderResponse, type OrderStatusType } from '@my-app/types';
 
 const ORDERS_URL = '/orders';
 
@@ -7,6 +7,20 @@ const ORDERS_URL = '/orders';
 export class OrdersApi {
     static async getActive(tenantId: string): Promise<OrderResponse[]> {
         const res = await apiClient<OrderResponse[]>(`${ORDERS_URL}/active/${tenantId}`);
+        return res.data;
+    }
+
+    /** GET /orders/history/:tenantId — historical orders with filtering. */
+    static async getHistory(tenantId: string, query?: OrderHistoryQueryDto): Promise<OrderResponse[]> {
+        const params = new URLSearchParams();
+        if (query?.status) params.set('status', query.status);
+        if (query?.search) params.set('search', query.search);
+        if (query?.startDate) params.set('startDate', query.startDate);
+        if (query?.endDate) params.set('endDate', query.endDate);
+        if (query?.limit) params.set('limit', String(query.limit));
+
+        const qs = params.toString() ? `?${params.toString()}` : '';
+        const res = await apiClient<OrderResponse[]>(`${ORDERS_URL}/history/${tenantId}${qs}`);
         return res.data;
     }
 

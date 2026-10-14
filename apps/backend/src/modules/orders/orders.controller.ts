@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto, OrderResponse, PublicOrderResponse, SuccessResponse, UpdateOrderStatusDto } from '@my-app/types';
+import { OrderHistoryQueryDto } from './dto/orders.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { TenantGuard } from 'src/common/guards/tenant.guard';
 import { Public } from 'src/common/decorators/public.decorator';
@@ -63,6 +64,16 @@ export class OrdersController {
         @Param('tenantId') tenantId: string,
     ): Promise<SuccessResponse<OrderResponse[]>> {
         const data = await this.ordersService.getActiveOrders(tenantId);
+        return { success: true, data };
+    }
+
+    @UseGuards(JwtAuthGuard, TenantGuard)
+    @Get('history/:tenantId')
+    async getHistory(
+        @Param('tenantId') tenantId: string,
+        @Query() query: OrderHistoryQueryDto,
+    ): Promise<SuccessResponse<OrderResponse[]>> {
+        const data = await this.ordersService.getOrderHistory(tenantId, query);
         return { success: true, data };
     }
 

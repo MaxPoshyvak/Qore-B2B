@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Loader2, Plus } from 'lucide-react';
+import { Loader2, Plus, Printer } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { type Table } from '@my-app/database';
@@ -12,6 +12,7 @@ import { useDeleteTable } from '../hooks/useDeleteTable';
 import { TableCard } from './TableCard';
 import { TableFormModal } from './TableFormModal';
 import { TableQrModal } from './TableQrModal';
+import { BulkQrPrintModal } from './BulkQrPrintModal';
 import { TablesEmptyState } from './TablesEmptyState';
 
 type TableGridProps = {
@@ -30,6 +31,7 @@ export function TableGrid({ slug, venueName }: TableGridProps) {
 
     const [qrTable, setQrTable] = useState<Table | null>(null);
     const [qrOpen, setQrOpen] = useState(false);
+    const [bulkPrintOpen, setBulkPrintOpen] = useState(false);
 
     const [deleteTarget, setDeleteTarget] = useState<Table | null>(null);
 
@@ -54,20 +56,30 @@ export function TableGrid({ slug, venueName }: TableGridProps) {
 
     return (
         <div>
-            <div className="mb-6 flex items-center justify-between">
+            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-sm text-[#6B6A65] dark:text-[#94938D]">
                     {tables && tables.length > 0
                         ? t('tableCount', { count: tables.length })
                         : t('manageSeating')}
                 </p>
                 {tables && tables.length > 0 && (
-                    <button
-                        type="button"
-                        onClick={openAdd}
-                        className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#3B82F6]/20 transition-opacity hover:opacity-95">
-                        <Plus size={16} strokeWidth={2.4} />
-                        {t('addTable')}
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <button
+                            type="button"
+                            onClick={() => setBulkPrintOpen(true)}
+                            className="inline-flex items-center gap-2 rounded-2xl border border-[#E7E5E0] bg-white px-3.5 py-2.5 text-sm font-semibold text-[#0A0A0C] shadow-sm transition-colors hover:border-[#3B82F6]/40 dark:border-[#232327] dark:bg-[#141417] dark:text-[#F5F4F2] cursor-pointer">
+                            <Printer size={16} />
+                            <span>Print All QR Codes</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={openAdd}
+                            className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#3B82F6]/20 transition-opacity hover:opacity-95 cursor-pointer">
+                            <Plus size={16} strokeWidth={2.4} />
+                            {t('addTable')}
+                        </button>
+                    </div>
                 )}
             </div>
 
@@ -107,6 +119,16 @@ export function TableGrid({ slug, venueName }: TableGridProps) {
                     table={qrTable}
                     venueName={venueName}
                     onRegenerated={(updated) => setQrTable(updated)}
+                />
+            )}
+
+            {tables && (
+                <BulkQrPrintModal
+                    open={bulkPrintOpen}
+                    onClose={() => setBulkPrintOpen(false)}
+                    tables={tables}
+                    slug={slug}
+                    venueName={venueName}
                 />
             )}
 

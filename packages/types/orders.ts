@@ -27,6 +27,16 @@ export const updateOrderStatusSchema = z.object({
 
 export type UpdateOrderStatusDto = z.infer<typeof updateOrderStatusSchema>;
 
+export const orderHistoryQuerySchema = z.object({
+    status: z.enum(['all', ...ORDER_STATUSES]).optional(),
+    search: z.string().optional(),
+    startDate: z.string().optional(),
+    endDate: z.string().optional(),
+    limit: z.coerce.number().optional().default(50),
+});
+
+export type OrderHistoryQueryDto = z.infer<typeof orderHistoryQuerySchema>;
+
 /* ------------------------------------------------------------------ */
 /*  Order API response contracts                                      */
 /* ------------------------------------------------------------------ */
