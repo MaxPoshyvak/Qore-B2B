@@ -27,7 +27,7 @@ export function LiveStatusBadge({ workingHours }: { workingHours: unknown }) {
     if (!hasHours) {
         return (
             <span
-                className={`${mono.className} inline-flex items-center gap-2 rounded-full border border-black/10 bg-black/5 px-3 py-1.5 text-[11px] uppercase tracking-widest text-[#6B6A65] dark:border-white/15 dark:bg-white/10 dark:text-[#94938D]`}>
+                className={`${mono.className} inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-black/5 px-2.5 py-1 text-[10px] sm:text-[11px] font-medium uppercase tracking-wider text-[#6B6A65] dark:border-white/15 dark:bg-white/10 dark:text-[#94938D]`}>
                 <span className="h-1.5 w-1.5 rounded-full bg-[#9C9B95]" />
                 {displayLabel}
             </span>
@@ -44,10 +44,10 @@ export function LiveStatusBadge({ workingHours }: { workingHours: unknown }) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className={`${mono.className} inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] uppercase tracking-widest ${tone}`}>
-            <span className="relative flex h-2 w-2">
+            className={`${mono.className} inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] sm:text-[11px] font-medium uppercase tracking-wider ${tone}`}>
+            <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2">
                 <span className={`absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 ${dot}`} />
-                <span className={`relative inline-flex h-2 w-2 rounded-full ${dot}`} />
+                <span className={`relative inline-flex h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full ${dot}`} />
             </span>
             {displayLabel}
         </motion.span>

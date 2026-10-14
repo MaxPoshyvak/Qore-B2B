@@ -10,10 +10,32 @@ interface StickyCategoryNavProps {
 
 export function StickyCategoryNav({ categories }: StickyCategoryNavProps) {
     const [activeId, setActiveId] = useState<string>('');
+    const [stickyTop, setStickyTop] = useState<number>(80);
     const activeIdRef = useRef<string>('');
     const navRef = useRef<HTMLDivElement>(null);
     const wrapperRef = useRef<HTMLDivElement>(null);
     const isClickScrolling = useRef<boolean>(false);
+
+    // Dynamically calculate sticky top offset so category bar never touches or overlaps BaseHeader
+    useEffect(() => {
+        const updateStickyTop = () => {
+            const header = document.querySelector('header');
+            if (header) {
+                const headerTop = window.innerWidth < 640 ? 12 : 16;
+                const headerHeight = header.offsetHeight;
+                const gap = window.innerWidth < 640 ? 10 : 12;
+                setStickyTop(headerTop + headerHeight + gap);
+            }
+        };
+
+        updateStickyTop();
+        window.addEventListener('resize', updateStickyTop);
+        const timer = setTimeout(updateStickyTop, 150);
+        return () => {
+            window.removeEventListener('resize', updateStickyTop);
+            clearTimeout(timer);
+        };
+    }, []);
 
     const centerCategoryPill = (categoryId: string) => {
         const navElement = navRef.current;
@@ -30,10 +52,8 @@ export function StickyCategoryNav({ categories }: StickyCategoryNavProps) {
         const handleScrollSpy = () => {
             if (isClickScrolling.current || !categories || categories.length === 0) return;
 
-            const navBarHeight = wrapperRef.current?.offsetHeight ?? 44;
-            const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
-            const topOffset = isMobile ? 68 : 76;
-            const triggerLine = topOffset + navBarHeight + 20;
+            const navBarHeight = wrapperRef.current?.offsetHeight ?? 38;
+            const triggerLine = stickyTop + navBarHeight + 16;
 
             let currentActiveId = '';
 
@@ -66,7 +86,7 @@ export function StickyCategoryNav({ categories }: StickyCategoryNavProps) {
         handleScrollSpy();
 
         return () => window.removeEventListener('scroll', handleScrollSpy);
-    }, [categories]);
+    }, [categories, stickyTop]);
 
     const handleCategoryClick = (id: string, e: React.MouseEvent) => {
         e.preventDefault();
@@ -80,10 +100,8 @@ export function StickyCategoryNav({ categories }: StickyCategoryNavProps) {
         setActiveId(sectionId);
         centerCategoryPill(sectionId);
 
-        const navBarHeight = wrapperRef.current?.offsetHeight ?? 44;
-        const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
-        const topOffset = isMobile ? 68 : 76;
-        const offset = topOffset + navBarHeight + 14;
+        const navBarHeight = wrapperRef.current?.offsetHeight ?? 38;
+        const offset = stickyTop + navBarHeight + 12;
 
         const y = element.getBoundingClientRect().top + window.scrollY - offset;
         window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
@@ -98,10 +116,11 @@ export function StickyCategoryNav({ categories }: StickyCategoryNavProps) {
     return (
         <div
             ref={wrapperRef}
-            className="sticky top-[68px] sm:top-[76px] z-30 my-3 rounded-2xl border border-[#E7E5E0]/80 bg-white/80 p-1.5 shadow-xs backdrop-blur-xl dark:border-white/10 dark:bg-[#0A0A0C]/80">
+            style={{ top: `${stickyTop}px` }}
+            className="sticky z-30 my-2 rounded-2xl border border-black/5 bg-white/80 p-1 shadow-xs backdrop-blur-xl dark:border-white/10 dark:bg-[#0A0A0C]/80 sm:my-3 sm:p-1.5">
             <div
                 ref={navRef}
-                className="flex items-center gap-1.5 overflow-x-auto hide-scrollbar px-1 py-0.5 scroll-smooth">
+                className="flex items-center gap-1.5 overflow-x-auto hide-scrollbar px-0.5 py-0.5 scroll-smooth">
                 {categories.map((category) => {
                     const sectionId = `cat-${category.id}`;
                     const isActive = activeId === sectionId;
@@ -112,7 +131,7 @@ export function StickyCategoryNav({ categories }: StickyCategoryNavProps) {
                             type="button"
                             data-category={sectionId}
                             onClick={(e) => handleCategoryClick(category.id, e)}
-                            className={`${body.className} relative shrink-0 rounded-xl px-3.5 py-1.5 text-xs font-semibold whitespace-nowrap transition-colors duration-150 ${
+                            className={`${body.className} relative shrink-0 rounded-xl px-3 py-1 text-xs font-semibold whitespace-nowrap transition-colors duration-150 ${
                                 isActive
                                     ? 'bg-[#3B82F6] text-white shadow-xs'
                                     : 'text-[#6B6A65] hover:bg-black/5 hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:bg-white/5 dark:hover:text-[#F5F4F2]'

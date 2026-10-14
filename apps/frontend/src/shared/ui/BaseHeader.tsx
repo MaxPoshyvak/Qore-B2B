@@ -29,7 +29,7 @@ export function BaseHeader({ children, centerContent, bottomContent, scrolled = 
                 className="mx-auto max-w-6xl rounded-[2rem] border border-[#E7E5E0]/80 bg-white/70 backdrop-blur-xl dark:border-white/10 dark:bg-black/40">
                 {/* Flex layout: logo on the left, center content with overflow safety,
                     happy hour banner + actions on the right without squeezing */}
-                <div className="flex items-center justify-between w-full px-4 py-2.5 sm:px-5 gap-2 sm:gap-4">
+                <div className="flex items-center justify-between w-full px-3.5 py-1.5 sm:px-5 sm:py-2.5 gap-2 sm:gap-4">
                     {/* Left column: logo */}
                     <div className="flex items-center justify-start shrink-0">
                         <Logo />
