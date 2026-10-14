@@ -22,7 +22,7 @@ export function LandingView() {
     if (!mounted) return null;
 
     return (
-        <div className={`${body.className} relative min-h-screen text-[#0A0A0C] antialiased dark:text-[#F5F4F2]`}>
+        <div className={`${body.className} relative min-h-screen overflow-x-clip text-[#0A0A0C] antialiased dark:text-[#F5F4F2]`}>
             <style
                 dangerouslySetInnerHTML={{
                     __html: `

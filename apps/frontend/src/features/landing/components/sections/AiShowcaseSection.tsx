@@ -23,8 +23,8 @@ export function AiShowcaseSection() {
     ];
 
     return (
-        <section id="ai" className="mx-auto max-w-6xl px-6 py-24">
-            <div className="grid grid-cols-1 gap-14 md:grid-cols-2 md:items-center">
+        <section id="ai" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+            <div className="grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-14 md:items-center">
                 <Reveal>
                     <Eyebrow tone="violet">{t('badge')}</Eyebrow>
                     <h2 className={`${display.className} text-[26px] font-bold leading-tight sm:text-[34px]`}>
@@ -33,14 +33,14 @@ export function AiShowcaseSection() {
                         </span>{' '}
                         {t('titlePart2')}
                     </h2>
-                    <p className="mt-5 text-[14.5px] leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
+                    <p className="mt-4 sm:mt-5 text-[14.5px] leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
                         {t('subtitle')}
                     </p>
                     <MagneticButton
                         primary
                         showSparks
                         href="#pricing"
-                        className={`${body.className} mt-8 inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#8B5CF6] px-6 py-3.5 text-[14px] font-medium text-white transition-colors hover:bg-[#A78BFA]`}>
+                        className={`${body.className} mt-6 sm:mt-8 inline-flex cursor-pointer items-center gap-2 rounded-full bg-[#8B5CF6] px-6 py-3.5 text-[14px] font-medium text-white transition-colors hover:bg-[#A78BFA]`}>
                         {t('upgradeCta')}
                         <ArrowRight size={16} />
                     </MagneticButton>
@@ -48,10 +48,10 @@ export function AiShowcaseSection() {
 
                 <Reveal delay={0.1}>
                     <AIDemo />
-                    <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                    <div className="mt-3.5 grid grid-cols-1 gap-2.5 sm:grid-cols-3 sm:gap-3">
                         {localizedPills.map((f) => (
                             <TiltCard key={f.title} strength={5}>
-                                <GlowCard className="p-4" glow="139,92,246">
+                                <GlowCard className="p-3.5 sm:p-4" glow="139,92,246">
                                     <div className="flex items-center gap-2.5">
                                         <motion.span
                                             whileHover={{ scale: 1.1, rotate: 15 }}

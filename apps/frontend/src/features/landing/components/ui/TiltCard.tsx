@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop';
 
 export function TiltCard({
     children,
@@ -12,6 +13,7 @@ export function TiltCard({
     className?: string;
     strength?: number;
 }) {
+    const isDesktop = useIsDesktop();
     const ref = useRef<HTMLDivElement>(null);
     const rx = useMotionValue(0);
     const ry = useMotionValue(0);
@@ -19,6 +21,7 @@ export function TiltCard({
     const sry = useSpring(ry, { stiffness: 500, damping: 30, mass: 0.2 });
 
     function onMove(e: React.MouseEvent<HTMLDivElement>) {
+        if (!isDesktop) return;
         const rect = ref.current?.getBoundingClientRect();
         if (!rect) return;
         const px = (e.clientX - rect.left) / rect.width - 0.5;
@@ -27,8 +30,13 @@ export function TiltCard({
         rx.set(-py * strength);
     }
     function onLeave() {
+        if (!isDesktop) return;
         rx.set(0);
         ry.set(0);
+    }
+
+    if (!isDesktop) {
+        return <div className={className}>{children}</div>;
     }
 
     return (
@@ -37,7 +45,7 @@ export function TiltCard({
             onMouseMove={onMove}
             onMouseLeave={onLeave}
             style={{ rotateX: srx, rotateY: sry, transformPerspective: 1200 }}
-            className={`h-full ${className}`}>
+            className={className}>
             {children}
         </motion.div>
     );

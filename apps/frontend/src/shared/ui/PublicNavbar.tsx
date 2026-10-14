@@ -70,23 +70,28 @@ export function PublicNavbar({ theme, toggleTheme }: { theme: Theme; toggleTheme
         <AnimatePresence>
             {mobileOpen && (
                 <motion.div
-                    initial={{ opacity: 0, y: -8, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -8, scale: 0.98 }}
-                    transition={{ duration: 0.2, ease: EASE }}
-                    className="overflow-hidden rounded-2xl border border-black/10 bg-white/95 p-4 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-[#141417]/95">
-                    <div className="flex flex-col gap-3">
-                        {PUBLIC_NAV_LINKS.map((l) => (
-                            <Link
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.28, ease: EASE }}
+                    className="overflow-hidden border-t border-[#E7E5E0]/70 dark:border-white/10">
+                    <div className="flex flex-col gap-2.5 px-5 pb-5 pt-3">
+                        {PUBLIC_NAV_LINKS.map((l, i) => (
+                            <motion.div
                                 key={l.href}
-                                href={l.href}
-                                onClick={() => setMobileOpen(false)}
-                                className="py-2 text-[14px] text-[#6B6A65] transition-colors hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:text-[#F5F4F2]">
-                                {getNavLabel(l)}
-                            </Link>
+                                initial={{ opacity: 0, x: -8 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.2, delay: i * 0.03, ease: EASE }}>
+                                <Link
+                                    href={l.href}
+                                    onClick={() => setMobileOpen(false)}
+                                    className="block py-1.5 text-[14px] font-medium text-[#6B6A65] transition-colors hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:text-[#F5F4F2]">
+                                    {getNavLabel(l)}
+                                </Link>
+                            </motion.div>
                         ))}
                         <div className="my-1 border-t border-black/5 dark:border-white/5" />
-                        <div className="flex items-center justify-between pt-1">
+                        <div className="flex items-center justify-between py-1">
                             <span className="text-[12px] font-medium text-[#6B6A65] dark:text-[#94938D]">
                                 Theme / Language
                             </span>
@@ -99,7 +104,7 @@ export function PublicNavbar({ theme, toggleTheme }: { theme: Theme; toggleTheme
                             <Link
                                 href="/dashboard"
                                 onClick={() => setMobileOpen(false)}
-                                className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] py-2.5 text-[13px] font-semibold text-white">
+                                className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] py-2.5 text-[13px] font-semibold text-white shadow-sm transition-opacity hover:opacity-95">
                                 <LayoutDashboard size={14} />
                                 {t('nav.dashboard')}
                             </Link>
@@ -108,13 +113,13 @@ export function PublicNavbar({ theme, toggleTheme }: { theme: Theme; toggleTheme
                                 <Link
                                     href="/login"
                                     onClick={() => setMobileOpen(false)}
-                                    className="flex w-full items-center justify-center rounded-xl border border-black/10 py-2.5 text-[13px] font-medium text-[#0A0A0C] dark:border-white/10 dark:text-[#F5F4F2]">
+                                    className="flex w-full items-center justify-center rounded-xl border border-black/10 py-2.5 text-[13px] font-medium text-[#0A0A0C] transition-colors hover:bg-black/5 dark:border-white/10 dark:text-[#F5F4F2] dark:hover:bg-white/5">
                                     {t('nav.signIn')}
                                 </Link>
                                 <Link
                                     href="/register"
                                     onClick={() => setMobileOpen(false)}
-                                    className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] py-2.5 text-[13px] font-semibold text-white">
+                                    className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] py-2.5 text-[13px] font-semibold text-white shadow-sm transition-opacity hover:opacity-95">
                                     {t('nav.getStarted')}
                                     <ArrowRight size={13} />
                                 </Link>

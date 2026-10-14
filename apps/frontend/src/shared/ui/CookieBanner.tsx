@@ -104,19 +104,19 @@ export function CookieBanner() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 24, scale: 0.98 }}
                         transition={{ duration: 0.35, ease: EASE }}
-                        className="fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-xl sm:bottom-6 sm:right-6 sm:left-auto">
-                        <div className="relative overflow-hidden rounded-[26px] border border-black/10 bg-white/95 p-5 shadow-2xl shadow-black/10 backdrop-blur-2xl dark:border-white/10 dark:bg-[#141417]/95 dark:shadow-black/50">
-                            <div className="flex items-start gap-4">
-                                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#3B82F6]/15 to-[#8B5CF6]/15 text-[#3B82F6] dark:text-[#60A5FA]">
-                                    <Cookie size={20} strokeWidth={2.2} />
+                        className="fixed bottom-3 left-3 right-3 z-50 mx-auto max-w-xl sm:bottom-6 sm:right-6 sm:left-auto">
+                        <div className="relative overflow-hidden rounded-2xl border border-black/10 bg-white/95 p-4 shadow-2xl shadow-black/10 backdrop-blur-2xl dark:border-white/10 dark:bg-[#141417]/95 dark:shadow-black/50 sm:rounded-[26px] sm:p-5">
+                            <div className="flex items-start gap-3 sm:gap-4">
+                                <span className="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#3B82F6]/15 to-[#8B5CF6]/15 text-[#3B82F6] dark:text-[#60A5FA] sm:rounded-2xl">
+                                    <Cookie className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={2.2} />
                                 </span>
 
-                                <div className="flex-1 pr-1">
+                                <div className="flex-1 min-w-0 pr-1">
                                     <h3
-                                        className={`${display.className} text-[15px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
+                                        className={`${display.className} text-[14px] sm:text-[15px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
                                         {t('title')}
                                     </h3>
-                                    <p className="mt-1 text-[13px] leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
+                                    <p className="mt-1 text-[12px] sm:text-[13px] leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
                                         {t('description')}{' '}
                                         <Link
                                             href="/privacy"
@@ -125,24 +125,24 @@ export function CookieBanner() {
                                         </Link>
                                     </p>
 
-                                    <div className="mt-4 flex flex-wrap items-center gap-2">
+                                    <div className="mt-3.5 sm:mt-4 flex flex-wrap items-center gap-2">
                                         <button
                                             type="button"
                                             onClick={handleAcceptAll}
-                                            className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-4 py-2 text-[12.5px] font-semibold text-white shadow-md shadow-[#3B82F6]/20 transition-opacity hover:opacity-95">
+                                            className="inline-flex items-center justify-center rounded-lg sm:rounded-xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-3.5 py-1.5 sm:px-4 sm:py-2 text-[12px] sm:text-[12.5px] font-semibold text-white shadow-md shadow-[#3B82F6]/20 transition-opacity hover:opacity-95">
                                             {t('acceptAll')}
                                         </button>
                                         <button
                                             type="button"
                                             onClick={handleEssentialOnly}
-                                            className="inline-flex items-center justify-center rounded-xl border border-[#E7E5E0] bg-white px-3.5 py-2 text-[12.5px] font-medium text-[#0A0A0C] transition-colors hover:bg-black/5 dark:border-[#232327] dark:bg-white/5 dark:text-[#F5F4F2] dark:hover:bg-white/10">
+                                            className="inline-flex items-center justify-center rounded-lg sm:rounded-xl border border-[#E7E5E0] bg-white px-3 py-1.5 sm:px-3.5 sm:py-2 text-[12px] sm:text-[12.5px] font-medium text-[#0A0A0C] transition-colors hover:bg-black/5 dark:border-[#232327] dark:bg-white/5 dark:text-[#F5F4F2] dark:hover:bg-white/10">
                                             {t('essentialOnly')}
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() => setIsModalOpen(true)}
-                                            className="inline-flex items-center gap-1.5 px-2.5 py-2 text-[12px] font-medium text-[#6B6A65] transition-colors hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:text-[#F5F4F2]">
-                                            <SlidersHorizontal size={13} />
+                                            className="inline-flex items-center gap-1.5 px-2 py-1.5 text-[11.5px] sm:text-[12px] font-medium text-[#6B6A65] transition-colors hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:text-[#F5F4F2]">
+                                            <SlidersHorizontal size={12} />
                                             {t('customize')}
                                         </button>
                                     </div>

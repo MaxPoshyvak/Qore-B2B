@@ -20,8 +20,8 @@ export function SplitBillSection() {
     ];
 
     return (
-        <section className="border-y border-[#E7E5E0] bg-[#F2F1EE]/60 dark:border-[#232327] dark:bg-[#0F0F12]/60">
-            <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-6 py-20 md:grid-cols-2 md:py-24">
+        <section className="overflow-hidden border-y border-[#E7E5E0] bg-[#F2F1EE]/60 dark:border-[#232327] dark:bg-[#0F0F12]/60">
+            <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-4 py-16 sm:px-6 sm:py-20 md:grid-cols-2 md:py-24">
                 <Reveal>
                     <Eyebrow>{t('badge')}</Eyebrow>
                     <h2 className={`${display.className} text-[26px] font-bold leading-tight sm:text-[34px]`}>

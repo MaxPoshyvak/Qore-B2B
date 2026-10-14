@@ -22,7 +22,7 @@ export function FeatureCard({
     iconType?: 'default' | 'lightning' | 'coffee';
 }) {
     return (
-        <TiltCard strength={6} className={span ? 'sm:col-span-2' : ''}>
+        <TiltCard strength={6} className={span ? 'h-full sm:col-span-2' : 'h-full'}>
             <GlowCard className="p-7">
                 <div className="mb-5">
                     {iconType === 'lightning' ? (

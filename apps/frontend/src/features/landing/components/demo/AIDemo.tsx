@@ -45,7 +45,7 @@ export function AIDemo() {
 
     return (
         <TiltCard strength={5}>
-            <div className="relative overflow-hidden rounded-3xl border border-[#E7E5E0] bg-white p-5 shadow-lg dark:border-[#232327] dark:bg-[#141417]">
+            <div className="relative overflow-hidden rounded-3xl border border-[#E7E5E0] bg-white p-4 sm:p-5 shadow-lg dark:border-[#232327] dark:bg-[#141417]">
                 <div className="relative flex items-center gap-2 border-b border-[#E7E5E0] pb-3 dark:border-[#232327]">
                     <motion.span
                         className="flex h-7 w-7 items-center justify-center rounded-full bg-[#8B5CF6]/15 text-[#8B5CF6]"
@@ -62,7 +62,7 @@ export function AIDemo() {
                     </span>
                 </div>
 
-                <div className={`${body.className} relative mt-4 min-h-[92px] space-y-3 text-[13px]`}>
+                <div className={`${body.className} relative mt-4 min-h-[96px] space-y-3 text-[13px]`}>
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}

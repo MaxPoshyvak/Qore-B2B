@@ -13,7 +13,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
     if (!mounted) return null;
 
     return (
-        <div className={`${body.className} relative min-h-screen text-[#0A0A0C] antialiased dark:text-[#F5F4F2]`}>
+        <div className={`${body.className} relative min-h-screen overflow-x-clip text-[#0A0A0C] antialiased dark:text-[#F5F4F2]`}>
             <AmbientBackground />
             <PublicNavbar theme={theme} toggleTheme={toggle} />
             <main className="relative z-10 pt-28 pb-16">{children}</main>
