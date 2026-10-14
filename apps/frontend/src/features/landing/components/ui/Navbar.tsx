@@ -11,6 +11,7 @@ import { EASE } from '@/shared/config/animations';
 import { NAV_LINKS } from '../../config/landing-data';
 import type { Theme } from '@/shared/hooks/useTheme';
 import { ThemeToggle } from '@/shared/ui/ThemeToggle';
+import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
 import { MagneticButton } from '../ui/MagneticButton';
 import { BaseHeader } from '@/shared/ui/BaseHeader';
 
@@ -68,7 +69,10 @@ export function Navbar({ theme, toggleTheme }: { theme: Theme; toggleTheme: () =
                         ))}
 
                         <div className="mt-2 flex items-center justify-between border-t border-[#E7E5E0] pt-4 dark:border-white/10">
-                            <ThemeToggle theme={theme} toggle={toggleTheme} />
+                            <div className="flex items-center gap-2">
+                                <LanguageSwitcher />
+                                <ThemeToggle theme={theme} toggle={toggleTheme} />
+                            </div>
 
                             {isAuthenticated ? (
                                 <Link
@@ -103,6 +107,7 @@ export function Navbar({ theme, toggleTheme }: { theme: Theme; toggleTheme: () =
 
     return (
         <BaseHeader centerContent={centerNav} bottomContent={mobileDropdown} scrolled={scrolled}>
+            <LanguageSwitcher />
             <ThemeToggle theme={theme} toggle={toggleTheme} className="hidden sm:flex" />
 
             {isAuthenticated && (

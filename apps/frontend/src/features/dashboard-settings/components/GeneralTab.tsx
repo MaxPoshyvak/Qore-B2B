@@ -16,6 +16,7 @@ import { display, body, mono } from '@/shared/lib/fonts';
 import { AuthInput } from '@/shared/ui/AuthInput';
 import { FormTextarea, FormSelect } from '@/shared/ui/FormControls';
 import { ImageUpload } from '@/shared/ui/ImageUpload';
+import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
 
 type GeneralTabProps = {
     initialCurrency?: string;
@@ -219,6 +220,19 @@ export function GeneralTab({ initialCurrency = 'USD' }: GeneralTabProps) {
                             </motion.div>
                         )}
                     </AnimatePresence>
+
+                    {/* Language Preference */}
+                    <div className="flex flex-col gap-2 rounded-2xl border border-black/5 bg-black/[0.02] p-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/5 dark:bg-white/[0.02]">
+                        <div>
+                            <span className="text-[13.5px] font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
+                                Workspace & Menu Language
+                            </span>
+                            <p className="text-[12px] text-[#6B6A65] dark:text-[#94938D]">
+                                Select the display language for this venue and guest views.
+                            </p>
+                        </div>
+                        <LanguageSwitcher />
+                    </div>
                 </div>
             </section>
 

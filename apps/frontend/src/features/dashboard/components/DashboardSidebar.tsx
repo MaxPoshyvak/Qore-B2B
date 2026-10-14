@@ -23,19 +23,31 @@ import {
     Sparkles,
 } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
 import { Logo } from '@/shared/ui/Logo';
 import { ThemeToggle } from '@/shared/ui/ThemeToggle';
+import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
 import { useTheme } from '@/shared/hooks/useTheme';
 import { useGetTenantBySlug, useGetMyTenants } from '@/entities/tenant/hooks/useTenants';
 import { useActiveOrders } from '@/features/dashboard-orders/hooks/useOrders';
 
-const NAV: { label: string; suffix: string; section?: string; icon: typeof LayoutDashboard }[] = [
-    { label: 'Overview', suffix: '', icon: LayoutDashboard },
-    { label: 'Menu', suffix: '/menu', icon: UtensilsCrossed },
-    { label: 'Tables & Reservations', suffix: '/tables-reservations', section: 'tables', icon: QrCode },
-    { label: 'Live Orders', suffix: '/orders', icon: Bell },
-    { label: 'Analytics', suffix: '/analytics', icon: TrendingUp },
-    { label: 'Settings', suffix: '/settings', icon: Settings },
+type NavKey = 'overview' | 'menu' | 'tables' | 'orders' | 'analytics' | 'settings';
+
+type NavItem = {
+    key: NavKey;
+    defaultLabel: string;
+    suffix: string;
+    section?: string;
+    icon: typeof LayoutDashboard;
+};
+
+const NAV: NavItem[] = [
+    { key: 'overview', defaultLabel: 'Overview', suffix: '', icon: LayoutDashboard },
+    { key: 'menu', defaultLabel: 'Menu', suffix: '/menu', icon: UtensilsCrossed },
+    { key: 'tables', defaultLabel: 'Tables & Reservations', suffix: '/tables-reservations', section: 'tables', icon: QrCode },
+    { key: 'orders', defaultLabel: 'Live Orders', suffix: '/orders', icon: Bell },
+    { key: 'analytics', defaultLabel: 'Analytics', suffix: '/analytics', icon: TrendingUp },
+    { key: 'settings', defaultLabel: 'Settings', suffix: '/settings', icon: Settings },
 ];
 
 const SETTINGS_SECTIONS = [
@@ -94,6 +106,7 @@ function getPlanDetails(plan?: string | null) {
 }
 
 function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () => void }) {
+    const tSidebar = useTranslations('dashboard.sidebar');
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const { theme, toggle, mounted } = useTheme();
@@ -123,7 +136,9 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
 
             {/* Venue identity + live public link */}
             <div className="mt-8">
-                <p className="text-[12px] uppercase tracking-[0.18em] text-[#6B6A65] dark:text-[#94938D]">Your venue</p>
+                <p className="text-[12px] uppercase tracking-[0.18em] text-[#6B6A65] dark:text-[#94938D]">
+                    {tSidebar('yourVenue')}
+                </p>
                 <h2 className="mt-1 truncate text-[18px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]">
                     {tenant?.data.name ?? 'Workspace'}
                 </h2>
@@ -146,7 +161,7 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                             className="flex w-full items-center justify-between rounded-xl border border-[#E7E5E0]/80 bg-white/60 px-3 py-2 text-[13px] font-medium text-[#0A0A0C] transition-colors hover:border-[#3B82F6]/40 dark:border-white/10 dark:bg-white/5 dark:text-[#F5F4F2]">
                             <span className="flex items-center gap-2">
                                 <Store size={14} className="text-[#8B5CF6]" />
-                                Switch workspace
+                                {tSidebar('switchWorkspace')}
                             </span>
                             <ChevronDown
                                 size={15}
@@ -217,8 +232,9 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                             ? TABLES_SECTIONS
                             : ANALYTICS_SECTIONS;
                     const Icon = item.icon;
+                    const label = tSidebar(item.key);
                     return (
-                        <div key={item.label}>
+                        <div key={item.key}>
                             <Link
                                 href={href}
                                 onClick={onNavigate}
@@ -231,8 +247,8 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                                     className={`absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-full bg-[#3B82F6] transition-opacity ${active ? 'opacity-100' : 'opacity-0'}`}
                                 />
                                 <Icon size={17} strokeWidth={1.9} />
-                                <span className="flex-1">{item.label}</span>
-                                {item.label === 'Live Orders' && newOrdersCount > 0 && (
+                                <span className="flex-1">{label}</span>
+                                {item.key === 'orders' && newOrdersCount > 0 && (
                                     <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#3B82F6] px-1.5 text-[11px] font-semibold text-white">
                                         {newOrdersCount}
                                     </span>
@@ -288,7 +304,7 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                             onClick={onNavigate}
                             className="inline-flex items-center justify-center gap-1 text-[12px] font-semibold text-[#3B82F6] transition-colors hover:text-[#2563EB] dark:hover:text-[#60A5FA]">
                             <Sparkles size={12} />
-                            Upgrade
+                            {tSidebar('upgrade')}
                         </Link>
                     )}
                 </div>
@@ -311,7 +327,7 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
 
             {/* Footer */}
             <div className="mt-4 flex items-center justify-between border-t border-[#E7E5E0]/80 pt-4 dark:border-white/10">
-                {hasMultipleVenues && (
+                {hasMultipleVenues ? (
                     <Link
                         href="/dashboard"
                         className="flex items-center gap-2 text-[13px] text-[#6B6A65] transition-colors hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:text-[#F5F4F2]">
@@ -320,12 +336,16 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                         </span>
                         <span className="flex items-center gap-1">
                             <ArrowLeft size={13} />
-                            All venues
+                            {tSidebar('allVenues')}
                         </span>
                     </Link>
+                ) : (
+                    <span />
                 )}
-                {!hasMultipleVenues && <span />}
-                <div className="hidden md:block">{mounted && <ThemeToggle theme={theme} toggle={toggle} />}</div>
+                <div className="flex items-center gap-2">
+                    <LanguageSwitcher />
+                    <div className="hidden md:block">{mounted && <ThemeToggle theme={theme} toggle={toggle} />}</div>
+                </div>
             </div>
         </div>
     );
@@ -352,6 +372,7 @@ export function DashboardMobileNav() {
                     {tenant?.data.name ?? 'Workspace'}
                 </span>
                 <div className="flex items-center gap-1">
+                    <LanguageSwitcher />
                     <Link
                         href={`/${slug}`}
                         target="_blank"
