@@ -8,7 +8,7 @@ export class PublicTenantService {
     static async getBySlug(slug: string): Promise<PublicTenantResponse> {
         const res = await apiClient<PublicTenantResponse>(
             `${PUBLIC_TENANT_URL}/${slug}`,
-            { method: 'GET' },
+            { method: 'GET', allow401: true } as RequestInit,
             // The tenants module wraps results in the `SuccessResponse` envelope.
             true,
         );

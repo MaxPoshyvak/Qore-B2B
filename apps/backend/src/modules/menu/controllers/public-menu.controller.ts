@@ -1,5 +1,6 @@
 import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
 import { CategoriesService } from '../services/categories.service';
+import { Public } from 'src/common/decorators/public.decorator';
 import { SuccessResponse } from '@my-app/types';
 import type { PublicMenuResponseDTO } from '@my-app/types';
 
@@ -10,6 +11,7 @@ import type { PublicMenuResponseDTO } from '@my-app/types';
 export class PublicMenuController {
     constructor(private readonly categoriesService: CategoriesService) {}
 
+    @Public()
     @Get(':slug')
     getPublicMenu(@Param('slug') slug: string): Promise<SuccessResponse<PublicMenuResponseDTO>> {
         if (!slug) throw new NotFoundException('Venue not found');

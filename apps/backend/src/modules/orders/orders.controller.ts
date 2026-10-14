@@ -18,6 +18,7 @@ export class OrdersController {
         return { success: true, data };
     }
 
+    @Public()
     @UseGuards(KdsGuard)
     @Get('kds/:token')
     async getKdsOrders(@Param('token') token: string): Promise<SuccessResponse<OrderResponse[]>> {
@@ -36,6 +37,7 @@ export class OrdersController {
         return { success: true, data };
     }
 
+    @Public()
     @UseGuards(KdsGuard)
     @Patch('kds/:token/:orderId/status')
     async updateKdsStatus(

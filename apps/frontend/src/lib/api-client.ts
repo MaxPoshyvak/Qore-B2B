@@ -48,8 +48,13 @@ export async function apiClient<T>(
     options: RequestInit = {},
     useBaseResType: boolean = true,
 ): Promise<SuccessResponse<T> | T> {
-    const token = await getAuthToken();
-    console.log('📝 TOKEN FROM SESSION:', token);
+    const isPublicAuthEndpoint =
+        endpoint.startsWith('/auth/register') ||
+        endpoint.startsWith('/auth/login') ||
+        endpoint.startsWith('/auth/forgot-password') ||
+        endpoint.startsWith('/auth/reset-password');
+
+    const token = isPublicAuthEndpoint ? undefined : await getAuthToken();
 
     const headers = new Headers({
         'Content-Type': 'application/json',
@@ -60,19 +65,30 @@ export async function apiClient<T>(
         headers.set('Authorization', `Bearer ${token}`);
     }
 
+    const signal = options.signal ?? AbortSignal.timeout(15000);
+
     const response = await fetch(`${env.NEXT_PUBLIC_API_URL}${endpoint}`, {
         ...options,
         headers,
+        signal,
         credentials: 'include',
     });
 
-    // KDS endpoints authenticate with a Magic-Link token + PIN header, not a JWT.
-    // They must surface 401 to the caller (so the lock screen can re-appear) instead
-    // of being bounced to the login page like an expired dashboard session.
+    const isPublicEndpoint =
+        isPublicAuthEndpoint ||
+        endpoint.includes('/public') ||
+        endpoint.startsWith('/cart') ||
+        endpoint.startsWith('/payments');
+
+    // KDS endpoints authenticate with Magic-Link token + PIN header.
+    // Public guest routes (menus, reviews, tables, bookings) don't require dashboard sessions.
+    // Only authenticated dashboard views should bounce to /login when a session expires.
     const allow401 = (options as { allow401?: boolean }).allow401 === true;
+    const isDashboardRoute =
+        typeof window !== 'undefined' && window.location.pathname.startsWith('/dashboard');
 
     if (!response.ok) {
-        if (response.status === 401 && !allow401) {
+        if (response.status === 401 && !allow401 && !isPublicEndpoint && isDashboardRoute) {
             if (typeof window !== 'undefined') {
                 window.location.href = '/login';
             }
