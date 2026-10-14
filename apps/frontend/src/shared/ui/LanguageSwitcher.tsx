@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useTransition } from 'react';
 import { useLocale } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Globe, ChevronDown, Check } from 'lucide-react';
+import { Globe, ChevronDown, Check, Loader2 } from 'lucide-react';
 import { LOCALES_CONFIG, getLocaleConfig, type Locale } from '@my-app/types';
 import { cn } from '@/shared/lib/utils';
 import { EASE } from '@/shared/config/animations';
+import { setUserLocale } from '@/i18n/locale';
 
 type LanguageSwitcherProps = {
     className?: string;
@@ -23,6 +24,7 @@ export function LanguageSwitcher({
     const locale = useLocale() as Locale;
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     const currentConfig = getLocaleConfig(locale);
@@ -48,18 +50,27 @@ export function LanguageSwitcher({
             return;
         }
 
-        // 1. Set cookie for next-intl server & SSR detection
-        document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
+        setIsOpen(false);
 
-        // 2. Local storage for client persistence
+        // 1. Immediately write to client document.cookie & localStorage
+        if (typeof document !== 'undefined') {
+            document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
+        }
         if (typeof window !== 'undefined') {
             window.localStorage.setItem('NEXT_LOCALE', newLocale);
         }
 
-        setIsOpen(false);
-
-        // 3. Trigger immediate refresh to reload messages
-        router.refresh();
+        // 2. Set server cookie via Server Action and reload for full RootLayout re-hydration
+        startTransition(async () => {
+            try {
+                await setUserLocale(newLocale);
+            } catch {
+                // Fallback in case of server action error
+            }
+            if (typeof window !== 'undefined') {
+                window.location.reload();
+            }
+        });
     };
 
     return (
@@ -79,13 +90,17 @@ export function LanguageSwitcher({
                 <span className="uppercase tracking-wider">
                     {variant === 'full' ? currentConfig.localName : currentConfig.code}
                 </span>
-                <ChevronDown
-                    size={13}
-                    className={cn(
-                        'text-[#6B6A65] transition-transform duration-200 dark:text-[#94938D]',
-                        isOpen && 'rotate-180',
-                    )}
-                />
+                {isPending ? (
+                    <Loader2 size={13} className="animate-spin text-[#3B82F6] dark:text-[#60A5FA]" />
+                ) : (
+                    <ChevronDown
+                        size={13}
+                        className={cn(
+                            'text-[#6B6A65] transition-transform duration-200 dark:text-[#94938D]',
+                            isOpen && 'rotate-180',
+                        )}
+                    />
+                )}
             </button>
 
             <AnimatePresence>
