@@ -544,7 +544,10 @@
       "howItWorks": "Jak to funguje",
       "pricing": "Ceník",
       "signIn": "Přihlásit se",
-      "getStarted": "Vyzkoušet zdarma"
+      "getStarted": "Vyzkoušet zdarma",
+      "about": "O nás",
+      "contact": "Kontakt",
+      "dashboard": "Nástěnka"
     },
     "hero": {
       "badge": "Nová generace QR objednávek a pokladny pro gastro",

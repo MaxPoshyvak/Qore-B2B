@@ -544,7 +544,10 @@
       "howItWorks": "Jak to działa",
       "pricing": "Cennik",
       "signIn": "Zaloguj się",
-      "getStarted": "Wypróbuj za darmo"
+      "getStarted": "Wypróbuj za darmo",
+      "about": "O nas",
+      "contact": "Kontakt",
+      "dashboard": "Panel"
     },
     "hero": {
       "badge": "System zamówień QR i POS nowej generacji dla gastronomii",

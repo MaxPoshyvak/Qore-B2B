@@ -544,7 +544,10 @@
       "howItWorks": "How it works",
       "pricing": "Pricing",
       "signIn": "Sign In",
-      "getStarted": "Get Started Free"
+      "getStarted": "Get Started Free",
+      "about": "About",
+      "contact": "Contact",
+      "dashboard": "Dashboard"
     },
     "hero": {
       "badge": "Next-Gen QR & POS Solution for Hospitality",

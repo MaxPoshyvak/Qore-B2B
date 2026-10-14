@@ -19,8 +19,8 @@ export const PUBLIC_NAV_LINKS = [
     { href: '/#features', labelKey: 'nav.features', fallback: 'Features' },
     { href: '/#how', labelKey: 'nav.howItWorks', fallback: 'How it works' },
     { href: '/#pricing', labelKey: 'nav.pricing', fallback: 'Pricing' },
-    { href: '/about', labelKey: 'footer.about', fallback: 'About' },
-    { href: '/contact', labelKey: 'footer.contact', fallback: 'Contact' },
+    { href: '/about', labelKey: 'nav.about', fallback: 'About' },
+    { href: '/contact', labelKey: 'nav.contact', fallback: 'Contact' },
 ];
 
 export function PublicNavbar({ theme, toggleTheme }: { theme: Theme; toggleTheme: () => void }) {

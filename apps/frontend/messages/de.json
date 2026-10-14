@@ -544,7 +544,10 @@
       "howItWorks": "So funktioniert's",
       "pricing": "Preise",
       "signIn": "Anmelden",
-      "getStarted": "Kostenlos starten"
+      "getStarted": "Kostenlos starten",
+      "about": "Über uns",
+      "contact": "Kontakt",
+      "dashboard": "Dashboard"
     },
     "hero": {
       "badge": "Die moderne QR- & Kassenschnittstelle für die Gastronomie",
