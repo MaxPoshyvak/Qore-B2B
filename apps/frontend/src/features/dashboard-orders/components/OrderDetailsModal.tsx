@@ -26,12 +26,20 @@ const STATUS_CONFIG: Record<
 };
 
 export function OrderDetailsModal({ order, open, onClose, currency = 'USD' }: OrderDetailsModalProps) {
-    const t = useTranslations('liveOrders');
+    const tDetails = useTranslations('liveOrders.details');
+    const tHistory = useTranslations('liveOrders.history');
     if (!order) return null;
 
     const shortId = `#${order.id.slice(-4).toUpperCase()}`;
     const statusCfg = STATUS_CONFIG[order.status] ?? STATUS_CONFIG.new;
     const StatusIcon = statusCfg.icon;
+
+    const statusLabel =
+        order.status === 'delivered' ? tHistory('delivered') :
+        order.status === 'cancelled' ? tHistory('cancelled') :
+        order.status === 'ready' ? tHistory('ready') :
+        order.status === 'preparing' ? tHistory('preparing') :
+        tHistory('new');
 
     const createdFormatted = new Date(order.createdAt).toLocaleString(undefined, {
         month: 'short',
@@ -43,7 +51,7 @@ export function OrderDetailsModal({ order, open, onClose, currency = 'USD' }: Or
     const isPaid = order.paymentStatus === 'paid' || order.paymentStatus === 'COMPLETED';
 
     return (
-        <Modal open={open} onClose={onClose} title={`Order ${shortId}`} className="max-w-lg">
+        <Modal open={open} onClose={onClose} title={tDetails('orderTitle', { id: shortId })} className="max-w-lg">
             <div className="space-y-6">
                 {/* Header */}
                 <div className="flex items-start justify-between border-b border-[#E7E5E0] pb-4 dark:border-[#232327]">
@@ -59,7 +67,7 @@ export function OrderDetailsModal({ order, open, onClose, currency = 'USD' }: Or
                                     statusCfg.text,
                                 )}>
                                 <StatusIcon size={13} />
-                                {statusCfg.label}
+                                {statusLabel}
                             </span>
                         </div>
                         <p className="mt-1 text-xs text-[#6B6A65] dark:text-[#94938D]">
@@ -77,7 +85,7 @@ export function OrderDetailsModal({ order, open, onClose, currency = 'USD' }: Or
                                     'font-medium',
                                     isPaid ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400',
                                 )}>
-                                {isPaid ? 'Paid' : 'Unpaid'}
+                                {isPaid ? tDetails('paid') : tDetails('unpaid')}
                             </span>
                             {order.paymentMethod && (
                                 <span className="text-[#6B6A65] dark:text-[#94938D]">
@@ -96,14 +104,14 @@ export function OrderDetailsModal({ order, open, onClose, currency = 'USD' }: Or
                                 <>
                                     <ShoppingBag size={16} className="text-[#3B82F6]" />
                                     <span className="font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                        Takeaway / Order-Ahead
+                                        {tDetails('takeaway')}
                                     </span>
                                 </>
                             ) : (
                                 <>
                                     <Utensils size={16} className="text-[#3B82F6]" />
                                     <span className="font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                        {order.table?.name ? `Table ${order.table.name}` : 'Dine-In Table'}
+                                        {order.table?.name ? tDetails('table', { name: order.table.name }) : 'Table'}
                                     </span>
                                 </>
                             )}
@@ -120,7 +128,7 @@ export function OrderDetailsModal({ order, open, onClose, currency = 'USD' }: Or
                 {/* Items List */}
                 <div className="space-y-3">
                     <h3 className="text-xs font-semibold uppercase tracking-wider text-[#6B6A65] dark:text-[#94938D]">
-                        Items ({order.items.reduce((s, it) => s + it.quantity, 0)})
+                        {tDetails('itemsCount', { count: order.items.reduce((s, it) => s + it.quantity, 0) })}
                     </h3>
 
                     <div className="divide-y divide-[#E7E5E0] rounded-2xl border border-[#E7E5E0] bg-white dark:divide-[#232327] dark:border-[#232327] dark:bg-[#141417]">
@@ -141,7 +149,7 @@ export function OrderDetailsModal({ order, open, onClose, currency = 'USD' }: Or
                                         )}
                                         {item.guestName && (
                                             <p className="mt-0.5 text-[11px] text-[#3B82F6]">
-                                                Ordered by {item.guestName}
+                                                {item.guestName}
                                             </p>
                                         )}
                                     </div>
@@ -158,7 +166,7 @@ export function OrderDetailsModal({ order, open, onClose, currency = 'USD' }: Or
                 {/* Total breakdown */}
                 <div className="rounded-2xl border border-[#E7E5E0] bg-[#FAFAF8] p-4 text-xs dark:border-[#232327] dark:bg-white/[0.02]">
                     <div className="flex justify-between font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                        <span>Grand Total</span>
+                        <span>{isPaid ? tDetails('totalPaid') : tDetails('totalDue')}</span>
                         <span className={`${display.className} text-base`}>
                             {formatCurrencyPrice(Number(order.totalAmount), currency)}
                         </span>

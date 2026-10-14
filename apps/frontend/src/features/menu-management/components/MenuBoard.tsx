@@ -95,19 +95,8 @@ export function MenuBoard({ slug, createCategoryOpen, onCreateCategoryOpenChange
     const [searchQuery, setSearchQuery] = useState('');
     const [availabilityFilter, setAvailabilityFilter] = useState<'all' | 'available' | 'soldOut'>('all');
 
-    if (isTenantLoading || isCategoriesLoading) return <MenuBoardSkeleton />;
-    if (isTenantError) return <BoardError message={getErrorMessage(tenantError)} />;
-    if (isCategoriesError) return <BoardError message={getErrorMessage(categoriesError)} />;
-
-    // PRO (and higher) plans unlock the AI dish generator.
-    const plan = tenantResponse?.data.subscriptionPlan;
-    const isPro = plan === 'pro' || plan === 'business';
-
     const categoryList = categories ?? [];
-    // A category can only be removed once it is empty (the API restricts deletes
-    // that would orphan menu items), so surface that up front.
     const blockedByItems = (deletingCategory?.items.length ?? 0) > 0;
-
     const currency = tenantResponse?.data?.settings?.currency ?? 'USD';
 
     const allDishes = useMemo(() => {
@@ -149,12 +138,20 @@ export function MenuBoard({ slug, createCategoryOpen, onCreateCategoryOpenChange
             });
     }, [categories, searchQuery, availabilityFilter]);
 
+    if (isTenantLoading || isCategoriesLoading) return <MenuBoardSkeleton />;
+    if (isTenantError) return <BoardError message={getErrorMessage(tenantError)} />;
+    if (isCategoriesError) return <BoardError message={getErrorMessage(categoriesError)} />;
+
+    // PRO (and higher) plans unlock the AI dish generator.
+    const plan = tenantResponse?.data.subscriptionPlan;
+    const isPro = plan === 'pro' || plan === 'business';
+
     return (
         <>
             {categoryList.length === 0 ? (
                 <MenuEmptyState onAddCategory={() => onCreateCategoryOpenChange(true)} />
             ) : (
-                <motion.div layout className="flex flex-col gap-6">
+                <div className="flex flex-col gap-6">
                     {/* Search and Availability Bar */}
                     <div className="flex flex-col gap-3 rounded-3xl border border-[#E7E5E0] bg-white p-4 shadow-sm dark:border-[#232327] dark:bg-[#121215] sm:flex-row sm:items-center sm:justify-between">
                         {/* Search Input */}
@@ -164,7 +161,7 @@ export function MenuBoard({ slug, createCategoryOpen, onCreateCategoryOpenChange
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search dishes by name or description..."
+                                placeholder={t('searchPlaceholder')}
                                 className="w-full rounded-2xl border border-[#E7E5E0] bg-[#FAFAF8] py-2 pl-10 pr-9 text-sm text-[#0A0A0C] transition-colors placeholder:text-[#6B6A65] focus:border-[#3B82F6] focus:outline-none dark:border-[#232327] dark:bg-white/[0.03] dark:text-[#F5F4F2] dark:placeholder:text-[#94938D]"
                             />
                             {searchQuery && (
@@ -188,7 +185,7 @@ export function MenuBoard({ slug, createCategoryOpen, onCreateCategoryOpenChange
                                         ? 'bg-white text-[#0A0A0C] shadow-sm dark:bg-[#232327] dark:text-white'
                                         : 'text-[#6B6A65] hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:text-white',
                                 )}>
-                                All ({totalCount})
+                                {t('filterAll')} ({totalCount})
                             </button>
                             <button
                                 type="button"
@@ -199,7 +196,7 @@ export function MenuBoard({ slug, createCategoryOpen, onCreateCategoryOpenChange
                                         ? 'bg-white text-emerald-600 shadow-sm dark:bg-[#232327] dark:text-emerald-400'
                                         : 'text-[#6B6A65] hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:text-white',
                                 )}>
-                                Available ({availableCount})
+                                {t('filterAvailable')} ({availableCount})
                             </button>
                             <button
                                 type="button"
@@ -210,7 +207,7 @@ export function MenuBoard({ slug, createCategoryOpen, onCreateCategoryOpenChange
                                         ? 'bg-white text-red-600 shadow-sm dark:bg-[#232327] dark:text-red-400'
                                         : 'text-[#6B6A65] hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:text-white',
                                 )}>
-                                Sold Out / 86 ({soldOutCount})
+                                {t('filterSoldOut')} ({soldOutCount})
                             </button>
                         </div>
                     </div>
@@ -219,10 +216,10 @@ export function MenuBoard({ slug, createCategoryOpen, onCreateCategoryOpenChange
                         <div className="flex min-h-[200px] flex-col items-center justify-center rounded-3xl border border-dashed border-[#E7E5E0] bg-white p-8 text-center dark:border-[#232327] dark:bg-[#121215]">
                             <Search size={28} className="text-[#94938D]" />
                             <h4 className="mt-3 text-base font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                No dishes match your filter
+                                {t('noDishesMatch')}
                             </h4>
                             <p className="mt-1 text-xs text-[#6B6A65] dark:text-[#94938D]">
-                                We couldn't find any dishes matching "{searchQuery}".
+                                {t('noDishesMatchDesc', { query: searchQuery })}
                             </p>
                             <button
                                 type="button"
@@ -231,11 +228,11 @@ export function MenuBoard({ slug, createCategoryOpen, onCreateCategoryOpenChange
                                     setAvailabilityFilter('all');
                                 }}
                                 className="mt-4 rounded-xl border border-[#E7E5E0] bg-[#FAFAF8] px-4 py-2 text-xs font-semibold text-[#0A0A0C] transition-colors hover:border-[#3B82F6]/40 dark:border-[#232327] dark:bg-white/5 dark:text-[#F5F4F2] cursor-pointer">
-                                Clear filters
+                                {t('clearFilters')}
                             </button>
                         </div>
                     ) : (
-                        <AnimatePresence mode="popLayout" initial={false}>
+                        <div className="flex flex-col gap-6">
                             {filteredCategoryList.map((category) => (
                                 <CategorySection
                                     key={category.id}
@@ -248,18 +245,18 @@ export function MenuBoard({ slug, createCategoryOpen, onCreateCategoryOpenChange
                                     onDeleteCategory={setDeletingCategory}
                                 />
                             ))}
-                        </AnimatePresence>
+                        </div>
                     )}
 
-                    <motion.button
-                        layout
-                        type="button"
-                        onClick={() => onCreateCategoryOpenChange(true)}
-                        transition={{ duration: 0.3, ease: EASE }}
-                        className="flex items-center justify-center gap-2 rounded-3xl border-2 border-dashed border-black/15 py-6 text-sm font-medium text-[#6B6A65] transition-colors hover:border-[#3B82F6]/50 hover:text-[#3B82F6] dark:border-white/15 dark:text-[#94938D] dark:hover:border-[#3B82F6]/50">
-                        {t('addAnotherCategory')}
-                    </motion.button>
-                </motion.div>
+                    {!searchQuery && availabilityFilter === 'all' && (
+                        <button
+                            type="button"
+                            onClick={() => onCreateCategoryOpenChange(true)}
+                            className="flex items-center justify-center gap-2 rounded-3xl border-2 border-dashed border-black/15 py-6 text-sm font-medium text-[#6B6A65] transition-colors hover:border-[#3B82F6]/50 hover:text-[#3B82F6] dark:border-white/15 dark:text-[#94938D] dark:hover:border-[#3B82F6]/50 cursor-pointer">
+                            {t('addAnotherCategory')}
+                        </button>
+                    )}
+                </div>
             )}
 
             <CreateCategoryForm

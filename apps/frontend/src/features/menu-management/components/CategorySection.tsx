@@ -35,11 +35,10 @@ export function CategorySection({
 
     return (
         <motion.section
-            layout
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.4, ease: EASE }}
+            transition={{ duration: 0.3, ease: EASE }}
             className="rounded-3xl border border-[#E7E5E0] bg-white/50 p-6 backdrop-blur-xl shadow-xs transition-colors dark:border-[#232327] dark:bg-[#141417]/40 sm:p-7">
             {/* Category header */}
             <header className="flex flex-wrap items-center justify-between gap-3">

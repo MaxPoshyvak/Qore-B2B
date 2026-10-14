@@ -24,6 +24,7 @@ export function BulkQrPrintModal({
     slug,
     venueName = 'Qore Venue',
 }: BulkQrPrintModalProps) {
+    const t = useTranslations('tablesFloor');
     const origin = typeof window !== 'undefined' ? window.location.origin : 'https://useqore.app';
 
     function handlePrint() {
@@ -38,8 +39,8 @@ export function BulkQrPrintModal({
         <Modal
             open={open}
             onClose={onClose}
-            title="Print Table QR Codes"
-            description={`Generate printable QR code stickers for all ${activeTables.length} active tables.`}
+            title={t('bulkPrintTitle')}
+            description={t('bulkPrintDesc', { count: activeTables.length })}
             className="max-w-4xl max-h-[90vh]">
             <div className="space-y-6">
                 {/* Print Action Header */}
@@ -50,10 +51,10 @@ export function BulkQrPrintModal({
                         </div>
                         <div>
                             <h4 className="text-sm font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                Ready for standard A4 printing
+                                {t('readyForA4')}
                             </h4>
                             <p className="text-xs text-[#6B6A65] dark:text-[#94938D]">
-                                Click Print to generate table cards, stickers, or save as a PDF.
+                                {t('readyForA4Desc')}
                             </p>
                         </div>
                     </div>
@@ -63,7 +64,7 @@ export function BulkQrPrintModal({
                         onClick={handlePrint}
                         className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-4 py-2 text-sm font-semibold text-white shadow-md shadow-[#3B82F6]/20 transition-all hover:opacity-95 cursor-pointer">
                         <Printer size={15} />
-                        <span>Print Sheet</span>
+                        <span>{t('printSheet')}</span>
                     </button>
                 </div>
 
@@ -103,10 +104,10 @@ export function BulkQrPrintModal({
                                     {/* Scan Instruction */}
                                     <div className="mt-3">
                                         <p className="text-xs font-semibold text-[#0A0A0C] print:text-black">
-                                            Scan for Menu & Ordering
+                                            {t('scanForMenu')}
                                         </p>
                                         <p className="mt-0.5 text-[10px] text-[#6B6A65] print:text-gray-600">
-                                            Point phone camera to order
+                                            {t('pointCamera')}
                                         </p>
                                         <p
                                             className={`${mono.className} mt-2 text-[9px] text-[#94938D] print:text-gray-500`}>
@@ -125,14 +126,14 @@ export function BulkQrPrintModal({
                         type="button"
                         onClick={onClose}
                         className="rounded-xl border border-[#E7E5E0] bg-white px-5 py-2.5 text-sm font-medium text-[#0A0A0C] transition-colors hover:border-[#3B82F6]/40 dark:border-[#232327] dark:bg-[#141417] dark:text-[#F5F4F2] cursor-pointer">
-                        Close
+                        ✕
                     </button>
                     <button
                         type="button"
                         onClick={handlePrint}
-                        className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-blue-500 cursor-pointer">
+                        className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-[#3B82F6]/20 transition-all hover:opacity-95 cursor-pointer">
                         <Printer size={15} />
-                        <span>Print All</span>
+                        <span>{t('printSheet')}</span>
                     </button>
                 </div>
             </div>

@@ -16,9 +16,9 @@ export default function NotFound() {
             <AmbientBackground />
 
             <div className="relative z-10 flex w-full max-w-md flex-col items-center text-center">
-                <Link href="/" className="mb-8 inline-block transition-transform hover:scale-105">
+                <div className="mb-8 inline-block">
                     <Logo />
-                </Link>
+                </div>
 
                 <div className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-black/5 px-3.5 py-1 text-xs font-semibold uppercase tracking-widest text-[#3B82F6] dark:border-white/10 dark:bg-white/5 dark:text-[#60A5FA]">
                     <span className={mono.className}>Error 404</span>

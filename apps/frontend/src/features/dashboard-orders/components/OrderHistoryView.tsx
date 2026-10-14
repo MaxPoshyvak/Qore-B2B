@@ -29,20 +29,21 @@ type OrderHistoryViewProps = {
 
 type DatePreset = 'all' | 'today' | 'yesterday' | '7days';
 
-const STATUS_PILLS: { key: OrderStatusType | 'all'; label: string }[] = [
-    { key: 'all', label: 'All Orders' },
-    { key: 'delivered', label: 'Delivered' },
-    { key: 'cancelled', label: 'Cancelled' },
-    { key: 'ready', label: 'Ready' },
-    { key: 'preparing', label: 'Preparing' },
-    { key: 'new', label: 'New' },
-];
-
 export function OrderHistoryView({ tenantId, currency = 'USD' }: OrderHistoryViewProps) {
+    const t = useTranslations('liveOrders.history');
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState<OrderStatusType | 'all'>('all');
     const [datePreset, setDatePreset] = useState<DatePreset>('all');
     const [selectedOrder, setSelectedOrder] = useState<OrderResponse | null>(null);
+
+    const statusPills: { key: OrderStatusType | 'all'; label: string }[] = useMemo(() => [
+        { key: 'all', label: t('allOrders') },
+        { key: 'delivered', label: t('delivered') },
+        { key: 'cancelled', label: t('cancelled') },
+        { key: 'ready', label: t('ready') },
+        { key: 'preparing', label: t('preparing') },
+        { key: 'new', label: t('new') },
+    ], [t]);
 
     // Compute date ranges based on preset
     const { startDate, endDate } = useMemo(() => {
@@ -85,14 +86,14 @@ export function OrderHistoryView({ tenantId, currency = 'USD' }: OrderHistoryVie
                             type="text"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Search by order #, guest, or table..."
+                            placeholder={t('searchPlaceholder')}
                             className="w-full rounded-2xl border border-[#E7E5E0] bg-[#FAFAF8] py-2.5 pl-10 pr-9 text-sm text-[#0A0A0C] transition-colors placeholder:text-[#6B6A65] focus:border-[#3B82F6] focus:outline-none dark:border-[#232327] dark:bg-white/[0.03] dark:text-[#F5F4F2] dark:placeholder:text-[#94938D]"
                         />
                         {search && (
                             <button
                                 type="button"
                                 onClick={() => setSearch('')}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B6A65] hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:text-white">
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B6A65] hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:text-white cursor-pointer">
                                 <X size={15} />
                             </button>
                         )}
@@ -111,10 +112,10 @@ export function OrderHistoryView({ tenantId, currency = 'USD' }: OrderHistoryVie
                                         ? 'bg-white text-[#0A0A0C] shadow-sm dark:bg-[#232327] dark:text-white'
                                         : 'text-[#6B6A65] hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:text-white',
                                 )}>
-                                {preset === 'all' && 'All Time'}
-                                {preset === 'today' && 'Today'}
-                                {preset === 'yesterday' && 'Yesterday'}
-                                {preset === '7days' && '7 Days'}
+                                {preset === 'all' && t('allTime')}
+                                {preset === 'today' && t('today')}
+                                {preset === 'yesterday' && t('yesterday')}
+                                {preset === '7days' && t('sevenDays')}
                             </button>
                         ))}
                     </div>
@@ -123,9 +124,9 @@ export function OrderHistoryView({ tenantId, currency = 'USD' }: OrderHistoryVie
                 {/* Status Filter Chips */}
                 <div className="flex flex-wrap items-center gap-2 border-t border-[#E7E5E0] pt-4 dark:border-[#232327]">
                     <span className="text-xs font-semibold uppercase tracking-wider text-[#6B6A65] dark:text-[#94938D]">
-                        Status:
+                        {t('statusLabel')}
                     </span>
-                    {STATUS_PILLS.map((pill) => (
+                    {statusPills.map((pill) => (
                         <button
                             key={pill.key}
                             type="button"
@@ -151,10 +152,10 @@ export function OrderHistoryView({ tenantId, currency = 'USD' }: OrderHistoryVie
                 <div className="flex min-h-[300px] flex-col items-center justify-center rounded-3xl border border-dashed border-[#E7E5E0] bg-white p-8 text-center dark:border-[#232327] dark:bg-[#121215]">
                     <Clock size={32} className="text-[#94938D]" />
                     <h3 className="mt-4 text-base font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                        No orders found
+                        {t('noOrdersFound')}
                     </h3>
                     <p className="mt-1 text-xs text-[#6B6A65] dark:text-[#94938D]">
-                        Try adjusting your search query, status, or date range filters.
+                        {t('noOrdersFoundDesc')}
                     </p>
                 </div>
             ) : (
@@ -163,13 +164,13 @@ export function OrderHistoryView({ tenantId, currency = 'USD' }: OrderHistoryVie
                         <table className="w-full text-left text-sm">
                             <thead className="border-b border-[#E7E5E0] bg-[#FAFAF8] text-xs font-semibold uppercase tracking-wider text-[#6B6A65] dark:border-[#232327] dark:bg-white/[0.02] dark:text-[#94938D]">
                                 <tr>
-                                    <th className="px-6 py-4">Order #</th>
-                                    <th className="px-6 py-4">Date & Time</th>
-                                    <th className="px-6 py-4">Table / Type</th>
-                                    <th className="px-6 py-4">Items</th>
-                                    <th className="px-6 py-4">Total</th>
-                                    <th className="px-6 py-4">Status</th>
-                                    <th className="px-6 py-4 text-right">Action</th>
+                                    <th className="px-6 py-4">{t('colOrder')}</th>
+                                    <th className="px-6 py-4">{t('colDateTime')}</th>
+                                    <th className="px-6 py-4">{t('colTableType')}</th>
+                                    <th className="px-6 py-4">{t('colItems')}</th>
+                                    <th className="px-6 py-4">{t('colTotal')}</th>
+                                    <th className="px-6 py-4">{t('colStatus')}</th>
+                                    <th className="px-6 py-4 text-right">{t('colAction')}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#E7E5E0] dark:divide-[#232327]">
@@ -184,6 +185,13 @@ export function OrderHistoryView({ tenantId, currency = 'USD' }: OrderHistoryVie
                                     const itemsSummary = order.items
                                         .map((it) => `${it.quantity}× ${it.menuItem?.name ?? 'Item'}`)
                                         .join(', ');
+
+                                    const statusLabel =
+                                        order.status === 'delivered' ? t('delivered') :
+                                        order.status === 'cancelled' ? t('cancelled') :
+                                        order.status === 'ready' ? t('ready') :
+                                        order.status === 'preparing' ? t('preparing') :
+                                        t('new');
 
                                     return (
                                         <tr
@@ -201,12 +209,12 @@ export function OrderHistoryView({ tenantId, currency = 'USD' }: OrderHistoryVie
                                                 {order.isOrderAhead ? (
                                                     <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-medium text-blue-600 dark:bg-blue-500/15 dark:text-blue-400">
                                                         <ShoppingBag size={12} />
-                                                        Takeaway
+                                                        {t('takeaway')}
                                                     </span>
                                                 ) : (
                                                     <span className="inline-flex items-center gap-1.5 rounded-full bg-black/5 px-2.5 py-0.5 text-xs font-medium text-[#0A0A0C] dark:bg-white/10 dark:text-[#F5F4F2]">
                                                         <Utensils size={12} />
-                                                        {order.table?.name ? `Table ${order.table.name}` : 'Table'}
+                                                        {order.table?.name ? t('table', { name: order.table.name }) : 'Table'}
                                                     </span>
                                                 )}
                                             </td>
@@ -231,7 +239,7 @@ export function OrderHistoryView({ tenantId, currency = 'USD' }: OrderHistoryVie
                                                     {order.status === 'ready' && <CheckCircle2 size={12} />}
                                                     {order.status === 'preparing' && <Clock size={12} />}
                                                     {order.status === 'new' && <Clock size={12} />}
-                                                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                                                    {statusLabel}
                                                 </span>
                                             </td>
                                             <td className="whitespace-nowrap px-6 py-4 text-right">
@@ -240,7 +248,7 @@ export function OrderHistoryView({ tenantId, currency = 'USD' }: OrderHistoryVie
                                                     onClick={() => setSelectedOrder(order)}
                                                     className="inline-flex items-center gap-1.5 rounded-xl border border-[#E7E5E0] bg-white px-3 py-1.5 text-xs font-medium text-[#0A0A0C] transition-colors hover:border-[#3B82F6]/40 hover:text-[#3B82F6] dark:border-[#232327] dark:bg-[#141417] dark:text-[#F5F4F2] cursor-pointer">
                                                     <Eye size={13} />
-                                                    <span>View</span>
+                                                    <span>{t('view')}</span>
                                                 </button>
                                             </td>
                                         </tr>

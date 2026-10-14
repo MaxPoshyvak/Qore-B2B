@@ -76,6 +76,11 @@ const ANALYTICS_SECTIONS = [
     { key: 'feedback', value: 'feedback', ns: 'sidebar' },
 ] as const;
 
+const ORDERS_SECTIONS = [
+    { key: 'liveOrdersSub', value: 'live', ns: 'sidebar' },
+    { key: 'orderHistorySub', value: 'history', ns: 'sidebar' },
+] as const;
+
 function getPlanDetails(plan: string | null | undefined, tSidebar: (key: any) => string) {
     const normalizedPlan = plan?.toLowerCase();
 
@@ -208,34 +213,40 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                     const isMenu = item.suffix === '/menu';
                     const isTablesReservations = item.suffix === '/tables-reservations';
                     const isAnalytics = item.suffix === '/analytics';
+                    const isOrders = item.suffix === '/orders';
                     const defaultSection = isTablesReservations
                         ? 'tables'
                         : isAnalytics
                           ? 'overview'
                           : isMenu
                             ? 'builder'
-                            : 'general';
-                    const href = isSettings || isTablesReservations || isAnalytics || isMenu
+                            : isOrders
+                              ? 'live'
+                              : 'general';
+                    const href = isSettings || isTablesReservations || isAnalytics || isMenu || isOrders
                         ? `${baseHref}?section=${defaultSection}`
                         : item.section
                           ? `${baseHref}?section=${item.section}`
                           : baseHref;
                     const active =
-                        isSettings || isTablesReservations || isAnalytics || isMenu
+                        isSettings || isTablesReservations || isAnalytics || isMenu || isOrders
                             ? pathname.startsWith(baseHref)
                             : pathname === href;
                     const showDropdown =
                         (isSettings && pathname.includes('/settings')) ||
                         (isMenu && pathname.includes('/menu')) ||
                         (isTablesReservations && pathname.includes('/tables-reservations')) ||
-                        (isAnalytics && pathname.includes('/analytics'));
+                        (isAnalytics && pathname.includes('/analytics')) ||
+                        (isOrders && pathname.includes('/orders'));
                     const sections = isSettings
                         ? SETTINGS_SECTIONS
                         : isMenu
                           ? MENU_SECTIONS
                           : isTablesReservations
                             ? TABLES_SECTIONS
-                            : ANALYTICS_SECTIONS;
+                            : isAnalytics
+                              ? ANALYTICS_SECTIONS
+                              : ORDERS_SECTIONS;
                     const Icon = item.icon;
                     const label = tSidebar(item.key);
                     return (

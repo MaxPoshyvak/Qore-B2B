@@ -23,9 +23,9 @@ export default function GlobalError({
             <AmbientBackground />
 
             <div className="relative z-10 flex w-full max-w-md flex-col items-center text-center">
-                <Link href="/" className="mb-8 inline-block transition-transform hover:scale-105">
+                <div className="mb-8 inline-block">
                     <Logo />
-                </Link>
+                </div>
 
                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-500/10 text-red-500 dark:bg-red-500/15 dark:text-red-400">
                     <AlertCircle size={28} />

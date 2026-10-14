@@ -69,7 +69,7 @@ export function TableGrid({ slug, venueName }: TableGridProps) {
                             onClick={() => setBulkPrintOpen(true)}
                             className="inline-flex items-center gap-2 rounded-2xl border border-[#E7E5E0] bg-white px-3.5 py-2.5 text-sm font-semibold text-[#0A0A0C] shadow-sm transition-colors hover:border-[#3B82F6]/40 dark:border-[#232327] dark:bg-[#141417] dark:text-[#F5F4F2] cursor-pointer">
                             <Printer size={16} />
-                            <span>Print All QR Codes</span>
+                            <span>{t('printAllQr')}</span>
                         </button>
 
                         <button
