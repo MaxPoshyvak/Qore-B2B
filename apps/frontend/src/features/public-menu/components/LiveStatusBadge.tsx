@@ -19,7 +19,7 @@ export function LiveStatusBadge({ workingHours }: { workingHours: unknown }) {
     } else if (info.status === 'closed_today') {
         displayLabel = t('closedOpensToday', { time: info.time });
     } else if (info.status === 'closed_day') {
-        displayLabel = t('closedOpensDay', { day: t(`days.${info.dayKey}` as any).toUpperCase(), time: info.time });
+        displayLabel = t('closedOpensDay', { day: t(`days.${info.dayKey}` as any), time: info.time });
     } else if (info.status === 'closed') {
         displayLabel = t('currentlyClosed');
     }

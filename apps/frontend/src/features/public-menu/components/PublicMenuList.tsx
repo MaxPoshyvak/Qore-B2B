@@ -1,13 +1,10 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { UtensilsCrossed, RotateCcw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { MenuItemResponse, PublicMenuCategoryResponse, PublicMenuResponseDTO } from '@my-app/types';
 
 import { display } from '@/shared/lib/fonts';
-import { EASE } from '@/shared/config/animations';
-import { Reveal } from '@/shared/ui/Reveal';
 import { GuestItemModal } from './GuestItemModal';
 import { PublicMenuItem } from './PublicMenuItem';
 import { pickBestDiscount, type ActiveHappyHourRule } from '../hooks/usePublicHappyHour';
@@ -22,17 +19,6 @@ type PublicMenuListProps = {
     /** Поточні активні правила Happy Hour (з дисконт-калькуляцією). */
     activeHappyHourRules?: ActiveHappyHourRule[];
     onResetFilters?: () => void;
-};
-
-// Staggered fade-up: each item rises into place after the previous one.
-const listContainer = {
-    hidden: {},
-    show: { transition: { staggerChildren: 0.06 } },
-};
-
-const listItem = {
-    hidden: { y: 20, opacity: 0 },
-    show: { y: 0, opacity: 1, transition: { duration: 0.4, ease: EASE } },
 };
 
 /** Форматує бейдж знижки Happy Hour у людський вигляд. */
@@ -82,38 +68,34 @@ export function PublicMenuList({
     }
 
     return (
-        <div className="mt-10 flex flex-col gap-12">
+        <div className="mt-8 flex flex-col gap-12">
             {categories.map((category: PublicMenuCategoryResponse) => (
-                <Reveal key={category.id} className="scroll-mt-32" delay={0}>
-                    <section id={`cat-${category.id}`}>
+                <section key={category.id} id={`cat-${category.id}`} className="scroll-mt-36">
+                    <div className="mb-5 flex items-center justify-between border-b border-black/5 pb-3 dark:border-white/5">
                         <h2
-                            className={`${display.className} mb-5 text-[26px] font-bold leading-tight tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2] sm:text-[34px]`}>
+                            className={`${display.className} text-[22px] font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2] sm:text-[28px]`}>
                             {category.name}
                         </h2>
+                        <span className="text-xs font-semibold text-[#6B6A65] dark:text-[#94938D]">
+                            {category.items.length}
+                        </span>
+                    </div>
 
-                        {/* Mobile: 1 column · Tablet: 2 columns · Desktop: 3 columns */}
-                        <motion.div
-                            variants={listContainer}
-                            initial="hidden"
-                            whileInView="show"
-                            viewport={{ once: true, margin: '-60px' }}
-                            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                            {category.items.map((item) => {
-                                const discount = pickBestDiscount(item, activeHappyHourRules);
-                                return (
-                                    <PublicMenuItem
-                                        key={item.id}
-                                        item={item}
-                                        variants={listItem}
-                                        onSelect={setSelectedItem}
-                                        discountedPrice={discount?.finalPrice}
-                                        discountBadge={formatDiscountBadge(discount, currency)}
-                                    />
-                                );
-                            })}
-                        </motion.div>
-                    </section>
-                </Reveal>
+                    <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                        {category.items.map((item) => {
+                            const discount = pickBestDiscount(item, activeHappyHourRules);
+                            return (
+                                <PublicMenuItem
+                                    key={item.id}
+                                    item={item}
+                                    onSelect={setSelectedItem}
+                                    discountedPrice={discount?.finalPrice}
+                                    discountBadge={formatDiscountBadge(discount, currency)}
+                                />
+                            );
+                        })}
+                    </ul>
+                </section>
             ))}
 
             <GuestItemModal

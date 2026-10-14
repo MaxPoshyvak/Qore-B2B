@@ -112,11 +112,10 @@ export function StickyCategoryNav({ categories }: { categories: any[] }) {
         <div
             ref={wrapperRef}
             style={{ top: STICKY_TOP }}
-            className="sticky mt-5 z-20 mb-6 rounded-[2rem] border border-[#E7E5E0]/80 bg-white/70 px-3 py-3 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-black/40">
+            className="sticky z-20 my-4 -mx-2 px-2 py-2 backdrop-blur-xl bg-white/80 dark:bg-[#0A0A0C]/80 border-y border-black/5 dark:border-white/5 sm:-mx-4 sm:px-4 sm:rounded-2xl sm:border">
             <div
                 ref={navRef}
-                className="flex items-center gap-2 overflow-x-auto px-1 scrollbar-hide"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                className="flex items-center gap-1.5 overflow-x-auto hide-scrollbar">
                 {categories.map((category) => {
                     const sectionId = `cat-${category.id}`;
                     const isActive = activeId === sectionId;
@@ -126,19 +125,12 @@ export function StickyCategoryNav({ categories }: { categories: any[] }) {
                             key={category.id}
                             data-category={sectionId}
                             onClick={(e) => handleCategoryClick(category.id, e)}
-                            className={`${body.className} relative flex-shrink-0 rounded-full px-4 py-2 text-[14px] font-medium transition-colors ${
+                            className={`${body.className} relative flex-shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all duration-150 ${
                                 isActive
-                                    ? 'text-white'
-                                    : 'bg-black/5 text-[#6B6A65] hover:bg-black/10 dark:bg-white/5 dark:text-[#94938D] dark:hover:bg-white/10'
+                                    ? 'bg-[#3B82F6] text-white shadow-sm shadow-blue-500/20'
+                                    : 'bg-black/5 text-[#6B6A65] hover:bg-black/10 hover:text-[#0A0A0C] dark:bg-white/5 dark:text-[#94938D] dark:hover:bg-white/10 dark:hover:text-[#F5F4F2]'
                             }`}>
-                            {isActive && (
-                                <motion.div
-                                    layoutId="activeCategory"
-                                    className="absolute inset-0 rounded-full bg-[#3B82F6] shadow-sm dark:bg-[#3B82F6]"
-                                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                                />
-                            )}
-                            <span className="relative z-10">{category.name}</span>
+                            <span>{category.name}</span>
                         </button>
                     );
                 })}

@@ -29,7 +29,7 @@ export function VenueHero({ venue }: VenueHeroProps) {
             transition={{ duration: 0.7, ease: EASE }}
             className="text-left">
             {/* Cover banner */}
-            <div className="relative h-52 overflow-hidden rounded-[2rem] border border-black/5 shadow-lg dark:border-white/10 sm:h-60">
+            <div className="relative h-36 overflow-hidden rounded-3xl border border-black/5 shadow-md dark:border-white/10 sm:h-44">
                 {hasCover ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={coverUrl} alt={`${venue.name} cover`} className="h-full w-full object-cover" />
@@ -38,17 +38,17 @@ export function VenueHero({ venue }: VenueHeroProps) {
                         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_30%_0%,rgba(59,130,246,0.30),transparent_70%),radial-gradient(ellipse_60%_60%_at_85%_100%,rgba(139,92,246,0.28),transparent_70%)]" />
                     </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
             </div>
 
             {/* Overlapping glass logo */}
-            <div className="relative -mt-12 ml-5 flex">
-                <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-white/20 bg-white/15 shadow-2xl backdrop-blur-xl dark:bg-white/10">
+            <div className="relative -mt-10 ml-4 flex sm:-mt-12 sm:ml-5">
+                <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl border-2 border-white/80 bg-white/40 shadow-xl backdrop-blur-xl dark:border-white/15 dark:bg-[#121215]/80 sm:h-24 sm:w-24">
                     {hasLogo ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={logoUrl} alt={venue.name} className="h-full w-full rounded-2xl object-cover" />
                     ) : (
-                        <span className={`${display.className} text-4xl font-bold text-white drop-shadow-sm`}>
+                        <span className={`${display.className} text-3xl font-bold text-white drop-shadow-sm sm:text-4xl`}>
                             {initial}
                         </span>
                     )}
