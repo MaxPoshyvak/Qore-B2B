@@ -1,11 +1,15 @@
 import { z } from 'zod';
+import { isReservedSlug } from './tenant';
 
 export const CreateTenantSchema = z.object({
     name: z.string().min(2, 'Name is required').max(50, 'Name must be less than 50 characters'),
     slug: z
         .string()
         .min(2, 'URL is required')
-        .regex(/^[a-z0-9-]+$/, 'Only lowercase letters, numbers, and hyphens'),
+        .regex(/^[a-z0-9-]+$/, 'Only lowercase letters, numbers, and hyphens')
+        .refine((val) => !isReservedSlug(val), {
+            message: 'This URL is reserved for system use and cannot be used',
+        }),
 });
 
 export type CreateTenantDTO = z.infer<typeof CreateTenantSchema>;

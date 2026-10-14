@@ -50,7 +50,7 @@ export default function PublicTableResolvePage() {
     }, [qrToken, router, setTableSession]);
 
     return (
-        <main className="relative flex min-h-screen items-center justify-center bg-transparent px-4 antialiased dark:bg-transparent">
+        <main className="relative flex min-h-screen items-center justify-center overflow-x-clip bg-transparent px-4 antialiased dark:bg-transparent">
             <AmbientBackground />
 
             <div className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#3B82F6]/15 opacity-50 blur-3xl dark:bg-[#8B5CF6]/15" />

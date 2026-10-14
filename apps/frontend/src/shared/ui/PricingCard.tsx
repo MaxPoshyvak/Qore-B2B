@@ -79,7 +79,7 @@ export function PricingCard({
                     ? 'border-2 border-[#04916C] bg-white shadow-xl dark:border-[#10B981] dark:bg-[#141417]'
                     : featured
                       ? 'border-2 border-[#3B82F6] bg-white shadow-xl dark:bg-[#141417]'
-                      : 'border border-[#E7E5E0] bg-white dark:border-[#232327] dark:bg-[#141417]',
+                      : 'border-2 border-[#E7E5E0] bg-white dark:border-[#232327] dark:bg-[#141417]',
                 className,
             )}>
             {isCurrent && (
@@ -106,7 +106,7 @@ export function PricingCard({
                 )}
             </div>
 
-            <p className={`${body.className} mt-3 text-[13.5px] leading-relaxed text-[#6B6A65] dark:text-[#94938D]`}>
+            <p className={`${body.className} mt-3 min-h-[44px] text-[13.5px] leading-relaxed text-[#6B6A65] dark:text-[#94938D]`}>
                 {description}
             </p>
 

@@ -17,25 +17,11 @@ import { Reveal } from '@/shared/ui/Reveal';
 import { ThemeToggle } from '@/shared/ui/ThemeToggle';
 import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
 import { body } from '@/shared/lib/fonts';
+import { isReservedSlug } from '@my-app/types';
 import { useTheme } from '@/shared/hooks/useTheme';
 import { MenuNotFound } from '@/features/public-menu/components/MenuNotFound';
 import { usePublicHappyHour } from '@/features/public-menu/hooks/usePublicHappyHour';
 import { VenueActionGrid, VenueFooter, VenueHero } from '@/features/public-venue/components';
-
-// System / auth routes that must never be resolved as a tenant slug.
-const RESERVED_SLUGS = new Set([
-    'api',
-    'auth',
-    'login',
-    'register',
-    'onboarding',
-    'forgot-password',
-    'reset-password',
-    'verify-email',
-    'dashboard',
-    't',
-    'kds',
-]);
 
 export default function PublicVenuePage() {
     const tVenue = useTranslations('venue');
@@ -43,7 +29,7 @@ export default function PublicVenuePage() {
     const resolvedSlug = slug ?? '';
     // Defensive guard: reserved paths (e.g. an auth flow) must not trigger
     // tenant data fetching. Passing an empty slug disables the queries.
-    const safeSlug = RESERVED_SLUGS.has(resolvedSlug) ? '' : resolvedSlug;
+    const safeSlug = isReservedSlug(resolvedSlug) ? '' : resolvedSlug;
     const { theme, toggle, mounted } = useTheme();
     const { data: tenant, isLoading, isError } = useGetPublicTenant(safeSlug);
     const setCurrency = useCartStore((s) => s.setCurrency);
@@ -62,7 +48,7 @@ export default function PublicVenuePage() {
         `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(tenant?.settings?.address ?? resolvedSlug)}`;
 
     return (
-        <main className="relative min-h-screen bg-transparent text-[#0A0A0C] antialiased dark:bg-transparent dark:text-[#F5F4F2]">
+        <main className="relative min-h-screen overflow-x-clip bg-transparent text-[#0A0A0C] antialiased dark:bg-transparent dark:text-[#F5F4F2]">
             <AmbientBackground />
 
             <BaseHeader

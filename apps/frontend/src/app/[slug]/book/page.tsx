@@ -14,7 +14,7 @@ import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
 import { display } from '@/shared/lib/fonts';
 import { useTheme } from '@/shared/hooks/useTheme';
 import { useGetPublicTenant } from '@/entities/tenant/hooks/useGetPublicTenant';
-import { type ReservationResponse } from '@my-app/types';
+import { isReservedSlug, type ReservationResponse } from '@my-app/types';
 import { BookingForm } from '@/features/reservations/components/BookingForm';
 import { ReservationConfirmation } from '@/features/reservations/components/ReservationConfirmation';
 
@@ -23,14 +23,15 @@ export default function GuestBookingPage() {
     const tCommon = useTranslations('common');
     const { slug } = useParams<{ slug: string }>();
     const resolvedSlug = slug ?? '';
+    const safeSlug = isReservedSlug(resolvedSlug) ? '' : resolvedSlug;
     const { theme, toggle, mounted } = useTheme();
-    const { data: tenant, isLoading: tenantLoading } = useGetPublicTenant(resolvedSlug);
+    const { data: tenant, isLoading: tenantLoading } = useGetPublicTenant(safeSlug);
     const [created, setCreated] = useState<ReservationResponse | null>(null);
 
     const venueName = tenant?.name ?? 'Venue';
 
     return (
-        <main className="relative min-h-screen bg-transparent text-[#0A0A0C] antialiased dark:bg-transparent dark:text-[#F5F4F2]">
+        <main className="relative min-h-screen overflow-x-clip bg-transparent text-[#0A0A0C] antialiased dark:bg-transparent dark:text-[#F5F4F2]">
             <AmbientBackground />
             <BaseHeader
                 centerContent={

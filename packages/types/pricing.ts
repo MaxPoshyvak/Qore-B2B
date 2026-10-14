@@ -62,6 +62,7 @@ export const PRICING_PLANS: readonly PricingPlan[] = [
             'POS integrations (Square, Toast, Lightspeed)',
             'Custom domain and white-label',
             'Multi-location support',
+            'Dedicated account manager & SLA',
             'Priority support',
         ],
     },

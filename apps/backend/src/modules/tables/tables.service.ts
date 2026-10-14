@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { CreateTableDto, ResolvedTableDto, SuccessResponse, UpdateTableDto } from '@my-app/types';
 import { Table, Tenant } from '@my-app/database';
@@ -107,6 +107,29 @@ export class TablesService {
         if (!existing) {
             throw new NotFoundException('Table not found');
         }
+
+        const activeOrdersCount = await this.prisma.order.count({
+            where: {
+                tableId,
+                status: { in: ['new', 'preparing', 'ready'] },
+            },
+        });
+        if (activeOrdersCount > 0) {
+            throw new BadRequestException(
+                'Cannot delete table with active orders. Please complete or cancel open orders first.',
+            );
+        }
+
+        // Clean up cart sessions for this table
+        await this.prisma.cartSession.deleteMany({
+            where: { tableId },
+        });
+
+        // Detach past historical orders so order history is preserved without FK restrict crash
+        await this.prisma.order.updateMany({
+            where: { tableId },
+            data: { tableId: null },
+        });
 
         const table = await this.prisma.table.delete({
             where: { id: tableId },

@@ -73,6 +73,7 @@ export function BillingTab({
                 tPricing('businessFeature3'),
                 tPricing('businessFeature4'),
                 tPricing('businessFeature5'),
+                tPricing('businessFeature6'),
             ],
         },
     };
@@ -301,7 +302,7 @@ export function BillingTab({
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:items-stretch">
                 {PRICING_PLANS.map((plan) => {
                     const planRank = PLAN_RANK[plan.id] ?? 0;
                     const isCurrent = effectivePlan === plan.id;

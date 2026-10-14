@@ -19,6 +19,7 @@ import { useTheme } from '@/shared/hooks/useTheme';
 import { useGetPublicTenant } from '@/entities/tenant/hooks/useGetPublicTenant';
 import { VenueFooter } from '@/features/public-venue/components';
 import { MenuNotFound } from '@/features/public-menu/components/MenuNotFound';
+import { isReservedSlug } from '@my-app/types';
 import { PostOrderFeedback, usePublicFeedbacks } from '@/features/feedback';
 
 function DisplayStars({ rating }: { rating: number }) {
@@ -53,13 +54,14 @@ export default function PublicReviewsPage() {
     const t = useTranslations('reviews');
     const { slug } = useParams<{ slug: string }>();
     const resolvedSlug = slug ?? '';
+    const safeSlug = isReservedSlug(resolvedSlug) ? '' : resolvedSlug;
     const { theme, toggle, mounted } = useTheme();
-    const { data: tenant, isLoading, isError } = useGetPublicTenant(resolvedSlug);
-    const { data: feedbacks, isLoading: isLoadingFeedbacks } = usePublicFeedbacks(resolvedSlug);
+    const { data: tenant, isLoading, isError } = useGetPublicTenant(safeSlug);
+    const { data: feedbacks, isLoading: isLoadingFeedbacks } = usePublicFeedbacks(safeSlug);
     const [modalOpen, setModalOpen] = useState(false);
 
     return (
-        <main className="relative min-h-screen bg-transparent text-[#0A0A0C] antialiased dark:bg-transparent dark:text-[#F5F4F2]">
+        <main className="relative min-h-screen overflow-x-clip bg-transparent text-[#0A0A0C] antialiased dark:bg-transparent dark:text-[#F5F4F2]">
             <AmbientBackground />
 
             <BaseHeader

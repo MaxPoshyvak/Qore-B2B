@@ -1,8 +1,8 @@
-import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { randomInt } from 'crypto';
 import { CreateTenantDto } from './dto/tenants.dto';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { PublicTenantResponse, SuccessResponse, UpdateTenantSettingsDto } from '@my-app/types';
+import { isReservedSlug, PublicTenantResponse, SuccessResponse, UpdateTenantSettingsDto } from '@my-app/types';
 import { Prisma, Tenant } from '@my-app/database';
 
 
@@ -11,6 +11,10 @@ export class TenantsService {
     constructor(private prisma: PrismaService) {}
 
     async createTenant(dto: CreateTenantDto, userId: string): Promise<SuccessResponse<Tenant>> {
+        if (isReservedSlug(dto.slug)) {
+            throw new BadRequestException('This URL (slug) is reserved for system use and cannot be used.');
+        }
+
         const existingTenants = await this.prisma.tenant.findMany({
             where: { ownerId: userId },
             select: { id: true, subscriptionPlan: true },

@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { UpsellCacheService } from 'src/modules/ai/services/upsell-cache.service';
 import { SuccessResponse } from '@my-app/types';
@@ -94,6 +94,15 @@ export class CategoriesService {
         });
         if (!existing) throw new NotFoundException('Category not found');
         await this.assertOwnsTenant(existing.tenantId, userId);
+
+        const itemsCount = await this.prisma.menuItem.count({
+            where: { categoryId: id },
+        });
+        if (itemsCount > 0) {
+            throw new BadRequestException(
+                'Cannot delete category that still contains menu items. Please remove or move items first.',
+            );
+        }
 
         const result = await this.prisma.menuCategory.delete({ where: { id } });
 
