@@ -17,10 +17,10 @@ import type { ElementType } from 'react';
 /* ------------------------------------------------------------------ */
 
 export const NAV_LINKS: { href: string; label: string }[] = [
-    { href: '#features', label: 'Features' },
-    { href: '#how', label: 'How it works' },
-    { href: '#ai', label: 'AI' },
-    { href: '#pricing', label: 'Pricing' },
+    { href: '/#features', label: 'Features' },
+    { href: '/#how', label: 'How it works' },
+    { href: '/#ai', label: 'AI' },
+    { href: '/#pricing', label: 'Pricing' },
 ];
 
 /* ------------------------------------------------------------------ */
