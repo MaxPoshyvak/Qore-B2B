@@ -16,7 +16,8 @@
     "live": "Live",
     "done": "Done",
     "selectLanguage": "Select Language",
-    "logOut": "Log out"
+    "logOut": "Log out",
+    "add": "Add"
   },
   "publicMenu": {
     "headerTitle": "Menu",
@@ -24,7 +25,7 @@
     "searchPlaceholder": "Search dishes, drinks, ingredients...",
     "noDishesFound": "No dishes found",
     "noDishesDesc": "Try adjusting your search or category filter",
-    "viewCart": "View Order",
+    "viewCart": "View",
     "cart": "Order",
     "emptyCart": "Your order is empty",
     "emptyCartDesc": "Add delicious items from the menu to get started",
@@ -136,7 +137,9 @@
     "paidInFull": "Paid in Full",
     "addTip": "Add tip for staff",
     "noTip": "No tip",
+    "noTipShort": "No tip",
     "customTip": "Custom",
+    "customTipShort": "Custom",
     "payShare": "Pay My Share",
     "paySelected": "Pay Selected ({count})",
     "remaining": "remaining",

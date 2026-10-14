@@ -120,7 +120,7 @@ export default function OrderTrackingPage() {
     const StatusIcon = meta.icon;
 
     return (
-        <main className="relative min-h-screen bg-transparent text-[#0A0A0C] antialiased dark:bg-transparent dark:text-[#F5F4F2]">
+        <main className="relative min-h-screen overflow-x-clip bg-transparent text-[#0A0A0C] antialiased dark:bg-transparent dark:text-[#F5F4F2]">
             <AmbientBackground />
 
             <BaseHeader
@@ -135,7 +135,7 @@ export default function OrderTrackingPage() {
                 {mounted && <ThemeToggle theme={theme} toggle={toggle} />}
             </BaseHeader>
 
-            <div className="mx-auto max-w-xl px-4 pb-20 pt-6 sm:px-6">
+            <div className="mx-auto max-w-xl px-3 sm:px-6 pb-20 pt-6">
                 {isLoading ? (
                     <div className="mt-6 h-72 animate-pulse rounded-[2rem] bg-white/40 dark:bg-white/5" />
                 ) : isError || !order ? (
@@ -158,7 +158,7 @@ export default function OrderTrackingPage() {
                             initial={{ opacity: 0, scale: 0.96 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.5, ease: EASE }}
-                            className="rounded-[2rem] border border-white/60 bg-white/80 px-6 py-8 text-center shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-2xl">
+                            className="rounded-[2rem] border border-white/60 bg-white/80 px-4 py-6 sm:px-6 sm:py-8 text-center shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-2xl">
                             <motion.span
                                 initial={{ scale: 0.6, rotate: -8 }}
                                 animate={{ scale: 1, rotate: 0 }}
@@ -185,9 +185,9 @@ export default function OrderTrackingPage() {
                                     const active = i === currentStepIndex && status !== 'delivered';
                                     const StepIcon = step.icon;
                                     return (
-                                        <div key={step.value} className="flex flex-1 flex-col items-center gap-1.5">
+                                        <div key={step.value} className="flex min-w-0 flex-1 flex-col items-center gap-1.5">
                                             <div
-                                                className={`flex h-9 w-9 items-center justify-center rounded-full border transition-colors ${
+                                                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-colors ${
                                                     done || active
                                                         ? 'border-[#3B82F6]/30 bg-[#3B82F6]/10 ' + step.accent
                                                         : 'border-black/10 text-[#9C9B95] dark:border-white/10'
@@ -195,7 +195,7 @@ export default function OrderTrackingPage() {
                                                 <StepIcon size={16} strokeWidth={1.9} />
                                             </div>
                                             <span
-                                                className={`text-[10px] uppercase tracking-wider ${
+                                                className={`text-[9px] sm:text-[10px] uppercase tracking-normal sm:tracking-wider text-center leading-tight truncate max-w-full px-0.5 ${
                                                     done || active ? 'text-[#0A0A0C] dark:text-[#F5F4F2]' : 'text-[#9C9B95]'
                                                 }`}>
                                                 {getStatusLabel(step.value, t)}
@@ -219,7 +219,7 @@ export default function OrderTrackingPage() {
                             initial={{ opacity: 0, y: 16 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5, delay: 0.1, ease: EASE }}
-                            className="mt-4 rounded-[2rem] border border-white/60 bg-white/80 px-6 py-6 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-2xl">
+                            className="mt-4 rounded-[2rem] border border-white/60 bg-white/80 p-4 sm:p-6 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-2xl">
                             <div className="flex items-center justify-between">
                                 <span className={`${display.className} text-[16px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
                                     {t('yourOrder')}
@@ -233,13 +233,13 @@ export default function OrderTrackingPage() {
                             <ul className="mt-4 space-y-3">
                                 {order.items.map((item) => (
                                     <li key={item.id} className="flex items-center justify-between gap-3 text-sm">
-                                        <span className="flex items-center gap-2 text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-black/[0.05] text-[11px] font-semibold dark:bg-white/10">
+                                        <span className="flex min-w-0 items-center gap-2 text-[#0A0A0C] dark:text-[#F5F4F2]">
+                                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-black/[0.05] text-[11px] font-semibold dark:bg-white/10">
                                                 {item.quantity}
                                             </span>
-                                            {item.menuItemName}
+                                            <span className="truncate">{item.menuItemName}</span>
                                         </span>
-                                        <span className="tabular-nums text-[#6B6A65] dark:text-[#94938D]">
+                                        <span className="shrink-0 tabular-nums text-[#6B6A65] dark:text-[#94938D]">
                                             {formatPrice(item.priceAtOrder * item.quantity, order.currency)}
                                         </span>
                                     </li>

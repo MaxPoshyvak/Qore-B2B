@@ -174,7 +174,7 @@ export function CartUpsellSection({
                                     ) : (
                                         <Plus size={13} strokeWidth={2.5} />
                                     )}
-                                    <span>{tCommon('add')}</span>
+                                    <span>{t('add')}</span>
                                 </button>
                             )}
                         </li>

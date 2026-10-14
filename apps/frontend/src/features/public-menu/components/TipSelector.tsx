@@ -61,17 +61,17 @@ export function TipSelector({ baseAmount, tipAmount, onTipChange, currency = 'US
                             type="button"
                             onClick={() => handlePresetClick(pct)}
                             className={cn(
-                                'flex flex-col items-center justify-center rounded-xl border py-2 text-xs transition-all duration-150',
+                                'flex min-w-0 flex-col items-center justify-center rounded-xl border px-1 py-2 text-center transition-all duration-150',
                                 isSelected
                                     ? 'border-[#3B82F6] bg-[#3B82F6]/10 font-bold text-[#2563EB] dark:border-[#60A5FA] dark:text-[#60A5FA]'
                                     : 'border-black/10 bg-black/[0.02] text-[#0A0A0C] [@media(hover:hover)]:hover:border-black/20 dark:border-white/10 dark:bg-white/[0.03] dark:text-[#F5F4F2] dark:[@media(hover:hover)]:hover:border-white/20',
                             )}>
-                            <span>{pct === 0 ? t('noTip') : `${pct}%`}</span>
-                            {pct > 0 && (
-                                <span className="text-[10px] opacity-75">
-                                    {formatPrice(presetAmount, currency)}
-                                </span>
-                            )}
+                            <span className="text-xs sm:text-sm font-semibold">
+                                {pct === 0 ? '0%' : `${pct}%`}
+                            </span>
+                            <span className="text-[10px] leading-tight text-[#6B6A65] dark:text-[#94938D] truncate max-w-full">
+                                {pct === 0 ? t('noTipShort') : formatPrice(presetAmount, currency)}
+                            </span>
                         </button>
                     );
                 })}
@@ -82,12 +82,17 @@ export function TipSelector({ baseAmount, tipAmount, onTipChange, currency = 'US
                         setIsCustom(true);
                     }}
                     className={cn(
-                        'flex flex-col items-center justify-center rounded-xl border py-2 text-xs transition-all duration-150',
+                        'flex min-w-0 flex-col items-center justify-center rounded-xl border px-1 py-2 text-center transition-all duration-150',
                         isCustom
                             ? 'border-[#3B82F6] bg-[#3B82F6]/10 font-bold text-[#2563EB] dark:border-[#60A5FA] dark:text-[#60A5FA]'
                             : 'border-black/10 bg-black/[0.02] text-[#0A0A0C] [@media(hover:hover)]:hover:border-black/20 dark:border-white/10 dark:bg-white/[0.03] dark:text-[#F5F4F2] dark:[@media(hover:hover)]:hover:border-white/20',
                     )}>
-                    <span>{t('customTip')}</span>
+                    <span className="text-xs sm:text-sm font-semibold truncate max-w-full">
+                        {t('customTipShort')}
+                    </span>
+                    <span className="text-[10px] leading-tight text-[#6B6A65] dark:text-[#94938D]">
+                        ...
+                    </span>
                 </button>
             </div>
 

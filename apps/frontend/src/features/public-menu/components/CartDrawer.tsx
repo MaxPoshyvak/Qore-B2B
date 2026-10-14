@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -163,6 +163,15 @@ export function CartDrawer({
     );
     const totalGuests = groups.length;
 
+    useEffect(() => {
+        if (!isOpen) return;
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = previousOverflow;
+        };
+    }, [isOpen]);
+
     const panelMotion = isDesktop
         ? { initial: { x: '100%' }, animate: { x: 0 }, exit: { x: '100%' } }
         : { initial: { y: '100%' }, animate: { y: 0 }, exit: { y: '100%' } };
@@ -187,11 +196,11 @@ export function CartDrawer({
                         aria-label="Shared order"
                         {...panelMotion}
                         transition={{ duration: 0.4, ease: EASE }}
-                        className="fixed inset-x-0 bottom-0 z-50 mx-auto flex max-h-[85vh] w-full max-w-md flex-col rounded-t-3xl border border-white/60 bg-white/95 shadow-2xl backdrop-blur-2xl dark:border-white/10 dark:bg-[#121215]/95 md:inset-x-auto md:bottom-0 md:right-0 md:top-0 md:h-full md:max-h-none md:max-w-none md:w-[400px] md:rounded-none md:border-l md:border-y-0 md:border-r-0 md:shadow-xl">
+                        className="fixed inset-x-0 bottom-0 z-50 mx-auto flex max-h-[85vh] w-full max-w-md flex-col overflow-hidden rounded-t-3xl border border-white/60 bg-white/95 shadow-2xl backdrop-blur-2xl dark:border-white/10 dark:bg-[#121215]/95 md:inset-x-auto md:bottom-0 md:right-0 md:top-0 md:h-full md:max-h-none md:max-w-none md:w-[400px] md:rounded-none md:border-l md:border-y-0 md:border-r-0 md:shadow-xl">
                         <div className="pointer-events-none absolute inset-x-6 top-2 h-1 rounded-full bg-black/10 dark:bg-white/15 md:hidden" />
 
                         {/* Header */}
-                        <div className="flex items-center justify-between gap-3 px-5 pb-4 pt-6">
+                        <div className="flex items-center justify-between gap-3 px-4 sm:px-5 pb-4 pt-6">
                             <div className="flex flex-wrap items-center gap-2">
                                 {tableName && (
                                     <span className="inline-flex items-center gap-1.5 rounded-full bg-[#3B82F6]/10 px-3 py-1 text-xs font-medium text-[#2563EB] dark:text-[#93C5FD]">
@@ -225,7 +234,7 @@ export function CartDrawer({
                         </div>
 
                         {/* Grouped guest lists */}
-                        <div className="flex-1 overflow-y-auto px-5">
+                        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain px-4 sm:px-5">
                             {isLoading ? (
                                 <p className="flex items-center justify-center gap-2 py-10 text-sm text-[#6B6A65] dark:text-[#94938D]">
                                     <Loader2 size={14} className="animate-spin" />
@@ -276,7 +285,7 @@ export function CartDrawer({
                                                     {group.items.map((item) => (
                                                         <li
                                                             key={item.id}
-                                                            className="flex items-center gap-3 rounded-2xl border border-black/5 bg-white/60 p-3 dark:border-white/10 dark:bg-white/[0.03]">
+                                                            className="flex items-center gap-2.5 sm:gap-3 rounded-2xl border border-black/5 bg-white/60 p-2.5 sm:p-3 dark:border-white/10 dark:bg-white/[0.03]">
                                                             <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-[#3B82F6]/20 via-[#8B5CF6]/12 to-transparent">
                                                                 {item.menuItem?.imageUrl ? (
                                                                     <Image
@@ -328,7 +337,7 @@ export function CartDrawer({
                                                                     {t('confirmed')}
                                                                 </span>
                                                             ) : isMine ? (
-                                                                <div className="flex items-center gap-2">
+                                                                <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
                                                                     <button
                                                                         type="button"
                                                                         onClick={() =>
@@ -405,7 +414,7 @@ export function CartDrawer({
 
                         {/* Footer / Ready check */}
                         {!isComplete && (
-                            <div className="border-t border-black/5 px-5 py-4 dark:border-white/10">
+                            <div className="border-t border-black/5 px-4 sm:px-5 py-4 dark:border-white/10">
                                 <div className="mb-3 flex items-center justify-between text-sm">
                                     <span className="text-[#6B6A65] dark:text-[#94938D]">{t('subtotal')}</span>
                                     <span className="font-semibold tabular-nums text-[#0A0A0C] dark:text-[#F5F4F2]">

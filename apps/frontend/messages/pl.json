@@ -16,7 +16,8 @@
     "live": "Na żywo",
     "done": "Gotowe",
     "selectLanguage": "Wybierz język",
-    "logOut": "Wyloguj się"
+    "logOut": "Wyloguj się",
+    "add": "Dodaj"
   },
   "publicMenu": {
     "headerTitle": "Menu",
@@ -24,7 +25,7 @@
     "searchPlaceholder": "Szukaj dań, napojów, składników...",
     "noDishesFound": "Nie znaleziono dań",
     "noDishesDesc": "Spróbuj zmienić zapytanie lub kategorię",
-    "viewCart": "Zobacz zamówienie",
+    "viewCart": "Zobacz",
     "cart": "Zamówienie",
     "emptyCart": "Twoje zamówienie jest puste",
     "emptyCartDesc": "Dodaj pyszne pozycje z menu, aby rozpocząć",
@@ -136,7 +137,9 @@
     "paidInFull": "Całkowicie opłacony",
     "addTip": "Napiwek dla obsługi",
     "noTip": "Bez napiwku",
+    "noTipShort": "Bez",
     "customTip": "Inna kwota",
+    "customTipShort": "Inna",
     "payShare": "Zapłać moją część",
     "paySelected": "Zapłać wybrane ({count})",
     "remaining": "pozostało",

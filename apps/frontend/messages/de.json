@@ -16,7 +16,8 @@
     "live": "Live",
     "done": "Fertig",
     "selectLanguage": "Sprache wählen",
-    "logOut": "Abmelden"
+    "logOut": "Abmelden",
+    "add": "Hinzufügen"
   },
   "publicMenu": {
     "headerTitle": "Speisekarte",
@@ -24,7 +25,7 @@
     "searchPlaceholder": "Speisen, Getränke, Zutaten suchen...",
     "noDishesFound": "Keine Gerichte gefunden",
     "noDishesDesc": "Passe deine Suche an oder wähle eine andere Kategorie",
-    "viewCart": "Bestellung ansehen",
+    "viewCart": "Ansehen",
     "cart": "Bestellung",
     "emptyCart": "Deine Bestellung ist leer",
     "emptyCartDesc": "Füge köstliche Gerichte aus der Karte hinzu, um zu beginnen",
@@ -136,7 +137,9 @@
     "paidInFull": "Vollständig bezahlt",
     "addTip": "Trinkgeld für das Personal",
     "noTip": "Kein Trinkgeld",
+    "noTipShort": "Kein",
     "customTip": "Anderer Betrag",
+    "customTipShort": "Eigener",
     "payShare": "Meinen Anteil zahlen",
     "paySelected": "Ausgewählte zahlen ({count})",
     "remaining": "offen",

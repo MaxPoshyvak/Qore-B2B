@@ -16,7 +16,8 @@
     "live": "Živě",
     "done": "Hotovo",
     "selectLanguage": "Vyberte jazyk",
-    "logOut": "Odhlásit se"
+    "logOut": "Odhlásit se",
+    "add": "Přidat"
   },
   "publicMenu": {
     "headerTitle": "Menu",
@@ -24,7 +25,7 @@
     "searchPlaceholder": "Hledat jídla, nápoje, suroviny...",
     "noDishesFound": "Žádná jídla nebyla nalezena",
     "noDishesDesc": "Zkuste upravit vyhledávání nebo zvolit jinou kategorii",
-    "viewCart": "Zobrazit objednávku",
+    "viewCart": "Zobrazit",
     "cart": "Objednávka",
     "emptyCart": "Vaše objednávka je prázdná",
     "emptyCartDesc": "Začněte přidáním lahodných položek z menu",
@@ -136,7 +137,9 @@
     "paidInFull": "Zcela zaplaceno",
     "addTip": "Spropitné pro obsluhu",
     "noTip": "Bez spropitného",
+    "noTipShort": "Bez",
     "customTip": "Vlastní částka",
+    "customTipShort": "Vlastní",
     "payShare": "Zaplatit můj podíl",
     "paySelected": "Zaplatit vybrané ({count})",
     "remaining": "zbývá",

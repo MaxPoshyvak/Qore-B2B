@@ -61,7 +61,7 @@ export function CartBanner({ cart, activeHappyHourRules = [] }: CartBannerProps)
                         <button
                             type="button"
                             onClick={() => setCartDrawerOpen(true)}
-                            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#3B82F6]/20 transition-opacity [@media(hover:hover)]:hover:opacity-95">
+                            className="inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#3B82F6]/20 transition-opacity [@media(hover:hover)]:hover:opacity-95">
                             {t('viewCart')}
                         </button>
                     </div>

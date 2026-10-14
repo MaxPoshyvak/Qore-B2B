@@ -89,9 +89,9 @@ export function SplitBillModal({
                         animate={{ y: 0, opacity: 1 }}
                         exit={{ y: '100%', opacity: 0 }}
                         transition={{ duration: 0.3, ease: EASE }}
-                        className="relative z-10 flex max-h-[90vh] w-full max-w-lg flex-col rounded-t-[2rem] border border-white/60 bg-white/95 shadow-2xl backdrop-blur-2xl dark:border-white/10 dark:bg-[#121215]/95 sm:rounded-[2rem]">
+                        className="relative z-10 flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-t-[2rem] border border-white/60 bg-white/95 shadow-2xl backdrop-blur-2xl dark:border-white/10 dark:bg-[#121215]/95 sm:rounded-[2rem]">
                         {/* Header */}
-                        <div className="flex items-center justify-between border-b border-black/5 px-6 py-4 dark:border-white/5">
+                        <div className="flex items-center justify-between border-b border-black/5 px-4 sm:px-6 py-4 dark:border-white/5">
                             <div className="flex items-center gap-2.5">
                                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#3B82F6]/10 text-[#3B82F6]">
                                     <SplitSquareHorizontal size={18} />
@@ -117,7 +117,7 @@ export function SplitBillModal({
                         </div>
 
                         {/* Content */}
-                        <div className="flex-1 overflow-y-auto px-6 py-4 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+                        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-4 sm:px-6 py-4 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
                             {/* Bill progress bar */}
                             <SplitProgressBar
                                 totalAmount={bill.totalAmount}

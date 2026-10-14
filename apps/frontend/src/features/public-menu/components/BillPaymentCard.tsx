@@ -68,17 +68,17 @@ export function BillPaymentCard({
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, ease: EASE }}
-                    className="mt-4 rounded-[2rem] border border-[#10B981]/30 bg-[#10B981]/5 px-6 py-5 text-center shadow-lg backdrop-blur-2xl dark:border-[#10B981]/20 dark:bg-[#10B981]/10">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#10B981]/10 text-[#10B981]">
+                    className="mt-4 rounded-[2rem] border border-[#10B981]/30 bg-[#10B981]/5 px-4 py-4 sm:px-6 sm:py-5 text-center shadow-lg backdrop-blur-2xl dark:border-[#10B981]/20 dark:bg-[#10B981]/10">
+                    <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#10B981]/10 text-[#10B981]">
                                 <Receipt size={20} />
                             </span>
-                            <div className="text-left leading-tight">
+                            <div className="text-left leading-tight min-w-0">
                                 <p className="text-xs uppercase tracking-wider text-[#059669] dark:text-[#34D399]">
                                     {t('billSettled')}
                                 </p>
-                                <p className="text-sm font-bold text-[#0A0A0C] dark:text-[#F5F4F2]">
+                                <p className="text-sm font-bold text-[#0A0A0C] dark:text-[#F5F4F2] truncate">
                                     {formatPrice(bill.totalAmount, bill.currency)} {t('paidInFull')}
                                 </p>
                             </div>
@@ -87,9 +87,9 @@ export function BillPaymentCard({
                         <button
                             type="button"
                             onClick={() => setReceiptModalOpen(true)}
-                            className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-white/80 px-4 py-2 text-xs font-semibold text-[#0A0A0C] shadow-sm transition-colors [@media(hover:hover)]:hover:bg-white dark:border-white/10 dark:bg-[#141417]/80 dark:text-[#F5F4F2] dark:[@media(hover:hover)]:hover:bg-[#141417]">
+                            className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-black/10 bg-white/80 px-3.5 sm:px-4 py-2 text-xs font-semibold text-[#0A0A0C] shadow-sm transition-colors [@media(hover:hover)]:hover:bg-white dark:border-white/10 dark:bg-[#141417]/80 dark:text-[#F5F4F2] dark:[@media(hover:hover)]:hover:bg-[#141417]">
                             <Receipt size={14} />
-                            {t('viewReceipt')}
+                            <span>{t('viewReceipt')}</span>
                         </button>
                     </div>
                 </motion.div>
@@ -109,7 +109,7 @@ export function BillPaymentCard({
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, ease: EASE }}
-                className="mt-4 rounded-[2rem] border border-white/60 bg-white/80 p-6 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-2xl">
+                className="mt-4 rounded-[2rem] border border-white/60 bg-white/80 p-4 sm:p-6 shadow-xl backdrop-blur-2xl dark:border-white/10 dark:bg-white/[0.04] dark:shadow-2xl">
                 <div className="flex items-center justify-between border-b border-black/5 pb-4 dark:border-white/5">
                     <div className="flex items-center gap-2">
                         <CreditCard size={18} className="text-[#3B82F6]" />
@@ -166,16 +166,16 @@ export function BillPaymentCard({
                             type="button"
                             onClick={handlePayFull}
                             disabled={payFullMutation.isPending || remaining <= 0}
-                            className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#3B82F6]/20 transition-opacity [@media(hover:hover)]:hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50">
+                            className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-4 sm:px-5 py-3.5 text-center text-sm font-semibold text-white shadow-lg shadow-[#3B82F6]/20 transition-opacity [@media(hover:hover)]:hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50">
                             {payFullMutation.isPending ? (
                                 <>
                                     <Loader2 size={16} className="animate-spin" />
-                                    {t('openingCheckout')}
+                                    <span>{t('openingCheckout')}</span>
                                 </>
                             ) : isPartiallyPaid ? (
-                                t('payRemainingAmount', { amount: formatPrice(totalToCharge, bill.currency) })
+                                <span>{t('payRemainingAmount', { amount: formatPrice(totalToCharge, bill.currency) })}</span>
                             ) : (
-                                t('payFullBillAmount', { amount: formatPrice(totalToCharge, bill.currency) })
+                                <span>{t('payFullBillAmount', { amount: formatPrice(totalToCharge, bill.currency) })}</span>
                             )}
                         </button>
 
@@ -184,9 +184,9 @@ export function BillPaymentCard({
                             <button
                                 type="button"
                                 onClick={() => setSplitModalOpen(true)}
-                                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#3B82F6]/30 bg-[#3B82F6]/5 px-5 py-3 text-sm font-semibold text-[#2563EB] transition-colors [@media(hover:hover)]:hover:border-[#3B82F6]/60 dark:text-[#60A5FA]">
+                                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#3B82F6]/30 bg-[#3B82F6]/5 px-4 sm:px-5 py-3 text-center text-sm font-semibold text-[#2563EB] transition-colors [@media(hover:hover)]:hover:border-[#3B82F6]/60 dark:text-[#60A5FA]">
                                 <SplitSquareHorizontal size={16} />
-                                {t('splitBillDineIn')}
+                                <span>{t('splitBillDineIn')}</span>
                             </button>
                         )}
                     </div>
