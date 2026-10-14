@@ -122,18 +122,19 @@ export function SettingsForm({ slug, initialData }: SettingsFormProps) {
 
             <div className="relative mx-auto max-w-6xl px-1">
                 <div className="pointer-events-none  absolute right-0 -top-20 h-72 w-72 rounded-full bg-[#3B82F6]/5 blur-3xl" />
-                <header className="mb-6 md:mb-8">
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-[#3B82F6]/20 bg-[#3B82F6]/10 px-3 py-1 text-xs font-medium text-[#2563EB] dark:text-[#60A5FA]">
+                <header className="mb-8 md:mb-10">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-[#3B82F6]/25 bg-[#3B82F6]/5 px-3 py-1 text-xs font-medium text-[#2563EB] dark:text-[#60A5FA]">
+                        <span className="flex h-1.5 w-1.5 rounded-full bg-[#3B82F6]" />
                         {t('title')}
                     </span>
                     <h1
                         className={cn(
                             display.className,
-                            'text-2xl font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2] md:text-3xl',
+                            'mt-4 text-2xl font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2] md:text-3xl',
                         )}>
                         {t('subtitle')}
                     </h1>
-                    <p className="mt-1.5 text-sm text-[#6B6A65] dark:text-[#94938D]">
+                    <p className="mt-2 text-sm text-[#6B6A65] dark:text-[#94938D]">
                         {t('generalDesc')}
                     </p>
                     <div className="hide-scrollbar -mx-4 mt-5 flex gap-2 overflow-x-auto px-4 md:hidden">

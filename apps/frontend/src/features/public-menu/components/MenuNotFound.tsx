@@ -31,7 +31,7 @@ export function MenuNotFound({ slug }: { slug: string }) {
             <Link
                 href="/"
                 className="mt-7 inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#3B82F6]/25 transition-opacity hover:opacity-95">
-                {t('goToCafeBoard')}
+                {t('goToQore')}
             </Link>
         </motion.div>
     );

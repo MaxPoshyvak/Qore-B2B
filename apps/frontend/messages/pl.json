@@ -107,7 +107,6 @@
     "feedbackDesc": "Twoja opinia pomaga lokalowi działać jeszcze lepiej.",
     "menuNotFound": "Nie znaleziono menu",
     "menuNotFoundDesc": "Nie mogliśmy znaleźć menu dla {slug}. Lokal może nie być jeszcze opublikowany lub link jest nieprawidłowy.",
-    "goToCafeBoard": "Przejdź do CaféBoard",
     "open": "Otwarte",
     "closed": "Zamknięte",
     "hoursNotSet": "Godziny nieustalone",
@@ -123,7 +122,8 @@
     "aiRecommended": "Rekomendowane przez AI",
     "options": "Opcje",
     "attentionTableReserved": "Uwaga: Ten stolik jest zarezerwowany na {time}.",
-    "keepInMindMove": "Prosimy o wzięcie tego pod uwagę lub zajęcie wolnego stolika."
+    "keepInMindMove": "Prosimy o wzięcie tego pod uwagę lub zajęcie wolnego stolika.",
+    "goToQore": "Przejdź do Qore"
   },
   "billing": {
     "payBill": "Zapłać rachunek",
@@ -301,7 +301,9 @@
       "venueLanguageDesc": "Wybierz domyślny język interfejsu Twojego lokalu i gości."
     },
     "analytics": {
-      "title": "Analityka",
+      "badge": "Analityka",
+      "title": "Wydajność",
+      "titleHighlight": "lokalu",
       "subtitle": "Śledź przychody, bestsellery i preferencje swoich gości.",
       "totalRevenue": "Całkowity przychód",
       "totalOrders": "Wszystkie zamówienia",
@@ -572,7 +574,7 @@
       "typical2": "Wolne ładowanie na słabym Wi-Fi w lokalu",
       "typical3": "Każdy gość ma swój własny, oddzielny koszyk",
       "typical4": "Kelner musi ręcznie dzielić rachunek przy kasie",
-      "qoreTitle": "CaféBoard",
+      "qoreTitle": "Qore",
       "qore1": "Renderowanie po stronie serwera, gotowe w mniej niż sekundę",
       "qore2": "Jeden wspólny koszyk stolika aktualizowany w czasie rzeczywistym",
       "qore3": "Goście dzielą rachunek sami — po równo lub według pozycji",
@@ -639,11 +641,11 @@
     "ctaBanner": {
       "title": "Uruchom swój lokal w jeden wieczór",
       "description": "Przeniesienie menu, kody QR dla stolików i wdrożenie zespołu — zacznij za darmo.",
-      "button": "Wypróbuj CaféBoard"
+      "button": "Wypróbuj Qore"
     },
     "footer": {
       "tagline": "Interaktywne menu QR, rezerwacje i AI dla kawiarni i restauracji.",
-      "domain": "cafeboard.app",
+      "domain": "useqore.app",
       "product": "Produkt",
       "company": "Firma",
       "legal": "Prawo",
@@ -654,7 +656,7 @@
       "contact": "Kontakt",
       "terms": "Regulamin",
       "privacy": "Prywatność",
-      "copyright": "© {year} CaféBoard. Wszelkie prawa zastrzeżone."
+      "copyright": "© {year} Qore. Wszelkie prawa zastrzeżone."
     }
   },
   "menuManagement": {

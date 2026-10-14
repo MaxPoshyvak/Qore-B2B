@@ -9,7 +9,6 @@ import { display } from '@/shared/lib/fonts';
 import { EASE } from '@/shared/config/animations';
 import { cn } from '@/shared/lib/utils';
 import { useGetTenantBySlug } from '@/entities/tenant/hooks/useTenants';
-import { Eyebrow } from '@/shared/ui/Eyebrow';
 import { FeedbackView, GuestsView, OverviewView, SalesView } from '@/features/analytics';
 import { useTranslations } from 'next-intl';
 
@@ -60,12 +59,15 @@ export default function AnalyticsPage() {
                 transition={{ duration: 0.5, ease: EASE }}
                 className="flex flex-wrap items-end justify-between gap-4">
                 <div>
-                    <Eyebrow>{tAnalytics('title')}</Eyebrow>
+                    <span className="inline-flex items-center gap-2 rounded-full border border-[#3B82F6]/25 bg-[#3B82F6]/5 px-3 py-1 text-xs font-medium text-[#2563EB] dark:text-[#93C5FD]">
+                        <span className="flex h-1.5 w-1.5 rounded-full bg-[#3B82F6]" />
+                        {tAnalytics('badge')}
+                    </span>
                     <h1
-                        className={`${display.className} mt-3 text-3xl font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2] sm:text-4xl`}>
-                        Venue{' '}
+                        className={`${display.className} mt-4 text-3xl font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2] sm:text-4xl`}>
+                        {tAnalytics('title')}{' '}
                         <span className="bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] bg-clip-text text-transparent">
-                            Performance
+                            {tAnalytics('titleHighlight')}
                         </span>
                     </h1>
                     <p className="mt-2 max-w-xl text-sm leading-relaxed text-[#6B6A65] dark:text-[#94938D]">

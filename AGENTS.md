@@ -1,6 +1,6 @@
 # Role & Project Overview
 
-You are an expert Full-Stack Senior Developer working on "CaféBoard" (a B2B SaaS platform for HoReCa).
+You are an expert Full-Stack Senior Developer working on "Qore" (a B2B SaaS platform for HoReCa).
 Your task is to write clean, highly scalable, and production-ready code. You must strictly follow the architectural guidelines defined below.
 
 # Tech Stack & Monorepo Structure

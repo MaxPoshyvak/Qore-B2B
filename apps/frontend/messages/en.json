@@ -107,7 +107,6 @@
     "feedbackDesc": "Your feedback helps this venue serve you better.",
     "menuNotFound": "Menu not found",
     "menuNotFoundDesc": "We couldn't find a menu for {slug}. The venue may not be published yet, or the link is incorrect.",
-    "goToCafeBoard": "Go to CaféBoard",
     "open": "Open",
     "closed": "Closed",
     "hoursNotSet": "Hours not set",
@@ -123,7 +122,8 @@
     "aiRecommended": "AI Recommended",
     "options": "Options",
     "attentionTableReserved": "Attention: This table is reserved for {time}.",
-    "keepInMindMove": "Please keep this in mind, or kindly move to a free table."
+    "keepInMindMove": "Please keep this in mind, or kindly move to a free table.",
+    "goToQore": "Go to Qore"
   },
   "billing": {
     "payBill": "Pay Bill",
@@ -301,7 +301,9 @@
       "venueLanguageDesc": "Choose the default language for your venue interface and guests."
     },
     "analytics": {
-      "title": "Analytics",
+      "badge": "Analytics",
+      "title": "Venue",
+      "titleHighlight": "Performance",
       "subtitle": "Track revenue, best-selling dishes, and how your guests choose to order.",
       "totalRevenue": "Total Revenue",
       "totalOrders": "Total Orders",
@@ -572,7 +574,7 @@
       "typical2": "Slow to load on weak in-house Wi-Fi",
       "typical3": "Every guest has their own separate cart",
       "typical4": "The server splits the bill by hand",
-      "qoreTitle": "CaféBoard",
+      "qoreTitle": "Qore",
       "qore1": "Server-rendered, ready in under a second",
       "qore2": "One shared table cart, updated in real time",
       "qore3": "Guests split the bill themselves — evenly or by item",
@@ -639,11 +641,11 @@
     "ctaBanner": {
       "title": "Get your venue live in one evening",
       "description": "Menu migration, table QR setup, and team onboarding — free to get started.",
-      "button": "Try CaféBoard"
+      "button": "Try Qore"
     },
     "footer": {
       "tagline": "Live QR menus, reservations, and AI for cafés and restaurants.",
-      "domain": "cafeboard.app",
+      "domain": "useqore.app",
       "product": "Product",
       "company": "Company",
       "legal": "Legal",
@@ -654,7 +656,7 @@
       "contact": "Contact",
       "terms": "Terms",
       "privacy": "Privacy",
-      "copyright": "© {year} CaféBoard. All rights reserved."
+      "copyright": "© {year} Qore. All rights reserved."
     }
   },
   "menuManagement": {

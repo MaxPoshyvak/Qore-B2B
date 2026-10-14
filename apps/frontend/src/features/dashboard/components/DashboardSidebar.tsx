@@ -352,7 +352,7 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                             </span>
                         </Link>
                     ) : (
-                        <span className="text-[12px] font-medium text-[#9C9B95] dark:text-[#6E6D68]">CaféBoard</span>
+                        <span className="text-[12px] font-medium text-[#9C9B95] dark:text-[#6E6D68]">Qore</span>
                     )}
 
                     <button

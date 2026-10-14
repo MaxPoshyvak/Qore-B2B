@@ -61,7 +61,7 @@ export default function DashboardOverview() {
     ];
 
     const metricValues: Record<(typeof METRIC_SLOTS)[number]['key'], { value: string; sub?: string }> = {
-        revenue: { value: today ? formatPrice(today.revenueToday) : '' },
+        revenue: { value: today ? formatPrice(today.revenueToday, tenant?.data?.settings?.currency ?? 'USD') : '' },
         active: { value: today ? String(today.activeOrders) : '' },
         reservations: { value: today ? String(today.todayReservations) : '' },
         topDish: {

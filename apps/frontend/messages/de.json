@@ -107,7 +107,6 @@
     "feedbackDesc": "Dein Feedback hilft diesem Lokal, noch besser zu werden.",
     "menuNotFound": "Menü nicht gefunden",
     "menuNotFoundDesc": "Wir konnten kein Menü für {slug} finden. Der Betrieb ist möglicherweise noch nicht veröffentlicht oder der Link ist ungültig.",
-    "goToCafeBoard": "Zu CaféBoard",
     "open": "Geöffnet",
     "closed": "Geschlossen",
     "hoursNotSet": "Öffnungszeiten nicht festgelegt",
@@ -123,7 +122,8 @@
     "aiRecommended": "KI-Empfohlen",
     "options": "Optionen",
     "attentionTableReserved": "Achtung: Dieser Tisch ist für {time} reserviert.",
-    "keepInMindMove": "Bitte beachten Sie dies oder wechseln Sie an einen freien Tisch."
+    "keepInMindMove": "Bitte beachten Sie dies oder wechseln Sie an einen freien Tisch.",
+    "goToQore": "Zu Qore"
   },
   "billing": {
     "payBill": "Rechnung bezahlen",
@@ -301,7 +301,9 @@
       "venueLanguageDesc": "Wählen Sie die Standardsprache für Ihre Menüoberfläche und Gäste."
     },
     "analytics": {
-      "title": "Analytik",
+      "badge": "Analytik",
+      "title": "Leistung",
+      "titleHighlight": "des Betriebs",
       "subtitle": "Behalte Umsatz, Bestseller und Gästepräferenzen im Blick.",
       "totalRevenue": "Gesamtumsatz",
       "totalOrders": "Bestellungen gesamt",
@@ -572,7 +574,7 @@
       "typical2": "Langsame Ladezeiten im schwachen Gäste-WLAN",
       "typical3": "Jeder Gast hat seinen eigenen separaten Warenkorb",
       "typical4": "Die Bedienung teilt die Rechnung mühsam per Hand auf",
-      "qoreTitle": "CaféBoard",
+      "qoreTitle": "Qore",
       "qore1": "Server-gerendert, in unter einer Sekunde geladen",
       "qore2": "Ein gemeinsamer Tisch-Warenkorb in Echtzeit",
       "qore3": "Gäste teilen die Rechnung selbst — gleichmäßig oder nach Speisen",
@@ -639,11 +641,11 @@
     "ctaBanner": {
       "title": "Starten Sie Ihren Betrieb an einem einzigen Abend",
       "description": "Menü-Import, Tisch-QR-Codes und Teameinbindung — kostenlos loslegen.",
-      "button": "CaféBoard ausprobieren"
+      "button": "Qore ausprobieren"
     },
     "footer": {
       "tagline": "Interaktive QR-Speisekarten, Reservierungen und KI für Cafés und Restaurants.",
-      "domain": "cafeboard.app",
+      "domain": "useqore.app",
       "product": "Produkt",
       "company": "Unternehmen",
       "legal": "Rechtliches",
@@ -654,7 +656,7 @@
       "contact": "Kontakt",
       "terms": "AGB",
       "privacy": "Datenschutz",
-      "copyright": "© {year} CaféBoard. Alle Rechte vorbehalten."
+      "copyright": "© {year} Qore. Alle Rechte vorbehalten."
     }
   },
   "menuManagement": {

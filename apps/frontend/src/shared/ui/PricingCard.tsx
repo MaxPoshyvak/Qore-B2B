@@ -61,7 +61,7 @@ export function PricingCard({
 
     const buttonClassNames = cn(
         body.className,
-        'mt-8 flex w-full items-center justify-center gap-2 rounded-2xl py-3 text-[14px] font-medium transition-colors',
+        'flex w-full items-center justify-center gap-2 rounded-2xl py-3 text-[14px] font-medium transition-colors',
         disabled
             ? 'border border-black/10 bg-black/5 text-[#6B6A65] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D] cursor-not-allowed opacity-60'
             : isUpgradeAction
@@ -135,41 +135,43 @@ export function PricingCard({
                 ))}
             </ul>
 
-            {isCurrent && !onCtaClick ? (
-                <button
-                    type="button"
-                    disabled
-                    className={cn(
-                        body.className,
-                        'mt-8 flex w-full cursor-default items-center justify-center gap-2 rounded-2xl border border-black/10 bg-black/5 py-3 text-[14px] font-medium text-[#6B6A65] dark:border-white/15 dark:bg-white/5 dark:text-[#94938D]',
-                    )}>
-                    {t('currentPlanBadge')}
-                </button>
-            ) : isCurrent && onCtaClick ? (
-                <button
-                    type="button"
-                    onClick={onCtaClick}
-                    disabled={disabled || loading}
-                    className={cn(
-                        body.className,
-                        'mt-8 flex w-full items-center justify-center gap-2 rounded-2xl border border-[#E7E5E0] py-3 text-[14px] font-medium text-[#0A0A0C] transition-colors md:hover:border-[#3B82F6]/40 dark:border-[#232327] dark:text-[#F5F4F2]',
-                        (disabled || loading) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
-                        loading && 'pointer-events-none'
-                    )}>
-                    {ctaText}
-                    {loading ? <Loader2 size={15} className="animate-spin" /> : <ArrowRight size={15} />}
-                </button>
-            ) : ctaHref ? (
-                <MagneticButton href={ctaHref} showSparks={featured} className={buttonClassNames}>
-                    {ctaText}
-                    {loading ? <Loader2 size={15} className="animate-spin" /> : <ArrowRight size={15} />}
-                </MagneticButton>
-            ) : (
-                <button type="button" onClick={onCtaClick} disabled={disabled || loading} className={buttonClassNames}>
-                    {ctaText}
-                    {loading ? <Loader2 size={15} className="animate-spin" /> : <ArrowRight size={15} />}
-                </button>
-            )}
+            <div className="mt-auto pt-6 w-full">
+                {isCurrent && !onCtaClick ? (
+                    <button
+                        type="button"
+                        disabled
+                        className={cn(
+                            body.className,
+                            'flex w-full cursor-default items-center justify-center gap-2 rounded-2xl border border-black/10 bg-black/5 py-3 text-[14px] font-medium text-[#6B6A65] dark:border-white/15 dark:bg-white/5 dark:text-[#94938D]',
+                        )}>
+                        {t('currentPlanBadge')}
+                    </button>
+                ) : isCurrent && onCtaClick ? (
+                    <button
+                        type="button"
+                        onClick={onCtaClick}
+                        disabled={disabled || loading}
+                        className={cn(
+                            body.className,
+                            'flex w-full items-center justify-center gap-2 rounded-2xl border border-[#E7E5E0] py-3 text-[14px] font-medium text-[#0A0A0C] transition-colors md:hover:border-[#3B82F6]/40 dark:border-[#232327] dark:text-[#F5F4F2]',
+                            (disabled || loading) ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
+                            loading && 'pointer-events-none'
+                        )}>
+                        {ctaText}
+                        {loading ? <Loader2 size={15} className="animate-spin" /> : <ArrowRight size={15} />}
+                    </button>
+                ) : ctaHref ? (
+                    <MagneticButton href={ctaHref} showSparks={featured} className={buttonClassNames}>
+                        {ctaText}
+                        {loading ? <Loader2 size={15} className="animate-spin" /> : <ArrowRight size={15} />}
+                    </MagneticButton>
+                ) : (
+                    <button type="button" onClick={onCtaClick} disabled={disabled || loading} className={buttonClassNames}>
+                        {ctaText}
+                        {loading ? <Loader2 size={15} className="animate-spin" /> : <ArrowRight size={15} />}
+                    </button>
+                )}
+            </div>
         </motion.div>
     );
 }
