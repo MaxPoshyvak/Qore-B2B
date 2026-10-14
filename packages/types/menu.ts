@@ -214,6 +214,7 @@ export interface PublicMenuVenueResponse {
     description: string | null;
     logoUrl: string | null;
     coverUrl: string | null;
+    currency?: string;
     workingHours?: unknown;
 }
 

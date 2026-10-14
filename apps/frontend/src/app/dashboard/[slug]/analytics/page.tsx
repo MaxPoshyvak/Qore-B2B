@@ -107,9 +107,15 @@ export default function AnalyticsPage() {
                     ) : !tenantId ? (
                         <p className="text-sm text-[#6B6A65] dark:text-[#94938D]">Venue not found.</p>
                     ) : tab === 'overview' ? (
-                        <OverviewView tenantId={tenantId} />
+                        <OverviewView
+                            tenantId={tenantId}
+                            currency={data?.data?.settings?.currency ?? 'USD'}
+                        />
                     ) : tab === 'sales' ? (
-                        <SalesView tenantId={tenantId} />
+                        <SalesView
+                            tenantId={tenantId}
+                            currency={data?.data?.settings?.currency ?? 'USD'}
+                        />
                     ) : tab === 'guests' ? (
                         <GuestsView tenantId={tenantId} />
                     ) : (

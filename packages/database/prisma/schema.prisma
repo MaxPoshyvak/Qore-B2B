@@ -136,6 +136,7 @@ model TenantSettings {
   address       String?
   instagramUrl  String?
   googleMapsUrl String?
+  currency      String  @default("USD")
 
   // Сервіси та Графік
   workingHours Json

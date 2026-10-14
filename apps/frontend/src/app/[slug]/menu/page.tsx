@@ -143,6 +143,14 @@ export default function PublicMenuPage() {
     const setOrderTypeModalOpen = useCartStore((s) => s.setOrderTypeModalOpen);
     const setTakeawayCheckoutOpen = useCartStore((s) => s.setTakeawayCheckoutOpen);
     const setPendingCartItem = useCartStore((s) => s.setPendingCartItem);
+    const setCurrency = useCartStore((s) => s.setCurrency);
+
+    useEffect(() => {
+        if (data?.venue?.currency) {
+            setCurrency(data.venue.currency);
+        }
+    }, [data?.venue?.currency, setCurrency]);
+
     const cartQuery = useSharedCart(tableId, takeawaySessionId);
     const cart = cartQuery.data;
     const startNewSession = useStartNewCartSession(tableId);

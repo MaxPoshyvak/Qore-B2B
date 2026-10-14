@@ -17,7 +17,7 @@ function formatChartDate(dateKey: string): string {
     return parsed.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-function GlassTooltip({ active, payload, label }: any) {
+function GlassTooltip({ active, payload, label, currency = 'USD' }: any) {
     if (!active || !payload?.length) return null;
     return (
         <div className="rounded-2xl border border-[#E7E5E0] bg-white/90 px-4 py-2.5 shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-[#141417]/95">
@@ -25,13 +25,13 @@ function GlassTooltip({ active, payload, label }: any) {
                 {label}
             </p>
             <p className={`${display.className} text-[18px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                {formatPrice(payload[0].value)}
+                {formatPrice(payload[0].value, currency)}
             </p>
         </div>
     );
 }
 
-export function OverviewView({ tenantId }: { tenantId: string }) {
+export function OverviewView({ tenantId, currency = 'USD' }: { tenantId: string; currency?: string }) {
     const { data, isLoading } = useAnalyticsOverview(tenantId);
 
     const totalRevenue = data?.totalRevenue ?? 0;
@@ -51,7 +51,7 @@ export function OverviewView({ tenantId }: { tenantId: string }) {
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 <MetricCard
                     label="Total Revenue"
-                    value={isLoading ? '—' : formatPrice(totalRevenue)}
+                    value={isLoading ? '—' : formatPrice(totalRevenue, currency)}
                     icon={DollarSign}
                     accent="blue"
                 />
@@ -63,7 +63,7 @@ export function OverviewView({ tenantId }: { tenantId: string }) {
                 />
                 <MetricCard
                     label="Avg Order Value"
-                    value={isLoading ? '—' : formatPrice(averageOrderValue)}
+                    value={isLoading ? '—' : formatPrice(averageOrderValue, currency)}
                     icon={Calculator}
                     accent="green"
                 />
@@ -124,7 +124,7 @@ export function OverviewView({ tenantId }: { tenantId: string }) {
                             width={48}
                             tickFormatter={(v) => `$${v}`}
                         />
-                        <Tooltip content={<GlassTooltip />} cursor={{ stroke: '#3B82F6', strokeOpacity: 0.2 }} />
+                        <Tooltip content={<GlassTooltip currency={currency} />} cursor={{ stroke: '#3B82F6', strokeOpacity: 0.2 }} />
                         <Area
                             type="monotone"
                             dataKey="revenue"

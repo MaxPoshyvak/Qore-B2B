@@ -80,6 +80,7 @@ function PriceTag({
     item: CartItemResponse;
     activeHappyHourRules: ActiveHappyHourRule[];
 }) {
+    const currency = useCartStore((s) => s.currency);
     if (!item.menuItem) return null;
 
     const { subtotal, lineTotal, discountRule } = priceCartLine(item, activeHappyHourRules);
@@ -88,7 +89,7 @@ function PriceTag({
     if (!discountRule) {
         return (
             <p className="mt-0.5 text-xs tabular-nums text-[#6B6A65] dark:text-[#94938D]">
-                {formatPrice(lineTotal)}
+                {formatPrice(lineTotal, currency)}
             </p>
         );
     }
@@ -100,10 +101,10 @@ function PriceTag({
                 Happy Hour
             </span>
             <span className="text-xs tabular-nums text-[#A8A6A0] line-through dark:text-[#5A5A56]">
-                {formatPrice(subtotalLine)}
+                {formatPrice(subtotalLine, currency)}
             </span>
             <span className="text-xs font-semibold tabular-nums text-[#B45309] dark:text-[#F59E0B]">
-                {formatPrice(lineTotal)}
+                {formatPrice(lineTotal, currency)}
             </span>
         </div>
     );
@@ -134,6 +135,7 @@ export function CartDrawer({
     const updateItem = useUpdateCartItem(tableId, takeawaySessionId);
     const removeItem = useRemoveCartItem(tableId, takeawaySessionId);
     const toggleReady = useToggleCartReady(tableId ?? '');
+    const currency = useCartStore((s) => s.currency);
 
     const isDesktop = useIsDesktop();
 
@@ -405,7 +407,7 @@ export function CartDrawer({
                                 <div className="mb-3 flex items-center justify-between text-sm">
                                     <span className="text-[#6B6A65] dark:text-[#94938D]">Subtotal</span>
                                     <span className="font-semibold tabular-nums text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                        {formatPrice(total)}
+                                        {formatPrice(total, currency)}
                                     </span>
                                 </div>
 

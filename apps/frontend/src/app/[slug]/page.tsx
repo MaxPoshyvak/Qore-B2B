@@ -1,11 +1,13 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { CalendarDays, Star, UtensilsCrossed } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 import { useGetPublicTenant } from '@/entities/tenant/hooks/useGetPublicTenant';
+import { useCartStore } from '@/features/public-menu/store/useCartStore';
 import { AmbientBackground } from '@/shared/ui/AmbientBackground';
 import { BaseHeader } from '@/shared/ui/BaseHeader';
 import { MagneticButton } from '@/shared/ui/MagneticButton';
@@ -40,6 +42,13 @@ export default function PublicVenuePage() {
     const safeSlug = RESERVED_SLUGS.has(resolvedSlug) ? '' : resolvedSlug;
     const { theme, toggle, mounted } = useTheme();
     const { data: tenant, isLoading, isError } = useGetPublicTenant(safeSlug);
+    const setCurrency = useCartStore((s) => s.setCurrency);
+
+    useEffect(() => {
+        if (tenant?.settings?.currency) {
+            setCurrency(tenant.settings.currency);
+        }
+    }, [tenant?.settings?.currency, setCurrency]);
 
     // Активні правила Happy Hour для банера у шапці (підрахунок знижок у меню/кошику).
     const { activeRules: activeHappyHourRules } = usePublicHappyHour({ slug: safeSlug });

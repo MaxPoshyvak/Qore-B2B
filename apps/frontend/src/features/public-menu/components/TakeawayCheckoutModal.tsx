@@ -36,6 +36,7 @@ export function TakeawayCheckoutModal({ onComplete }: TakeawayCheckoutModalProps
     const takeawaySessionId = useCartStore((s) => s.takeawaySessionId);
     const setTakeawaySessionId = useCartStore((s) => s.setTakeawaySessionId);
     const setCartDrawerOpen = useCartStore((s) => s.setCartDrawerOpen);
+    const currency = useCartStore((s) => s.currency);
 
     const { data: cart } = useSharedCart(null, takeawaySessionId);
     const placeOrder = useCreatePublicOrder();
@@ -238,11 +239,11 @@ export function TakeawayCheckoutModal({ onComplete }: TakeawayCheckoutModalProps
                                         <span className="flex shrink-0 items-center gap-1.5 tabular-nums">
                                             {discountRule && (
                                                 <span className="text-[11px] text-white/40 line-through">
-                                                    {formatPrice(subtotal * item.quantity)}
+                                                    {formatPrice(subtotal * item.quantity, currency)}
                                                 </span>
                                             )}
                                             <span className="font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                                {formatPrice(lineTotal)}
+                                                {formatPrice(lineTotal, currency)}
                                             </span>
                                         </span>
                                     </li>
@@ -253,7 +254,7 @@ export function TakeawayCheckoutModal({ onComplete }: TakeawayCheckoutModalProps
                             <span className="text-sm text-[#6B6A65] dark:text-[#94938D]">Total</span>
                             <span
                                 className={`${display.className} text-[15px] font-bold tabular-nums text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                                {formatPrice(total)}
+                                {formatPrice(total, currency)}
                             </span>
                         </div>
                     </div>

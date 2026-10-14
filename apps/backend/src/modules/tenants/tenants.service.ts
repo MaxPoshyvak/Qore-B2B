@@ -2,8 +2,9 @@ import { ConflictException, ForbiddenException, Injectable, NotFoundException } 
 import { randomInt } from 'crypto';
 import { CreateTenantDto } from './dto/tenants.dto';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { SuccessResponse, UpdateTenantSettingsDto } from '@my-app/types';
+import { PublicTenantResponse, SuccessResponse, UpdateTenantSettingsDto } from '@my-app/types';
 import { Prisma, Tenant } from '@my-app/database';
+
 
 @Injectable()
 export class TenantsService {
@@ -59,7 +60,7 @@ export class TenantsService {
         return { success: true, data: existingTenants };
     }
 
-    async getTenantBySlug(slug: string, userId: string): Promise<SuccessResponse<Tenant>> {
+    async getTenantBySlug(slug: string, userId: string): Promise<SuccessResponse<PublicTenantResponse>> {
         const tenant = await this.prisma.tenant.findUnique({
             where: { slug, ownerId: userId },
             include: { settings: true },
@@ -78,7 +79,7 @@ export class TenantsService {
      * without a JWT. The 404 must stay indistinguishable from an unauthorized
      * call, hence no ownership/session check here.
      */
-    async getPublicTenantBySlug(slug: string): Promise<SuccessResponse<Tenant>> {
+    async getPublicTenantBySlug(slug: string): Promise<SuccessResponse<PublicTenantResponse>> {
         const tenant = await this.prisma.tenant.findUnique({
             where: { slug },
             include: { settings: true },
@@ -118,7 +119,7 @@ export class TenantsService {
             throw new NotFoundException('Tenant not found or access denied');
         }
 
-        const { name, workingHours, ...settingsData } = dto;
+        const { name, workingHours, convertPrices, conversionRate, ...settingsData } = dto;
 
         // 1. Оновлюємо назву закладу у базовій моделі Tenant, якщо вона змінилась
         if (name && name !== tenant.name) {
@@ -128,7 +129,50 @@ export class TenantsService {
             });
         }
 
-        // 2. Готуємо об'єкт налаштувань
+        // 2. Якщо користувач обрав конвертацію цін страв за курсом
+        if (convertPrices && conversionRate && conversionRate > 0) {
+            await this.prisma.$transaction(async (tx) => {
+                const menuItems = await tx.menuItem.findMany({
+                    where: { tenantId: tenant.id },
+                    select: { id: true, price: true, happyHourPrice: true },
+                });
+
+                for (const item of menuItems) {
+                    const newPrice = Math.round(Number(item.price) * conversionRate * 100) / 100;
+                    const newHappyHour =
+                        item.happyHourPrice != null
+                            ? Math.round(Number(item.happyHourPrice) * conversionRate * 100) / 100
+                            : null;
+
+                    await tx.menuItem.update({
+                        where: { id: item.id },
+                        data: {
+                            price: new Prisma.Decimal(newPrice),
+                            happyHourPrice: newHappyHour != null ? new Prisma.Decimal(newHappyHour) : null,
+                        },
+                    });
+                }
+
+                const modifierOptions = await tx.modifierOption.findMany({
+                    where: { group: { menuItem: { tenantId: tenant.id } } },
+                    select: { id: true, priceAdjustment: true },
+                });
+
+                for (const opt of modifierOptions) {
+                    if (Number(opt.priceAdjustment) !== 0) {
+                        const newAdj = Math.round(Number(opt.priceAdjustment) * conversionRate * 100) / 100;
+                        await tx.modifierOption.update({
+                            where: { id: opt.id },
+                            data: {
+                                priceAdjustment: new Prisma.Decimal(newAdj),
+                            },
+                        });
+                    }
+                }
+            });
+        }
+
+        // 3. Готуємо об'єкт налаштувань
         const formattedSettings: Prisma.TenantSettingsUpdateInput = {
             ...settingsData,
         };
@@ -137,7 +181,7 @@ export class TenantsService {
             formattedSettings.workingHours = workingHours as Prisma.InputJsonValue;
         }
 
-        // 3. Атомарно оновлюємо або створюємо налаштування
+        // 4. Атомарно оновлюємо або створюємо налаштування
         const updatedTenant = await this.prisma.tenant.update({
             where: { id: tenant.id },
             data: {

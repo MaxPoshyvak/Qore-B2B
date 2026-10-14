@@ -11,6 +11,7 @@ import { MenuItemCard } from './MenuItemCard';
 
 type CategorySectionProps = {
     category: MenuCategoryWithItemsResponse;
+    currency?: string;
     onAddItem: (category: MenuCategoryWithItemsResponse) => void;
     onEditItem: (item: MenuItemResponse) => void;
     onDeleteItem: (item: MenuItemResponse) => void;
@@ -20,6 +21,7 @@ type CategorySectionProps = {
 
 export function CategorySection({
     category,
+    currency,
     onAddItem,
     onEditItem,
     onDeleteItem,
@@ -111,7 +113,13 @@ export function CategorySection({
             <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 <AnimatePresence mode="popLayout" initial={false}>
                     {category.items.map((item) => (
-                        <MenuItemCard key={item.id} item={item} onEdit={onEditItem} onDelete={onDeleteItem} />
+                        <MenuItemCard
+                            key={item.id}
+                            item={item}
+                            currency={currency}
+                            onEdit={onEditItem}
+                            onDelete={onDeleteItem}
+                        />
                     ))}
                 </AnimatePresence>
 

@@ -23,6 +23,14 @@ import {
     VerifyPaymentResponse,
 } from '@my-app/types';
 
+function toStripeAmount(amount: number, currency: string): number {
+    const zeroDecimalCurrencies = ['jpy', 'krw', 'clp', 'vnd'];
+    if (zeroDecimalCurrencies.includes(currency.toLowerCase())) {
+        return Math.round(amount);
+    }
+    return Math.round(amount * 100);
+}
+
 @Injectable()
 export class PaymentsService {
     private readonly logger = new Logger(PaymentsService.name);
@@ -38,6 +46,7 @@ export class PaymentsService {
         const order = await this.prisma.order.findUnique({
             where: { id: orderId },
             include: {
+                tenant: { include: { settings: true } },
                 table: true,
                 items: {
                     include: { menuItem: true },
@@ -78,6 +87,7 @@ export class PaymentsService {
             orderId: order.id,
             tableId: order.tableId,
             tableName: order.table?.name ?? null,
+            currency: order.tenant?.settings?.currency ?? 'USD',
             totalAmount,
             paidAmount,
             remainingAmount,
@@ -124,7 +134,7 @@ export class PaymentsService {
     ): Promise<OrderPaymentSessionResponse> {
         const order = await this.prisma.order.findUnique({
             where: { id: orderId },
-            include: { tenant: true },
+            include: { tenant: { include: { settings: true } } },
         });
 
         if (!order) {
@@ -157,15 +167,17 @@ export class PaymentsService {
             },
         });
 
+        const venueCurrency = (order.tenant.settings?.currency || 'USD').toLowerCase();
+
         const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
             {
                 price_data: {
-                    currency: 'usd',
+                    currency: venueCurrency,
                     product_data: {
                         name: `Order #${order.id.slice(-6).toUpperCase()} Payment`,
                         description: `Order at ${order.tenant.name}`,
                     },
-                    unit_amount: Math.round(remainingAmount * 100),
+                    unit_amount: toStripeAmount(remainingAmount, venueCurrency),
                 },
                 quantity: 1,
             },
@@ -174,12 +186,12 @@ export class PaymentsService {
         if (tipAmount > 0) {
             lineItems.push({
                 price_data: {
-                    currency: 'usd',
+                    currency: venueCurrency,
                     product_data: {
                         name: 'Gratuity / Tip',
                         description: 'Tip for the staff',
                     },
-                    unit_amount: Math.round(tipAmount * 100),
+                    unit_amount: toStripeAmount(tipAmount, venueCurrency),
                 },
                 quantity: 1,
             });
@@ -223,7 +235,7 @@ export class PaymentsService {
     ): Promise<OrderPaymentSessionResponse> {
         const order = await this.prisma.order.findUnique({
             where: { id: orderId },
-            include: { tenant: true },
+            include: { tenant: { include: { settings: true } } },
         });
 
         if (!order) {
@@ -262,15 +274,17 @@ export class PaymentsService {
             },
         });
 
+        const venueCurrency = (order.tenant.settings?.currency || 'USD').toLowerCase();
+
         const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
             {
                 price_data: {
-                    currency: 'usd',
+                    currency: venueCurrency,
                     product_data: {
                         name: `Order #${order.id.slice(-6).toUpperCase()} Share (1 of ${dto.totalParts})`,
                         description: `Equal split payment for order at ${order.tenant.name}`,
                     },
-                    unit_amount: Math.round(share * 100),
+                    unit_amount: toStripeAmount(share, venueCurrency),
                 },
                 quantity: 1,
             },
@@ -279,12 +293,12 @@ export class PaymentsService {
         if (tipAmount > 0) {
             lineItems.push({
                 price_data: {
-                    currency: 'usd',
+                    currency: venueCurrency,
                     product_data: {
                         name: 'Gratuity / Tip',
                         description: 'Tip for the staff',
                     },
-                    unit_amount: Math.round(tipAmount * 100),
+                    unit_amount: toStripeAmount(tipAmount, venueCurrency),
                 },
                 quantity: 1,
             });
@@ -329,7 +343,7 @@ export class PaymentsService {
     ): Promise<OrderPaymentSessionResponse> {
         const order = await this.prisma.order.findUnique({
             where: { id: orderId },
-            include: { tenant: true },
+            include: { tenant: { include: { settings: true } } },
         });
 
         if (!order) {
@@ -411,14 +425,16 @@ export class PaymentsService {
             include: { menuItem: true },
         });
 
+        const venueCurrency = (order.tenant.settings?.currency || 'USD').toLowerCase();
+
         const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = lockedItems.map((item) => ({
             price_data: {
-                currency: 'usd',
+                currency: venueCurrency,
                 product_data: {
                     name: `${item.menuItem?.name || 'Dish'} (x${item.quantity})`,
                     description: `Item payment for order #${order.id.slice(-6).toUpperCase()}`,
                 },
-                unit_amount: Math.round(Number(item.priceAtOrder) * 100),
+                unit_amount: toStripeAmount(Number(item.priceAtOrder), venueCurrency),
             },
             quantity: item.quantity,
         }));
@@ -426,12 +442,12 @@ export class PaymentsService {
         if (dto.tipAmount > 0) {
             lineItems.push({
                 price_data: {
-                    currency: 'usd',
+                    currency: venueCurrency,
                     product_data: {
                         name: 'Gratuity / Tip',
                         description: 'Tip for the staff',
                     },
-                    unit_amount: Math.round(dto.tipAmount * 100),
+                    unit_amount: toStripeAmount(dto.tipAmount, venueCurrency),
                 },
                 quantity: 1,
             });

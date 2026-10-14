@@ -94,6 +94,7 @@ export interface OrderBillStatusResponse {
     orderId: string;
     tableId: string | null;
     tableName: string | null;
+    currency?: string;
     totalAmount: number;
     paidAmount: number;
     remainingAmount: number;

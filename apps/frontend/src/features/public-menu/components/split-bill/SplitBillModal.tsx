@@ -118,6 +118,7 @@ export function SplitBillModal({
                             <SplitProgressBar
                                 totalAmount={bill.totalAmount}
                                 paidAmount={bill.paidAmount}
+                                currency={bill.currency}
                             />
 
                             {/* Mode Segmented Controls */}
@@ -156,6 +157,7 @@ export function SplitBillModal({
                                     remainingAmount={bill.remainingAmount}
                                     guestSessionId={guestSessionId}
                                     guestName={guestName}
+                                    currency={bill.currency}
                                 />
                             ) : (
                                 <SplitByItemTab
@@ -163,6 +165,7 @@ export function SplitBillModal({
                                     items={bill.items}
                                     guestSessionId={guestSessionId}
                                     guestName={guestName}
+                                    currency={bill.currency}
                                 />
                             )}
                         </div>

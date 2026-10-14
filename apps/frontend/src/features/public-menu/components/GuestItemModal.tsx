@@ -67,6 +67,7 @@ export function GuestItemModal({
     const setPendingCartItem = useCartStore((s) => s.setPendingCartItem);
     const setOrderTypeModalOpen = useCartStore((s) => s.setOrderTypeModalOpen);
     const setNameModalOpen = useCartStore((s) => s.setNameModalOpen);
+    const currency = useCartStore((s) => s.currency);
     const guestSessionId = useTableSessionStore((s) => s.guestSessionId);
     const { addConfigured } = useAddConfiguredCartItem(tableId, takeawaySessionId);
 
@@ -312,15 +313,15 @@ export function GuestItemModal({
                                     {bestDiscount ? (
                                         <>
                                             <span className="block text-xs font-medium text-[#6B6A65] line-through dark:text-[#94938D]">
-                                                {formatPrice(item.price)}
+                                                {formatPrice(item.price, currency)}
                                             </span>
                                             <span className="text-lg font-bold text-[#F59E0B]">
-                                                {formatPrice(bestDiscount.finalPrice)}
+                                                {formatPrice(bestDiscount.finalPrice, currency)}
                                             </span>
                                         </>
                                     ) : (
                                         <span className="text-lg font-bold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                            {formatPrice(item.price)}
+                                            {formatPrice(item.price, currency)}
                                         </span>
                                     )}
                                     {discountBadge && (
@@ -461,7 +462,7 @@ export function GuestItemModal({
                                                         {hasAdjustment && (
                                                             <span className="shrink-0 text-sm font-semibold text-[#2563EB] dark:text-[#60A5FA]">
                                                                 {adjustment > 0 ? '+' : '−'}{' '}
-                                                                {formatPrice(Math.abs(adjustment))}
+                                                                {formatPrice(Math.abs(adjustment), currency)}
                                                             </span>
                                                         )}
                                                     </button>
@@ -517,14 +518,14 @@ export function GuestItemModal({
                                             {bestDiscount ? (
                                                 <span className="flex shrink-0 items-baseline gap-1.5 tabular-nums">
                                                     <span className="text-white/50 line-through">
-                                                        {formatPrice(subtotalTotal)}
+                                                        {formatPrice(subtotalTotal, currency)}
                                                     </span>
                                                     <span className="font-bold text-[#F59E0B]">
-                                                        {formatPrice(total)}
+                                                        {formatPrice(total, currency)}
                                                     </span>
                                                 </span>
                                             ) : (
-                                                <span className="shrink-0 tabular-nums">{formatPrice(total)}</span>
+                                                <span className="shrink-0 tabular-nums">{formatPrice(total, currency)}</span>
                                             )}
                                         </>
                                     )}

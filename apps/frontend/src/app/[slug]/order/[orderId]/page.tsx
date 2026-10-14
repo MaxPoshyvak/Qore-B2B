@@ -211,7 +211,7 @@ export default function OrderTrackingPage() {
                                 </span>
                                 <span
                                     className={`${display.className} text-[16px] font-bold tabular-nums text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                                    {formatPrice(order.totalAmount)}
+                                    {formatPrice(order.totalAmount, order.currency)}
                                 </span>
                             </div>
 
@@ -225,7 +225,7 @@ export default function OrderTrackingPage() {
                                             {item.menuItemName}
                                         </span>
                                         <span className="tabular-nums text-[#6B6A65] dark:text-[#94938D]">
-                                            {formatPrice(item.priceAtOrder * item.quantity)}
+                                            {formatPrice(item.priceAtOrder * item.quantity, order.currency)}
                                         </span>
                                     </li>
                                 ))}

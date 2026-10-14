@@ -46,6 +46,7 @@ export const updateTenantSettingsSchema = z.object({
     address: z.string().optional().or(z.literal('')),
     instagramUrl: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
     googleMapsUrl: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
+    currency: z.string().optional(),
 
     // Guest Services
     wifiSsid: z.string().optional().or(z.literal('')),
@@ -56,6 +57,10 @@ export const updateTenantSettingsSchema = z.object({
     reservationStepMinutes: z.number().min(5).max(120).optional(),
     minReservationTime: z.number().min(15).max(300).optional(),
     maxGuestsPerReservation: z.number().min(1).max(50).optional(),
+
+    // Currency conversion options
+    convertPrices: z.boolean().optional(),
+    conversionRate: z.number().positive().optional(),
 });
 
 export type UpdateTenantSettingsDto = z.infer<typeof updateTenantSettingsSchema>;

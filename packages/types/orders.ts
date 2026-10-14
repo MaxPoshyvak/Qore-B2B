@@ -73,6 +73,7 @@ export interface PublicOrderResponse {
     status: OrderStatusType;
     paymentStatus: string;
     isOrderAhead: boolean;
+    currency?: string;
     /** Decimal → number. */
     totalAmount: number;
     paidAmount: number;

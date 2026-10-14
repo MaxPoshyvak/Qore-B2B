@@ -7,7 +7,7 @@ import { EASE } from '@/shared/config/animations';
 import { formatPrice } from '@/shared/lib/utils';
 import { useAnalyticsSales } from '../hooks/useAnalytics';
 
-export function SalesView({ tenantId }: { tenantId: string }) {
+export function SalesView({ tenantId, currency = 'USD' }: { tenantId: string; currency?: string }) {
     const { data, isLoading } = useAnalyticsSales(tenantId);
 
     const topItems = data?.topItems ?? [];
@@ -56,7 +56,7 @@ export function SalesView({ tenantId }: { tenantId: string }) {
                                             </span>
                                             <span
                                                 className={`${display.className} text-[14px] font-bold tabular-nums text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                                                {formatPrice(item.revenue)}
+                                                {formatPrice(item.revenue, currency)}
                                             </span>
                                         </div>
                                         <div className="h-2.5 w-full overflow-hidden rounded-full bg-black/5 dark:bg-white/10">
@@ -115,7 +115,7 @@ export function SalesView({ tenantId }: { tenantId: string }) {
                                     </span>
                                     <span
                                         className={`${mono.className} text-[10.5px] uppercase tracking-wider text-[#F59E0B] dark:text-[#FBBF24]`}>
-                                        {formatPrice(item.price)} · No sales
+                                        {formatPrice(item.price, currency)} · No sales
                                     </span>
                                 </li>
                             ))}

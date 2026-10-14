@@ -15,6 +15,7 @@ export const tenantSettingsSchema = z.object({
     address: z.string().nullable().optional(),
     instagramUrl: z.string().nullable().optional(),
     googleMapsUrl: z.string().nullable().optional(),
+    currency: z.string().default('USD'),
     workingHours: z.unknown().nullable().optional(),
     wifiSsid: z.string().nullable().optional(),
     wifiPassword: z.string().nullable().optional(),

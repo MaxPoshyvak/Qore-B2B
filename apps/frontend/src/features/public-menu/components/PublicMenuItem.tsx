@@ -10,6 +10,7 @@ import { display } from '@/shared/lib/fonts';
 import { toStringArray } from '@/shared/lib/menu-attributes';
 import { TiltCard } from '@/shared/ui/TiltCard';
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop';
+import { useCartStore } from '../store/useCartStore';
 
 // Inherit the stagger variants from the parent list.
 type PublicMenuItemProps = {
@@ -35,6 +36,7 @@ type PublicMenuItemProps = {
  */
 export function PublicMenuItem({ item, variants, onSelect, discountedPrice, discountBadge }: PublicMenuItemProps) {
     const isDesktop = useIsDesktop();
+    const currency = useCartStore((s) => s.currency);
 
     const tags = toStringArray(item.tags);
     const allergens = toStringArray(item.allergens);
@@ -124,15 +126,15 @@ export function PublicMenuItem({ item, variants, onSelect, discountedPrice, disc
                                 {discountedPrice !== undefined ? (
                                     <div className="flex flex-wrap items-baseline gap-2">
                                         <span className="text-xs font-medium text-[#6B6A65] line-through dark:text-[#94938D]">
-                                            {formatPrice(item.price)}
+                                            {formatPrice(item.price, currency)}
                                         </span>
                                         <span className="text-xl font-bold text-[#F59E0B]">
-                                            {formatPrice(discountedPrice)}
+                                            {formatPrice(discountedPrice, currency)}
                                         </span>
                                     </div>
                                 ) : (
                                     <span className="text-xl font-bold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                        {formatPrice(item.price)}
+                                        {formatPrice(item.price, currency)}
                                     </span>
                                 )}
                             </div>

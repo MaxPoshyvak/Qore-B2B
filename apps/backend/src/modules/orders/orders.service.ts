@@ -245,7 +245,10 @@ export class OrdersService {
     async getPublicOrderById(orderId: string): Promise<PublicOrderResponse> {
         const order = await this.prisma.order.findUnique({
             where: { id: orderId },
-            include: { items: { include: { menuItem: true } } },
+            include: {
+                items: { include: { menuItem: true } },
+                tenant: { include: { settings: true } },
+            },
         });
 
         if (!order) {
@@ -257,6 +260,7 @@ export class OrdersService {
             status: order.status,
             paymentStatus: order.paymentStatus,
             isOrderAhead: order.isOrderAhead,
+            currency: order.tenant?.settings?.currency ?? 'USD',
             totalAmount: Number(order.totalAmount),
             paidAmount: Number(order.paidAmount),
             paymentMethod: order.paymentMethod,

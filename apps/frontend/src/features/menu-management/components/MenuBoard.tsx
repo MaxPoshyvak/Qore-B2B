@@ -100,6 +100,8 @@ export function MenuBoard({ slug, createCategoryOpen, onCreateCategoryOpenChange
     // that would orphan menu items), so surface that up front.
     const blockedByItems = (deletingCategory?.items.length ?? 0) > 0;
 
+    const currency = tenantResponse?.data?.settings?.currency ?? 'USD';
+
     return (
         <>
             {categoryList.length === 0 ? (
@@ -111,6 +113,7 @@ export function MenuBoard({ slug, createCategoryOpen, onCreateCategoryOpenChange
                             <CategorySection
                                 key={category.id}
                                 category={category}
+                                currency={currency}
                                 onAddItem={setAddItemCategory}
                                 onEditItem={setEditingItem}
                                 onDeleteItem={setDeletingItem}

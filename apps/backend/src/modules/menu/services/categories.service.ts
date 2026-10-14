@@ -151,6 +151,7 @@ export class CategoriesService {
                 description: tenant.settings?.description ?? null,
                 logoUrl: tenant.settings?.logoUrl ?? null,
                 coverUrl: tenant.settings?.coverUrl ?? null,
+                currency: tenant.settings?.currency ?? 'USD',
                 workingHours: tenant.settings?.workingHours ?? undefined,
             },
             categories: categories.map((category) => ({

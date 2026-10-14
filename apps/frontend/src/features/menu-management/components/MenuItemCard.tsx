@@ -13,11 +13,12 @@ import { useToggleMenuItem } from '@/entities/menu/hooks/useMenuItems';
 
 type MenuItemCardProps = {
     item: MenuItemResponse;
+    currency?: string;
     onEdit: (item: MenuItemResponse) => void;
     onDelete: (item: MenuItemResponse) => void;
 };
 
-export function MenuItemCard({ item, onEdit, onDelete }: MenuItemCardProps) {
+export function MenuItemCard({ item, currency, onEdit, onDelete }: MenuItemCardProps) {
     const toggleItem = useToggleMenuItem();
     const allergens = toStringArray(item.allergens);
     const tags = toStringArray(item.tags);
@@ -125,15 +126,15 @@ export function MenuItemCard({ item, onEdit, onDelete }: MenuItemCardProps) {
                         {item.happyHourPrice ? (
                             <div className="flex items-baseline gap-1.5">
                                 <span className="text-[11px] text-[#6B6A65] line-through dark:text-[#94938D]">
-                                    {formatPrice(item.price)}
+                                    {formatPrice(item.price, currency)}
                                 </span>
                                 <span className="text-sm font-bold text-[#10B981] tabular-nums">
-                                    {formatPrice(item.happyHourPrice)}
+                                    {formatPrice(item.happyHourPrice, currency)}
                                 </span>
                             </div>
                         ) : (
                             <span className="text-sm font-bold text-[#0A0A0C] dark:text-[#F5F4F2] tabular-nums">
-                                {formatPrice(item.price)}
+                                {formatPrice(item.price, currency)}
                             </span>
                         )}
                     </div>

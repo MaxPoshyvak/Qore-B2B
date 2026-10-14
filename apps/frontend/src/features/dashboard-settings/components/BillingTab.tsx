@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { Clock, Loader2 } from 'lucide-react';
-import { PRICING_PLANS, PLAN_RANK, type SubscriptionPlanId } from '@my-app/types';
+import { PRICING_PLANS, PLAN_RANK, getPlanPriceForCurrency, type SubscriptionPlanId } from '@my-app/types';
 import { PricingCard } from '@/shared/ui/PricingCard';
 import { useCreateCheckoutSession, useCreatePortalSession } from '../hooks/use-billing';
 import { BillingApi } from '../api/billing.api';
@@ -210,6 +210,7 @@ export function BillingTab({
         }
     };
 
+    const venueCurrency = liveTenant?.settings?.currency ?? 'USD';
     const currentRank = PLAN_RANK[effectivePlan] ?? 0;
     const currentPlanMeta = PRICING_PLANS.find((p) => p.id === effectivePlan);
     const targetPlanMeta = PRICING_PLANS.find((p) => p.id === confirmTargetPlan);
@@ -266,6 +267,7 @@ export function BillingTab({
                 {PRICING_PLANS.map((plan) => {
                     const planRank = PLAN_RANK[plan.id] ?? 0;
                     const isCurrent = effectivePlan === plan.id;
+                    const convertedPrice = getPlanPriceForCurrency(plan.id, venueCurrency).formattedPrice;
 
                     let onCtaClick: (() => void) | undefined = undefined;
                     let ctaText = plan.ctaText;
@@ -287,7 +289,7 @@ export function BillingTab({
                             key={plan.id}
                             planId={plan.id}
                             tier={plan.tier}
-                            price={plan.price}
+                            price={convertedPrice}
                             period={plan.period}
                             description={plan.description}
                             features={plan.features}
@@ -312,9 +314,9 @@ export function BillingTab({
                 onConfirm={handleConfirmUpgrade}
                 isLoading={isConfirmingUpgrade}
                 currentPlanTier={currentPlanMeta?.tier ?? 'Pro'}
-                currentPlanPrice={`${currentPlanMeta?.price ?? '$29'}${currentPlanMeta?.period ?? '/mo'}`}
+                currentPlanPrice={`${getPlanPriceForCurrency(effectivePlan, venueCurrency).formattedPrice}${currentPlanMeta?.period ?? '/mo'}`}
                 targetPlanTier={targetPlanMeta?.tier ?? 'Business'}
-                targetPlanPrice={`${targetPlanMeta?.price ?? '$79'}${targetPlanMeta?.period ?? '/mo'}`}
+                targetPlanPrice={confirmTargetPlan ? `${getPlanPriceForCurrency(confirmTargetPlan, venueCurrency).formattedPrice}${targetPlanMeta?.period ?? '/mo'}` : ''}
             />
         </div>
     );

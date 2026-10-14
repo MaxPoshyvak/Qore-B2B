@@ -62,6 +62,7 @@ export function SettingsForm({ slug, initialData }: SettingsFormProps) {
     const { mutateAsync, isPending } = useUpdateTenantSettings(slug);
 
     const settings = initialData.settings;
+    const [savedCurrency, setSavedCurrency] = useState(settings?.currency ?? 'USD');
 
     const defaults: UpdateTenantSettingsDto = {
         name: initialData.name ?? '',
@@ -72,6 +73,7 @@ export function SettingsForm({ slug, initialData }: SettingsFormProps) {
         address: settings?.address ?? '',
         instagramUrl: settings?.instagramUrl ?? '',
         googleMapsUrl: settings?.googleMapsUrl ?? '',
+        currency: settings?.currency ?? 'USD',
         wifiSsid: settings?.wifiSsid ?? '',
         wifiPassword: settings?.wifiPassword ?? '',
         workingHours: (settings?.workingHours as WorkingHours) ?? emptyWorkingHours(),
@@ -85,7 +87,12 @@ export function SettingsForm({ slug, initialData }: SettingsFormProps) {
 
     const onSubmit = async (values: UpdateTenantSettingsDto) => {
         await mutateAsync(values);
-        methods.reset(values);
+        setSavedCurrency(values.currency ?? 'USD');
+        methods.reset({
+            ...values,
+            convertPrices: false,
+            conversionRate: undefined,
+        });
     };
 
     const onError = (errors: FieldErrors<UpdateTenantSettingsDto>) => {
@@ -149,7 +156,7 @@ export function SettingsForm({ slug, initialData }: SettingsFormProps) {
                         <form onSubmit={methods.handleSubmit(onSubmit, onError)}>
                             <div className="rounded-2xl border border-black/5 bg-card/50 p-6 shadow-sm backdrop-blur-sm dark:border-white/10">
                                 <TabsContent value="general">
-                                    <GeneralTab />
+                                    <GeneralTab initialCurrency={savedCurrency} />
                                 </TabsContent>
                                 <TabsContent value="hours">
                                     <WorkingHoursTab />

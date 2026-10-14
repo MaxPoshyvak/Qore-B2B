@@ -12,6 +12,7 @@ type SplitEquallyTabProps = {
     remainingAmount: number;
     guestSessionId: string;
     guestName?: string | null;
+    currency?: string;
 };
 
 export function SplitEquallyTab({
@@ -20,6 +21,7 @@ export function SplitEquallyTab({
     remainingAmount,
     guestSessionId,
     guestName,
+    currency = 'USD',
 }: SplitEquallyTabProps) {
     const [totalParts, setTotalParts] = useState(2);
     const [tipAmount, setTipAmount] = useState(0);
@@ -79,9 +81,9 @@ export function SplitEquallyTab({
                 </div>
 
                 <div className="mt-2 flex items-baseline justify-between border-t border-black/5 pt-3 text-xs text-[#6B6A65] dark:border-white/5 dark:text-[#94938D]">
-                    <span>Calculation ({formatPrice(totalAmount)} / {totalParts})</span>
+                    <span>Calculation ({formatPrice(totalAmount, currency)} / {totalParts})</span>
                     <span className="text-sm font-bold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                        {formatPrice(shareAmount)} each
+                        {formatPrice(shareAmount, currency)} each
                     </span>
                 </div>
             </div>
@@ -91,6 +93,7 @@ export function SplitEquallyTab({
                 baseAmount={shareAmount}
                 tipAmount={tipAmount}
                 onTipChange={setTipAmount}
+                currency={currency}
             />
 
             {equalSplitMutation.error && (
@@ -111,7 +114,7 @@ export function SplitEquallyTab({
                         Connecting to Stripe...
                     </>
                 ) : (
-                    `Pay My Share — ${formatPrice(totalToCharge)}`
+                    `Pay My Share — ${formatPrice(totalToCharge, currency)}`
                 )}
             </button>
         </div>

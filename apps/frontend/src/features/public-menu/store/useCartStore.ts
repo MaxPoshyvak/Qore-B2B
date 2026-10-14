@@ -36,6 +36,8 @@ type CartState = {
     pickupMode: 'asap' | 'scheduled';
     /** Chosen pickup time (HH:mm) when `pickupMode` is "scheduled". */
     pickupTime: string | null;
+    /** Venue currency code for guest pricing display. */
+    currency: string;
     setGuestName: (name: string) => void;
     setCartDrawerOpen: (isOpen: boolean) => void;
     setNameModalOpen: (isOpen: boolean) => void;
@@ -46,6 +48,7 @@ type CartState = {
     setTakeawayCheckoutOpen: (isOpen: boolean) => void;
     setPickupMode: (mode: 'asap' | 'scheduled') => void;
     setPickupTime: (time: string | null) => void;
+    setCurrency: (currency: string) => void;
 };
 
 /**
@@ -69,6 +72,7 @@ export const useCartStore = create<CartState>()(
             isTakeawayCheckoutOpen: false,
             pickupMode: 'asap',
             pickupTime: null,
+            currency: 'USD',
 
             setGuestName: (name) => set({ guestName: name.trim(), isNameModalOpen: false }),
             setCartDrawerOpen: (isOpen) => set({ isCartDrawerOpen: isOpen }),
@@ -80,6 +84,7 @@ export const useCartStore = create<CartState>()(
             setTakeawayCheckoutOpen: (isOpen) => set({ isTakeawayCheckoutOpen: isOpen }),
             setPickupMode: (mode) => set({ pickupMode: mode }),
             setPickupTime: (time) => set({ pickupTime: time }),
+            setCurrency: (currency) => set({ currency }),
         }),
         {
             name: 'qore-cart-session',
@@ -87,6 +92,7 @@ export const useCartStore = create<CartState>()(
             partialize: (state) => ({
                 guestName: state.guestName,
                 takeawaySessionId: state.takeawaySessionId,
+                currency: state.currency,
             }),
         },
     ),

@@ -13,6 +13,7 @@ type SplitByItemTabProps = {
     items: OrderBillItemResponse[];
     guestSessionId: string;
     guestName?: string | null;
+    currency?: string;
 };
 
 export function SplitByItemTab({
@@ -20,6 +21,7 @@ export function SplitByItemTab({
     items,
     guestSessionId,
     guestName,
+    currency = 'USD',
 }: SplitByItemTabProps) {
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [tipAmount, setTipAmount] = useState(0);
@@ -158,7 +160,7 @@ export function SplitByItemTab({
                             </div>
 
                             <span className="text-sm font-semibold tabular-nums text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                {formatPrice(item.priceAtOrder * item.quantity)}
+                                {formatPrice(item.priceAtOrder * item.quantity, currency)}
                             </span>
                         </div>
                     );
@@ -171,6 +173,7 @@ export function SplitByItemTab({
                     baseAmount={selectedSum}
                     tipAmount={tipAmount}
                     onTipChange={setTipAmount}
+                    currency={currency}
                 />
             )}
 
@@ -192,7 +195,7 @@ export function SplitByItemTab({
                         Connecting to Stripe...
                     </>
                 ) : selectedIds.length > 0 ? (
-                    `Pay Selected (${selectedIds.length}) — ${formatPrice(totalToCharge)}`
+                    `Pay Selected (${selectedIds.length}) — ${formatPrice(totalToCharge, currency)}`
                 ) : (
                     'Select dishes to pay'
                 )}

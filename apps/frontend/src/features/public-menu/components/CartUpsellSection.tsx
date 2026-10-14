@@ -39,6 +39,7 @@ export function CartUpsellSection({
 
     const localSessionId = useTableSessionStore((s) => s.guestSessionId);
     const guestName = useCartStore((s) => s.guestName);
+    const currency = useCartStore((s) => s.currency);
     const addItem = useAddCartItem(tableId, takeawaySessionId);
 
     const [addingItemId, setAddingItemId] = useState<string | null>(null);
@@ -139,11 +140,11 @@ export function CartUpsellSection({
                                                 ? 'text-xs font-semibold text-[#F59E0B] tabular-nums'
                                                 : 'text-xs font-medium text-[#6B6A65] dark:text-[#94938D] tabular-nums'
                                         }>
-                                        {formatPrice(finalPrice)}
+                                        {formatPrice(finalPrice, currency)}
                                     </span>
                                     {discount && (
                                         <span className="text-[10px] text-[#A8A6A0] line-through tabular-nums dark:text-[#5A5A56]">
-                                            {formatPrice(basePrice)}
+                                            {formatPrice(basePrice, currency)}
                                         </span>
                                     )}
                                 </div>

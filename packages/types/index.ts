@@ -19,3 +19,4 @@ export * from './ai/cart-upsell.schema';
 export * from './ai/review-digest.schema';
 export * from './pricing';
 export * from './payments';
+export * from './currency';

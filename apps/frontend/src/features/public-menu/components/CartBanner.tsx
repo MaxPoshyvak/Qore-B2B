@@ -19,6 +19,7 @@ export function CartBanner({ cart, activeHappyHourRules = [] }: CartBannerProps)
     const setCartDrawerOpen = useCartStore((s) => s.setCartDrawerOpen);
     const isCartDrawerOpen = useCartStore((s) => s.isCartDrawerOpen);
     const isDishModalOpen = useCartStore((s) => s.isDishModalOpen);
+    const currency = useCartStore((s) => s.currency);
 
     const items = cart?.items ?? [];
     const itemCount = items.reduce((total, item) => total + item.quantity, 0);
@@ -50,7 +51,7 @@ export function CartBanner({ cart, activeHappyHourRules = [] }: CartBannerProps)
                                     Shared order
                                 </p>
                                 <p className="text-sm font-semibold tabular-nums text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                    {formatPrice(total)}
+                                    {formatPrice(total, currency)}
                                 </p>
                             </div>
                         </div>

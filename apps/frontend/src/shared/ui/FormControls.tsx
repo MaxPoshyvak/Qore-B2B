@@ -2,7 +2,7 @@
 
 import { forwardRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, ChevronDown } from 'lucide-react';
 
 type FormTextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
     label: string;
@@ -71,6 +71,54 @@ export const FormToggle = forwardRef<HTMLInputElement, FormToggleProps>(function
                 />
                 <span className="pointer-events-none absolute left-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200 peer-checked:translate-x-5" />
             </span>
+        </label>
+    );
+});
+
+type FormSelectProps = React.SelectHTMLAttributes<HTMLSelectElement> & {
+    label: string;
+    error?: string;
+    description?: string;
+};
+
+export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(function FormSelect(
+    { label, error, description, className = '', children, ...props },
+    ref,
+) {
+    return (
+        <label className="block">
+            <span className="mb-1.5 block text-sm font-medium text-[#6B6A65] dark:text-[#94938D]">{label}</span>
+            {description && (
+                <span className="mb-2 block text-xs text-[#6B6A65]/80 dark:text-[#94938D]/80">{description}</span>
+            )}
+            <div className="relative">
+                <select
+                    ref={ref}
+                    className={`w-full appearance-none rounded-2xl border bg-white px-4 py-3 pr-10 text-[15px] text-[#0A0A0C] outline-none transition-colors cursor-pointer dark:bg-[#141417] dark:text-[#F5F4F2] ${
+                        error
+                            ? 'border-red-400/70 focus:border-red-400'
+                            : 'border-[#E7E5E0] focus:border-[#3B82F6]/60 dark:border-[#232327]'
+                    } ${className}`}
+                    {...props}>
+                    {children}
+                </select>
+                <div className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#6B6A65] dark:text-[#94938D]">
+                    <ChevronDown size={18} />
+                </div>
+            </div>
+            <AnimatePresence initial={false}>
+                {error && (
+                    <motion.span
+                        initial={{ opacity: 0, y: -4, height: 0 }}
+                        animate={{ opacity: 1, y: 0, height: 'auto' }}
+                        exit={{ opacity: 0, y: -4, height: 0 }}
+                        transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+                        className="mt-1.5 flex items-center gap-1.5 overflow-hidden text-xs text-red-500">
+                        <AlertCircle size={13} className="shrink-0" />
+                        {error}
+                    </motion.span>
+                )}
+            </AnimatePresence>
         </label>
     );
 });

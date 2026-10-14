@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { getCurrencyConfig } from '@my-app/types';
 import { formatPrice } from '@/shared/lib/utils';
 import { cn } from '@/shared/lib/utils';
 
@@ -8,18 +9,21 @@ type TipSelectorProps = {
     baseAmount: number;
     tipAmount: number;
     onTipChange: (tip: number) => void;
+    currency?: string;
 };
 
 const TIP_PERCENTAGES = [0, 10, 15, 20] as const;
 
-export function TipSelector({ baseAmount, tipAmount, onTipChange }: TipSelectorProps) {
+export function TipSelector({ baseAmount, tipAmount, onTipChange, currency = 'USD' }: TipSelectorProps) {
     const [isCustom, setIsCustom] = useState(false);
     const [customValue, setCustomValue] = useState('');
+    const currencyConfig = getCurrencyConfig(currency);
+    const factor = Math.pow(10, currencyConfig.decimals);
 
     function handlePresetClick(pct: number) {
         setIsCustom(false);
         setCustomValue('');
-        const calculated = pct === 0 ? 0 : Math.round(baseAmount * (pct / 100) * 100) / 100;
+        const calculated = pct === 0 ? 0 : Math.round(baseAmount * (pct / 100) * factor) / factor;
         onTipChange(calculated);
     }
 
@@ -27,7 +31,7 @@ export function TipSelector({ baseAmount, tipAmount, onTipChange }: TipSelectorP
         setCustomValue(value);
         const parsed = Number.parseFloat(value);
         if (Number.isFinite(parsed) && parsed >= 0) {
-            onTipChange(Math.round(parsed * 100) / 100);
+            onTipChange(Math.round(parsed * factor) / factor);
         } else {
             onTipChange(0);
         }
@@ -39,14 +43,14 @@ export function TipSelector({ baseAmount, tipAmount, onTipChange }: TipSelectorP
                 <span>Add tip for staff</span>
                 {tipAmount > 0 && (
                     <span className="font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                        +{formatPrice(tipAmount)}
+                        +{formatPrice(tipAmount, currency)}
                     </span>
                 )}
             </div>
 
             <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
                 {TIP_PERCENTAGES.map((pct) => {
-                    const presetAmount = pct === 0 ? 0 : Math.round(baseAmount * (pct / 100) * 100) / 100;
+                    const presetAmount = pct === 0 ? 0 : Math.round(baseAmount * (pct / 100) * factor) / factor;
                     const isSelected = !isCustom && tipAmount === presetAmount && (pct > 0 ? tipAmount > 0 : tipAmount === 0);
 
                     return (
@@ -63,7 +67,7 @@ export function TipSelector({ baseAmount, tipAmount, onTipChange }: TipSelectorP
                             <span>{pct === 0 ? 'No tip' : `${pct}%`}</span>
                             {pct > 0 && (
                                 <span className="text-[10px] opacity-75">
-                                    {formatPrice(presetAmount)}
+                                    {formatPrice(presetAmount, currency)}
                                 </span>
                             )}
                         </button>
@@ -86,20 +90,30 @@ export function TipSelector({ baseAmount, tipAmount, onTipChange }: TipSelectorP
             </div>
 
             {isCustom && (
-                <div className="relative mt-1">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-[#6B6A65] dark:text-[#94938D]">
-                        $
-                    </span>
+                <div className="relative mt-1 flex items-center rounded-xl border border-black/10 bg-white/80 shadow-sm backdrop-blur-md focus-within:border-[#3B82F6] dark:border-white/10 dark:bg-[#141417]/80 dark:focus-within:border-[#60A5FA]">
+                    {currencyConfig.symbolPosition === 'prefix' && (
+                        <span className="pl-3.5 pr-1.5 text-sm font-semibold text-[#6B6A65] dark:text-[#94938D]">
+                            {currencyConfig.symbol}
+                        </span>
+                    )}
                     <input
                         type="number"
-                        step="0.5"
+                        step={currencyConfig.decimals === 0 ? '1' : '0.5'}
                         min="0"
-                        placeholder="0.00"
+                        placeholder={currencyConfig.decimals === 0 ? '0' : '0.00'}
                         value={customValue}
                         onChange={(e) => handleCustomChange(e.target.value)}
                         autoFocus
-                        className="w-full rounded-xl border border-black/10 bg-white/80 py-2 pl-7 pr-3 text-sm font-semibold text-[#0A0A0C] shadow-sm backdrop-blur-md outline-none focus:border-[#3B82F6] dark:border-white/10 dark:bg-[#141417]/80 dark:text-[#F5F4F2] dark:focus:border-[#60A5FA]"
+                        className={cn(
+                            'w-full bg-transparent py-2 text-sm font-semibold text-[#0A0A0C] outline-none dark:text-[#F5F4F2]',
+                            currencyConfig.symbolPosition === 'prefix' ? 'pl-0 pr-3.5' : 'pl-3.5 pr-1.5',
+                        )}
                     />
+                    {currencyConfig.symbolPosition === 'suffix' && (
+                        <span className="pr-3.5 pl-1.5 text-sm font-semibold text-[#6B6A65] dark:text-[#94938D]">
+                            {currencyConfig.symbol}
+                        </span>
+                    )}
                 </div>
             )}
         </div>

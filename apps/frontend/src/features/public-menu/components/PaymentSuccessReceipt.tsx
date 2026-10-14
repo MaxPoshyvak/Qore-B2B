@@ -95,21 +95,21 @@ export function PaymentSuccessReceipt({ open, onClose, bill }: PaymentSuccessRec
                                     <div className="flex justify-between">
                                         <span className="text-[#6B6A65] dark:text-[#94938D]">Amount Paid</span>
                                         <span className="font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                            {formatPrice(latestTxn.amount)}
+                                            {formatPrice(latestTxn.amount, bill.currency)}
                                         </span>
                                     </div>
                                     {latestTxn.tipAmount > 0 && (
                                         <div className="flex justify-between">
                                             <span className="text-[#6B6A65] dark:text-[#94938D]">Tip</span>
                                             <span className="font-semibold text-[#10B981]">
-                                                +{formatPrice(latestTxn.tipAmount)}
+                                                +{formatPrice(latestTxn.tipAmount, bill.currency)}
                                             </span>
                                         </div>
                                     )}
                                     <div className="flex justify-between border-t border-black/5 pt-2 text-sm font-bold dark:border-white/5">
                                         <span className="text-[#0A0A0C] dark:text-[#F5F4F2]">Total Charged</span>
                                         <span className="text-[#2563EB] dark:text-[#60A5FA]">
-                                            {formatPrice(latestTxn.totalCharged)}
+                                            {formatPrice(latestTxn.totalCharged, bill.currency)}
                                         </span>
                                     </div>
                                 </>

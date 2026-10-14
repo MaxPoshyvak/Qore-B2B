@@ -77,7 +77,7 @@ export function BillPaymentCard({
                                     Bill Settled
                                 </p>
                                 <p className="text-sm font-bold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                    {formatPrice(bill.totalAmount)} Paid in Full
+                                    {formatPrice(bill.totalAmount, bill.currency)} Paid in Full
                                 </p>
                             </div>
                         </div>
@@ -130,6 +130,7 @@ export function BillPaymentCard({
                         <SplitProgressBar
                             totalAmount={bill.totalAmount}
                             paidAmount={bill.paidAmount}
+                            currency={bill.currency}
                         />
                     )}
 
@@ -139,7 +140,7 @@ export function BillPaymentCard({
                             {isPartiallyPaid ? 'Remaining to Pay' : 'Total Amount'}
                         </span>
                         <span className={`${display.className} text-xl font-bold tabular-nums text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                            {formatPrice(remaining)}
+                            {formatPrice(remaining, bill.currency)}
                         </span>
                     </div>
 
@@ -148,6 +149,7 @@ export function BillPaymentCard({
                         baseAmount={remaining}
                         tipAmount={tipAmount}
                         onTipChange={setTipAmount}
+                        currency={bill.currency}
                     />
 
                     {payFullMutation.error && (
@@ -169,7 +171,7 @@ export function BillPaymentCard({
                                     Opening Checkout...
                                 </>
                             ) : (
-                                `Pay ${isPartiallyPaid ? 'Remaining' : 'Full Bill'} — ${formatPrice(totalToCharge)}`
+                                `Pay ${isPartiallyPaid ? 'Remaining' : 'Full Bill'} — ${formatPrice(totalToCharge, bill.currency)}`
                             )}
                         </button>
 

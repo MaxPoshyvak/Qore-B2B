@@ -1,15 +1,27 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { Store, Palette, MapPin, Wifi } from 'lucide-react';
-import type { UpdateTenantSettingsDto } from '@my-app/types';
+import { Store, Palette, MapPin, Wifi, Coins, AlertTriangle, ArrowRight } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+    SUPPORTED_CURRENCIES,
+    getCurrencyConfig,
+    getSuggestedExchangeRate,
+    formatCurrencyPrice,
+    type UpdateTenantSettingsDto,
+} from '@my-app/types';
 
 import { display, body, mono } from '@/shared/lib/fonts';
 import { AuthInput } from '@/shared/ui/AuthInput';
-import { FormTextarea } from '@/shared/ui/FormControls';
+import { FormTextarea, FormSelect } from '@/shared/ui/FormControls';
 import { ImageUpload } from '@/shared/ui/ImageUpload';
 
-export function GeneralTab() {
+type GeneralTabProps = {
+    initialCurrency?: string;
+};
+
+export function GeneralTab({ initialCurrency = 'USD' }: GeneralTabProps) {
     const {
         register,
         watch,
@@ -19,6 +31,27 @@ export function GeneralTab() {
 
     const logoUrl = watch('logoUrl');
     const coverUrl = watch('coverUrl');
+    const selectedCurrency = watch('currency') || initialCurrency;
+    const convertPrices = watch('convertPrices') ?? false;
+    const conversionRate = watch('conversionRate');
+
+    const isCurrencyChanged = selectedCurrency !== initialCurrency;
+    const oldConfig = getCurrencyConfig(initialCurrency);
+    const newConfig = getCurrencyConfig(selectedCurrency);
+    const suggestedRate = getSuggestedExchangeRate(initialCurrency, selectedCurrency);
+
+    // Auto set suggested conversion rate when currency changes
+    useEffect(() => {
+        if (isCurrencyChanged) {
+            setValue('conversionRate', suggestedRate, { shouldValidate: true, shouldDirty: true });
+        } else {
+            setValue('convertPrices', false, { shouldValidate: true, shouldDirty: true });
+            setValue('conversionRate', undefined, { shouldValidate: true, shouldDirty: true });
+        }
+    }, [selectedCurrency, initialCurrency, suggestedRate, isCurrencyChanged, setValue]);
+
+    const effectiveRate = Number(conversionRate) > 0 ? Number(conversionRate) : suggestedRate;
+    const sampleConvertedPrice = formatCurrencyPrice(10 * effectiveRate, newConfig.code);
 
     return (
         <div className="mx-auto max-w-3xl space-y-8 pb-12">
@@ -66,6 +99,126 @@ export function GeneralTab() {
                         error={errors.description?.message}
                         {...register('description')}
                     />
+                    <FormSelect
+                        id="venue-currency"
+                        label="Venue Currency"
+                        description="Default currency used across your menus, checkout, and Stripe payments."
+                        error={errors.currency?.message}
+                        {...register('currency')}>
+                        {SUPPORTED_CURRENCIES.map((c) => (
+                            <option key={c.code} value={c.code} className="dark:bg-[#141417]">
+                                {c.flag} {c.code} — {c.name} ({c.symbol})
+                            </option>
+                        ))}
+                    </FormSelect>
+
+                    <AnimatePresence>
+                        {isCurrencyChanged && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0, y: -6 }}
+                                animate={{ opacity: 1, height: 'auto', y: 0 }}
+                                exit={{ opacity: 0, height: 0, y: -6 }}
+                                transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                                className="overflow-hidden">
+                                <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5 dark:border-amber-400/20 dark:bg-amber-400/10">
+                                    <div className="flex items-start gap-3.5">
+                                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-600 dark:bg-amber-400/20 dark:text-amber-300">
+                                            <AlertTriangle size={18} strokeWidth={2.2} />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <h4 className="text-sm font-bold text-amber-900 dark:text-amber-200">
+                                                Currency Change Notice
+                                            </h4>
+                                            <p className="text-xs leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
+                                                You are switching your venue currency from{' '}
+                                                <strong className="text-[#0A0A0C] dark:text-[#F5F4F2]">
+                                                    {oldConfig.code} ({oldConfig.symbol})
+                                                </strong>{' '}
+                                                to{' '}
+                                                <strong className="text-[#0A0A0C] dark:text-[#F5F4F2]">
+                                                    {newConfig.code} ({newConfig.symbol})
+                                                </strong>
+                                                . Existing menu items will keep their current numerical values (e.g.{' '}
+                                                {formatCurrencyPrice(10, oldConfig.code)} will become{' '}
+                                                {formatCurrencyPrice(10, newConfig.code)}) unless converted.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-4 border-t border-amber-500/20 pt-4 dark:border-amber-400/20">
+                                        <label className="flex cursor-pointer select-none items-start gap-3">
+                                            <input
+                                                type="checkbox"
+                                                {...register('convertPrices')}
+                                                className="mt-0.5 h-4 w-4 rounded border-amber-300 text-[#3B82F6] focus:ring-[#3B82F6] dark:border-white/20 dark:bg-[#141417]"
+                                            />
+                                            <div className="flex flex-col">
+                                                <span className="text-xs font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
+                                                    Recalculate existing menu item prices to {newConfig.code}
+                                                </span>
+                                                <span className="text-[11px] text-[#6B6A65] dark:text-[#94938D]">
+                                                    Automatically scales dish prices, Happy Hour deals, and modifier options with an exchange rate.
+                                                </span>
+                                            </div>
+                                        </label>
+
+                                        <AnimatePresence>
+                                            {convertPrices && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, height: 0 }}
+                                                    animate={{ opacity: 1, height: 'auto' }}
+                                                    exit={{ opacity: 0, height: 0 }}
+                                                    transition={{ duration: 0.2 }}
+                                                    className="mt-3.5 overflow-hidden">
+                                                    <div className="space-y-3 rounded-xl border border-black/10 bg-white/70 p-4 dark:border-white/10 dark:bg-white/[0.04]">
+                                                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                                            <label
+                                                                htmlFor="conversionRateInput"
+                                                                className="text-xs font-medium text-[#6B6A65] dark:text-[#94938D]">
+                                                                Conversion rate (1 {oldConfig.code} = ? {newConfig.code}):
+                                                            </label>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-xs font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
+                                                                    1 {oldConfig.code} =
+                                                                </span>
+                                                                <input
+                                                                    id="conversionRateInput"
+                                                                    type="number"
+                                                                    step="any"
+                                                                    min="0.0001"
+                                                                    {...register('conversionRate', { valueAsNumber: true })}
+                                                                    className="w-28 rounded-lg border border-black/10 bg-white px-3 py-1.5 text-right text-xs font-bold text-[#0A0A0C] shadow-xs outline-none focus:border-[#3B82F6] dark:border-white/15 dark:bg-[#141417] dark:text-[#F5F4F2]"
+                                                                />
+                                                                <span className="text-xs font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
+                                                                    {newConfig.code}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Live calculation preview */}
+                                                        <div className="flex items-center justify-between rounded-lg border border-black/5 bg-black/[0.02] px-3 py-2 text-xs dark:border-white/5 dark:bg-white/[0.02]">
+                                                            <span className="text-[#6B6A65] dark:text-[#94938D]">
+                                                                Sample price preview:
+                                                            </span>
+                                                            <div className="flex items-center gap-2 font-semibold">
+                                                                <span className="text-[#6B6A65] line-through dark:text-[#94938D]">
+                                                                    {formatCurrencyPrice(10, oldConfig.code)}
+                                                                </span>
+                                                                <ArrowRight size={13} className="text-[#3B82F6]" />
+                                                                <span className="text-[#3B82F6] dark:text-[#60A5FA]">
+                                                                    {sampleConvertedPrice}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             </section>
 

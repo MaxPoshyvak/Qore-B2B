@@ -6,9 +6,10 @@ import { formatPrice } from '@/shared/lib/utils';
 type SplitProgressBarProps = {
     totalAmount: number;
     paidAmount: number;
+    currency?: string;
 };
 
-export function SplitProgressBar({ totalAmount, paidAmount }: SplitProgressBarProps) {
+export function SplitProgressBar({ totalAmount, paidAmount, currency = 'USD' }: SplitProgressBarProps) {
     const percentage = totalAmount > 0 ? Math.min(100, Math.round((paidAmount / totalAmount) * 100)) : 0;
     const remaining = Math.max(0, totalAmount - paidAmount);
 
@@ -19,7 +20,7 @@ export function SplitProgressBar({ totalAmount, paidAmount }: SplitProgressBarPr
                     Bill Progress
                 </span>
                 <span className="font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                    {formatPrice(paidAmount)} of {formatPrice(totalAmount)} paid ({percentage}%)
+                    {formatPrice(paidAmount, currency)} of {formatPrice(totalAmount, currency)} paid ({percentage}%)
                 </span>
             </div>
 
@@ -34,7 +35,7 @@ export function SplitProgressBar({ totalAmount, paidAmount }: SplitProgressBarPr
 
             {remaining > 0 ? (
                 <p className="text-right text-[11px] font-medium text-[#6B6A65] dark:text-[#94938D]">
-                    {formatPrice(remaining)} remaining
+                    {formatPrice(remaining, currency)} remaining
                 </p>
             ) : (
                 <p className="text-right text-[11px] font-bold text-[#10B981]">

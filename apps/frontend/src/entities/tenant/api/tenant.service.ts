@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api-client';
-import { SuccessResponse } from '@my-app/types';
+import { SuccessResponse, type PublicTenantResponse } from '@my-app/types';
 import { Tenant } from '@my-app/database';
 
 export class TenantService {
@@ -9,9 +9,10 @@ export class TenantService {
         });
     }
 
-    static async getTenantBySlug(slug: string): Promise<SuccessResponse<Tenant>> {
-        return apiClient<Tenant>(`/tenants/by-slug/${slug}`, {
+    static async getTenantBySlug(slug: string): Promise<SuccessResponse<PublicTenantResponse>> {
+        return apiClient<PublicTenantResponse>(`/tenants/by-slug/${slug}`, {
             method: 'GET',
         });
     }
 }
+

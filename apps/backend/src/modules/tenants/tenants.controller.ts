@@ -3,6 +3,7 @@ import { TenantsService } from './tenants.service';
 import { CreateTenantDto, UpdateTenantSettingsDto } from 'src/modules/tenants/dto/tenants.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('tenants')
 @UseGuards(JwtAuthGuard)
@@ -25,6 +26,7 @@ export class TenantsController {
     }
 
     // Intentionally unauthenticated: venue guests only know the public slug.
+    @Public()
     @Get('/public/:slug')
     getPublicBySlug(@Param('slug') slug: string) {
         return this.tenantsService.getPublicTenantBySlug(slug);
