@@ -26,7 +26,7 @@ export function BaseHeader({ children, centerContent, bottomContent, scrolled = 
                     boxShadow: scrolled ? '0 12px 40px -16px rgba(10,10,12,0.18)' : '0 0px 0px 0px rgba(0,0,0,0)',
                 }}
                 transition={{ duration: 0.3, ease: EASE }}
-                className="mx-auto max-w-6xl rounded-[2rem] border border-[#E7E5E0]/80 bg-white/70 backdrop-blur-xl dark:border-white/10 dark:bg-black/40 overflow-hidden">
+                className="mx-auto max-w-6xl rounded-[2rem] border border-[#E7E5E0]/80 bg-white/70 backdrop-blur-xl dark:border-white/10 dark:bg-black/40">
                 {/* Трьохколонкова сітка: лого зліва, назва по центру,
                     банер + дії справа. Гарантує ідеальне центрування назви
                     незалежно від ширини банера Happy Hour. */}

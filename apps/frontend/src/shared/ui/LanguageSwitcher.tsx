@@ -96,8 +96,8 @@ export function LanguageSwitcher({
                         exit={{ opacity: 0, scale: 0.95, y: direction === 'down' ? 6 : -6 }}
                         transition={{ duration: 0.15, ease: EASE }}
                         className={cn(
-                            'absolute z-50 min-w-40 overflow-hidden rounded-2xl border border-black/10 bg-white/95 p-1.5 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-[#141417]/95',
-                            direction === 'down' ? 'top-full mt-1.5 right-0' : 'bottom-full mb-1.5 right-0',
+                            'absolute z-50 min-w-48 overflow-hidden rounded-2xl border border-black/10 bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#141417]/95',
+                            direction === 'down' ? 'top-full mt-2 right-0' : 'bottom-full mb-2 right-0',
                         )}>
                         <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#6B6A65] dark:text-[#94938D]">
                             Select Language

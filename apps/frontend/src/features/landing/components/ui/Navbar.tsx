@@ -56,7 +56,7 @@ export function Navbar({ theme, toggleTheme }: { theme: Theme; toggleTheme: () =
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
                     transition={{ duration: 0.25, ease: EASE }}
-                    className="border-t border-[#E7E5E0] dark:border-white/10 md:hidden">
+                    className="overflow-hidden rounded-b-[2rem] border-t border-[#E7E5E0] dark:border-white/10 md:hidden">
                     <div className="flex flex-col gap-1 px-5 py-4">
                         {NAV_LINKS.map((l) => (
                             <Link
