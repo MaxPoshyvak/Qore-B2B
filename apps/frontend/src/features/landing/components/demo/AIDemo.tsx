@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { body, mono } from '@/shared/lib/fonts';
 import { EASE } from '@/shared/config/animations';
@@ -10,6 +11,7 @@ import { AI_DEMO } from '../../config/landing-data';
 import { TiltCard } from '../ui/TiltCard';
 
 export function AIDemo() {
+    const t = useTranslations('landing.aiShowcase');
     const [pairIndex, setPairIndex] = useState(0);
     const [qChars, setQChars] = useState(0);
     const [aChars, setAChars] = useState(0);
@@ -52,7 +54,7 @@ export function AIDemo() {
                         <Sparkles size={14} />
                     </motion.span>
                     <span className={`${body.className} text-[13px] font-medium text-[#0A0A0C] dark:text-[#F5F4F2]`}>
-                        AI waiter concierge
+                        {t('waiterTitle')}
                     </span>
                     <span
                         className={`${mono.className} ml-auto rounded-full bg-[#8B5CF6]/15 px-2 py-0.5 text-[9px] uppercase tracking-widest text-[#8B5CF6]`}>

@@ -2,21 +2,37 @@
 
 import { motion } from 'framer-motion';
 import { Check, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { display, mono } from '@/shared/lib/fonts';
 import { EASE } from '@/shared/config/animations';
-import { COMPARISON_QORE, COMPARISON_TYPICAL } from '../../config/landing-data';
 import { Eyebrow } from '@/shared/ui/Eyebrow';
 import { Reveal } from '../ui/Reveal';
 
 export function ComparisonSection() {
+    const t = useTranslations('landing.comparison');
+
+    const typicalItems = [
+        t('typical1'),
+        t('typical2'),
+        t('typical3'),
+        t('typical4'),
+    ];
+
+    const qoreItems = [
+        t('qore1'),
+        t('qore2'),
+        t('qore3'),
+        t('qore4'),
+    ];
+
     return (
         <section className="border-b border-[#E7E5E0] bg-[#F2F1EE]/60 dark:border-[#232327] dark:bg-[#0F0F12]/60">
             <div className="mx-auto max-w-6xl px-6 py-20">
                 <Reveal>
-                    <Eyebrow>Comparison</Eyebrow>
+                    <Eyebrow>{t('badge')}</Eyebrow>
                     <h2 className={`${display.className} max-w-xl text-[26px] font-bold leading-tight sm:text-[34px]`}>
-                        Why not just a QR code to a PDF
+                        {t('title')}
                     </h2>
                 </Reveal>
 
@@ -29,19 +45,19 @@ export function ComparisonSection() {
                         className="rounded-3xl border border-[#E7E5E0] bg-white p-7 dark:border-[#232327] dark:bg-[#141417]">
                         <span
                             className={`${mono.className} text-[11px] uppercase tracking-widest text-[#6B6A65] dark:text-[#94938D]`}>
-                            Typical QR menu
+                            {t('typicalTitle')}
                         </span>
                         <ul className="mt-5 space-y-4">
-                            {COMPARISON_TYPICAL.map((t, i) => (
+                            {typicalItems.map((item, i) => (
                                 <motion.li
-                                    key={t}
+                                    key={i}
                                     initial={{ opacity: 0, x: -20 }}
                                     whileInView={{ opacity: 1, x: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ duration: 0.5, delay: i * 0.1, ease: EASE }}
                                     className="flex items-start gap-3 text-[13.5px] text-[#6B6A65] dark:text-[#94938D]">
                                     <X size={15} className="mt-0.5 shrink-0 text-[#9C9B95] dark:text-[#6E6D68]" />
-                                    {t}
+                                    {item}
                                 </motion.li>
                             ))}
                         </ul>
@@ -53,12 +69,12 @@ export function ComparisonSection() {
                         transition={{ duration: 0.7, ease: EASE, delay: 0.1 }}
                         className="relative rounded-3xl border border-[#3B82F6]/30 bg-white p-7 dark:bg-[#141417]">
                         <span className={`${mono.className} text-[11px] uppercase tracking-widest text-[#3B82F6]`}>
-                            Qore
+                            {t('qoreTitle')}
                         </span>
                         <ul className="mt-5 space-y-4">
-                            {COMPARISON_QORE.map((t, i) => (
+                            {qoreItems.map((item, i) => (
                                 <motion.li
-                                    key={t}
+                                    key={i}
                                     initial={{ opacity: 0, x: 20 }}
                                     whileInView={{ opacity: 1, x: 0 }}
                                     viewport={{ once: true }}
@@ -69,7 +85,7 @@ export function ComparisonSection() {
                                         className="mt-0.5 shrink-0 text-[#04916C] dark:text-[#10B981]"
                                         strokeWidth={2.5}
                                     />
-                                    {t}
+                                    {item}
                                 </motion.li>
                             ))}
                         </ul>

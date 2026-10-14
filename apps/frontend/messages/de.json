@@ -15,7 +15,8 @@
     "language": "Sprache",
     "live": "Live",
     "done": "Fertig",
-    "selectLanguage": "Sprache wählen"
+    "selectLanguage": "Sprache wählen",
+    "logOut": "Abmelden"
   },
   "publicMenu": {
     "headerTitle": "Speisekarte",
@@ -562,7 +563,99 @@
     "orderSpeed": "Bestellgeschwindigkeit",
     "avgCheck": "Zuwachs Durchschnittsbon",
     "dashboard": "Dashboard",
-    "logIn": "Anmelden"
+    "logIn": "Anmelden",
+    "comparison": {
+      "badge": "Vergleich",
+      "title": "Warum nicht einfach ein QR-Code zu einer PDF",
+      "typicalTitle": "Typische QR-Speisekarte",
+      "typical1": "Statische PDF, die vom Smartphone aus schwer zu aktualisieren ist",
+      "typical2": "Langsame Ladezeiten im schwachen Gäste-WLAN",
+      "typical3": "Jeder Gast hat seinen eigenen separaten Warenkorb",
+      "typical4": "Die Bedienung teilt die Rechnung mühsam per Hand auf",
+      "qoreTitle": "CaféBoard",
+      "qore1": "Server-gerendert, in unter einer Sekunde geladen",
+      "qore2": "Ein gemeinsamer Tisch-Warenkorb in Echtzeit",
+      "qore3": "Gäste teilen die Rechnung selbst — gleichmäßig oder nach Speisen",
+      "qore4": "Speisekarte wird im Dashboard bearbeitet und sofort aktualisiert"
+    },
+    "howItWorks": {
+      "badge": "Am Tisch",
+      "title": "Wie es an einem Tisch funktioniert",
+      "step1Title": "QR-Code scannen",
+      "step1Desc": "Die Speisekarte öffnet sich sofort im Browser — ohne App und Registrierung.",
+      "step2Title": "Gemeinsam bestellen",
+      "step2Desc": "Alle am Tisch sehen denselben Warenkorb und neue Bestellungen in Echtzeit.",
+      "step3Title": "Rechnung teilen",
+      "step3Desc": "Gleichmäßig oder nach Positionen — Gäste zahlen selbst, ohne Wartezeit."
+    },
+    "features": {
+      "badge": "Kostenlose Funktionen",
+      "title": "Alles, was ein Betrieb braucht — kostenlos",
+      "description": "Gemeinsamer Warenkorb, Rechnungsaufteilung, Vorbestellung und Stop-Liste sind im kostenlosen Tarif enthalten. Nur KI ist kostenpflichtig.",
+      "liveCartTitle": "Gemeinsamer Tisch-Warenkorb",
+      "liveCartDesc": "Mehrere Gäste am Tisch sehen dieselbe Karte und einen gemeinsamen Live-Warenkorb.",
+      "splitBillTitle": "Rechnung teilen",
+      "splitBillDesc": "Gleichmäßig oder nach gewählten Artikeln — Gäste zahlen direkt selbst.",
+      "orderAheadTitle": "Vorbestellung",
+      "orderAheadDesc": "Gäste bestellen unterwegs und umgehen die Warteschlange vor Ort.",
+      "stopListTitle": "Stop-Liste (86)",
+      "stopListDesc": "Ein Gericht aus der Küche sperren — es verschwindet sofort an allen Tischen.",
+      "happyHourTitle": "Happy Hour",
+      "happyHourDesc": "Rabatt mit Live-Countdown; Preise werden nach Ablauf automatisch zurückgesetzt.",
+      "npsTitle": "NPS-Bewertungen",
+      "npsDesc": "Gäste bewerten ihren Besuch direkt nach der Zahlung — Benachrichtigung via Telegram."
+    },
+    "aiShowcase": {
+      "badge": "Pro & Business",
+      "titlePart1": "KI",
+      "titlePart2": "die Umsatz bringt, nicht nur eine Demo ist",
+      "subtitle": "Das Kernprodukt ist kostenlos. Rechenintensive KI-Funktionen sind in den Pro-Tarifen gebündelt — als echter Umsatz-Booster.",
+      "upgradeCta": "Auf Pro upgraden",
+      "waiterTitle": "KI-Concierge-Kellner",
+      "promptPill": "Design per Prompt",
+      "upsellPill": "Upsell im Warenkorb",
+      "npsSummaryPill": "KI-Bewertungsanalyse"
+    },
+    "splitBill": {
+      "badge": "Rechnung teilen",
+      "title": "Die Rechnung in Sekundenschnelle aufgeteilt",
+      "description": "Gäste zahlen genau das, was sie bestellt haben. Kein lästiges Rechnen am Tisch — jeder Artikel ist dem Gast zugeordnet.",
+      "benefit1": "Jeder Artikel merkt sich, wer ihn bestellt hat",
+      "benefit2": "Nur den eigenen Anteil zahlen oder gleichmäßig aufteilen",
+      "benefit3": "Artikel vor der Zahlung sperren — keine doppelten Abbuchungen"
+    },
+    "splitBillDemo": {
+      "tableLive": "Tisch 4 · Live",
+      "aiUpsell": "KI-Empfehlung",
+      "upsellText": "Zum Cappuccino passt hervorragend ein Croissant — für $5.50 hinzufügen?",
+      "check": "Rechnung #0192",
+      "total": "Gesamt",
+      "splitEvenly": "Gleichmäßig teilen"
+    },
+    "pricing": {
+      "badge": "Transparente Konditionen",
+      "title": "Preise"
+    },
+    "ctaBanner": {
+      "title": "Starten Sie Ihren Betrieb an einem einzigen Abend",
+      "description": "Menü-Import, Tisch-QR-Codes und Teameinbindung — kostenlos loslegen.",
+      "button": "CaféBoard ausprobieren"
+    },
+    "footer": {
+      "tagline": "Interaktive QR-Speisekarten, Reservierungen und KI für Cafés und Restaurants.",
+      "domain": "cafeboard.app",
+      "product": "Produkt",
+      "company": "Unternehmen",
+      "legal": "Rechtliches",
+      "features": "Funktionen",
+      "howItWorks": "So funktioniert's",
+      "pricing": "Preise",
+      "about": "Über uns",
+      "contact": "Kontakt",
+      "terms": "AGB",
+      "privacy": "Datenschutz",
+      "copyright": "© {year} CaféBoard. Alle Rechte vorbehalten."
+    }
   },
   "menuManagement": {
     "badge": "Speisekarte",

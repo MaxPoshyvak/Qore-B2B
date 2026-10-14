@@ -15,7 +15,8 @@
     "language": "Język",
     "live": "Na żywo",
     "done": "Gotowe",
-    "selectLanguage": "Wybierz język"
+    "selectLanguage": "Wybierz język",
+    "logOut": "Wyloguj się"
   },
   "publicMenu": {
     "headerTitle": "Menu",
@@ -562,7 +563,99 @@
     "orderSpeed": "Szybkość zamówienia",
     "avgCheck": "Wzrost średniego rachunku",
     "dashboard": "Panel",
-    "logIn": "Zaloguj się"
+    "logIn": "Zaloguj się",
+    "comparison": {
+      "badge": "Porównanie",
+      "title": "Dlaczego nie po prostu kod QR do pliku PDF",
+      "typicalTitle": "Zwykłe menu QR",
+      "typical1": "Statyczny plik PDF trudny do zaktualizowania z telefonu",
+      "typical2": "Wolne ładowanie na słabym Wi-Fi w lokalu",
+      "typical3": "Każdy gość ma swój własny, oddzielny koszyk",
+      "typical4": "Kelner musi ręcznie dzielić rachunek przy kasie",
+      "qoreTitle": "CaféBoard",
+      "qore1": "Renderowanie po stronie serwera, gotowe w mniej niż sekundę",
+      "qore2": "Jeden wspólny koszyk stolika aktualizowany w czasie rzeczywistym",
+      "qore3": "Goście dzielą rachunek sami — po równo lub według pozycji",
+      "qore4": "Menu edytowane w panelu i aktualizowane natychmiast"
+    },
+    "howItWorks": {
+      "badge": "Przy stoliku",
+      "title": "Jak to działa przy jednym stoliku",
+      "step1Title": "Zeskanuj kod QR",
+      "step1Desc": "Menu otwiera się błyskawicznie w przeglądarce — bez aplikacji i rejestracji.",
+      "step2Title": "Zamawiajcie razem",
+      "step2Desc": "Wszyscy przy stoliku widzą wspólny koszyk i dodawane dania w czasie rzeczywistym.",
+      "step3Title": "Podzielcie rachunek",
+      "step3Desc": "Po równo lub według pozycji — goście płacą sami, bez czekania na kelnera."
+    },
+    "features": {
+      "badge": "Darmowe funkcje",
+      "title": "Wszystko, czego potrzebuje lokal — za darmo",
+      "description": "Wspólny koszyk, dzielenie rachunku, zamawianie z wyprzedzeniem i lista 86 są w darmowym planie. Płatna jest tylko sztuczna inteligencja.",
+      "liveCartTitle": "Wspólny koszyk stolika",
+      "liveCartDesc": "Kilku gości przy stoliku widzi to samo menu i jeden koszyk na żywo.",
+      "splitBillTitle": "Dzielenie rachunku",
+      "splitBillDesc": "Po równo lub według wybranych pozycji — goście rozliczają się sami.",
+      "orderAheadTitle": "Zamówienie z wyprzedzeniem",
+      "orderAheadDesc": "Goście zamawiają w drodze i odbierają bez stania w kolejce.",
+      "stopListTitle": "Stop-lista (86)",
+      "stopListDesc": "Wyłącz danie w kuchni — natychmiast zniknie ze wszystkich aktywnych stolików.",
+      "happyHourTitle": "Happy Hour",
+      "happyHourDesc": "Zniżka z odliczaniem na żywo; ceny przeliczają się automatycznie po zakończeniu.",
+      "npsTitle": "Oceny NPS",
+      "npsDesc": "Goście oceniają wizytę tuż po płatności — niska ocena natychmiast powiadamia na Telegramie."
+    },
+    "aiShowcase": {
+      "badge": "Pro & Business",
+      "titlePart1": "AI",
+      "titlePart2": "które zarabia, a nie jest tylko prezentacją",
+      "subtitle": "Podstawowy produkt jest bezpłatny. Zaawansowane funkcje LLM przenieśliśmy do płatnych planów — to silnik wzrostu średniego rachunku.",
+      "upgradeCta": "Przejdź na Pro",
+      "waiterTitle": "Konsjerż kelnerski AI",
+      "promptPill": "Projekt na podstawie promptu",
+      "upsellPill": "Upsell w koszyku",
+      "npsSummaryPill": "Analiza opinii przez AI"
+    },
+    "splitBill": {
+      "badge": "Dzielenie rachunku",
+      "title": "Rachunek podzielony w kilka sekund",
+      "description": "Goście płacą dokładnie za to, co zamówili. Bez skomplikowanych obliczeń — każda pozycja wie, kto ją dodał.",
+      "benefit1": "Każda pozycja pamięta, kto ją zamówił",
+      "benefit2": "Zapłać za swoją część lub podziel po równo",
+      "benefit3": "Blokada pozycji przed płatnością — brak podwójnych obciążeń"
+    },
+    "splitBillDemo": {
+      "tableLive": "stolik 4 · na żywo",
+      "aiUpsell": "Propozycja AI",
+      "upsellText": "Do cappuccino idealnie pasuje rogalik — dodać za $5.50?",
+      "check": "rachunek #0192",
+      "total": "Razem",
+      "splitEvenly": "Po równo"
+    },
+    "pricing": {
+      "badge": "Przejrzyste zasady",
+      "title": "Cennik"
+    },
+    "ctaBanner": {
+      "title": "Uruchom swój lokal w jeden wieczór",
+      "description": "Przeniesienie menu, kody QR dla stolików i wdrożenie zespołu — zacznij za darmo.",
+      "button": "Wypróbuj CaféBoard"
+    },
+    "footer": {
+      "tagline": "Interaktywne menu QR, rezerwacje i AI dla kawiarni i restauracji.",
+      "domain": "cafeboard.app",
+      "product": "Produkt",
+      "company": "Firma",
+      "legal": "Prawo",
+      "features": "Funkcje",
+      "howItWorks": "Jak to działa",
+      "pricing": "Cennik",
+      "about": "O nas",
+      "contact": "Kontakt",
+      "terms": "Regulamin",
+      "privacy": "Prywatność",
+      "copyright": "© {year} CaféBoard. Wszelkie prawa zastrzeżone."
+    }
   },
   "menuManagement": {
     "badge": "Menu",

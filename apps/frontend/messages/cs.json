@@ -15,7 +15,8 @@
     "language": "Jazyk",
     "live": "Živě",
     "done": "Hotovo",
-    "selectLanguage": "Vyberte jazyk"
+    "selectLanguage": "Vyberte jazyk",
+    "logOut": "Odhlásit se"
   },
   "publicMenu": {
     "headerTitle": "Menu",
@@ -562,7 +563,99 @@
     "orderSpeed": "Rychlost objednávky",
     "avgCheck": "Nárůst průměrného účtu",
     "dashboard": "Nástěnka",
-    "logIn": "Přihlásit se"
+    "logIn": "Přihlásit se",
+    "comparison": {
+      "badge": "Porovnání",
+      "title": "Proč ne jen obyčejný QR kód na PDF",
+      "typicalTitle": "Běžné QR menu",
+      "typical1": "Statické PDF, které se z telefonu špatně aktualizuje",
+      "typical2": "Pomalé načítání na slabé Wi-Fi v podniku",
+      "typical3": "Každý host má svůj vlastní oddělený košík",
+      "typical4": "Obsluha musí účet rozdělovat ručně na kase",
+      "qoreTitle": "CaféBoard",
+      "qore1": "Serverový rendering, načteno za méně než sekundu",
+      "qore2": "Jeden sdílený košík stolu aktualizovaný v reálném čase",
+      "qore3": "Hosté si účet rozdělí sami — rovným dílem nebo podle položek",
+      "qore4": "Menu se upravuje v administraci a okamžitě se projeví"
+    },
+    "howItWorks": {
+      "badge": "U stolu",
+      "title": "Jak to funguje u jednoho stolu",
+      "step1Title": "Naskenujte QR",
+      "step1Desc": "Menu se okamžitě otevře v prohlížeči — bez aplikace a registrace.",
+      "step2Title": "Objednávejte společně",
+      "step2Desc": "Všichni u stolu vidí jeden košík a přidané položky v reálném čase.",
+      "step3Title": "Rozdělte si účet",
+      "step3Desc": "Rovným dílem nebo podle vybraných položek — hosté platí sami, bez obsluhy."
+    },
+    "features": {
+      "badge": "Bezplatné funkce",
+      "title": "Vše, co podnik potřebuje — zdarma",
+      "description": "Sdílený košík, rozdělení účtu, objednávky předem a stop-list jsou součástí bezplatného plánu. Neomezujeme vás, placená je pouze AI.",
+      "liveCartTitle": "Sdílený košík stolu",
+      "liveCartDesc": "Více hostů u jednoho stolu vidí stejné menu a jeden živě aktualizovaný košík.",
+      "splitBillTitle": "Rozdělení účtu",
+      "splitBillDesc": "Rovným dílem nebo podle položek — hosté se vypořádají sami bez personálu.",
+      "orderAheadTitle": "Objednávka předem",
+      "orderAheadDesc": "Hosté si objednají na cestě a po příchodu přeskočí frontu.",
+      "stopListTitle": "Stop-list položek",
+      "stopListDesc": "Vyřaďte pokrm z kuchyně a okamžitě zmizí ze všech aktivních relací stolů.",
+      "happyHourTitle": "Happy Hour",
+      "happyHourDesc": "Sleva s živým odpočtem; ceny se po skončení automaticky přepočítají.",
+      "npsTitle": "Hodnocení NPS",
+      "npsDesc": "Hosté ohodnotí návštěvu hned po zaplacení — nízké skóre vás okamžitě upozorní na Telegramu."
+    },
+    "aiShowcase": {
+      "badge": "Pro & Business",
+      "titlePart1": "AI",
+      "titlePart2": "která vydělává, ne jen předvádí",
+      "subtitle": "Základní produkt je zdarma. Pokročilé volání LLM jsme umístili do placených tarifů — je to motor pro zvýšení průměrné útraty.",
+      "upgradeCta": "Přejít na Pro",
+      "waiterTitle": "AI číšník concierge",
+      "promptPill": "Design ze zadání",
+      "upsellPill": "Upsell v košíku",
+      "npsSummaryPill": "AI souhrny recenzí"
+    },
+    "splitBill": {
+      "badge": "Rozdělení účtu",
+      "title": "Účet rozdělený během několika sekund",
+      "description": "Hosté platí přesně za to, co si objednali. Žádné složité počítání s obsluhou — každá položka ví, kdo ji přidal.",
+      "benefit1": "Každá položka si pamatuje, kdo ji objednal",
+      "benefit2": "Zaplaťte svůj podíl nebo rozdělte rovným dílem",
+      "benefit3": "Uzamčení položek před platbou — žádné dvojí platby"
+    },
+    "splitBillDemo": {
+      "tableLive": "stůl 4 · živě",
+      "aiUpsell": "AI doporučení",
+      "upsellText": "K cappuccinu se skvěle hodí croissant — přidat za $5.50?",
+      "check": "účet #0192",
+      "total": "Celkem",
+      "splitEvenly": "Rovným dílem"
+    },
+    "pricing": {
+      "badge": "Žádné skryté poplatky",
+      "title": "Ceník"
+    },
+    "ctaBanner": {
+      "title": "Spusťte svůj podnik během jednoho večera",
+      "description": "Převod menu, QR kódy pro stoly a zaškolení týmu — začněte zdarma.",
+      "button": "Vyzkoušet CaféBoard"
+    },
+    "footer": {
+      "tagline": "Interaktivní QR menu, rezervace a AI pro kavárny a restaurace.",
+      "domain": "cafeboard.app",
+      "product": "Produkt",
+      "company": "Společnost",
+      "legal": "Právní informace",
+      "features": "Funkce",
+      "howItWorks": "Jak to funguje",
+      "pricing": "Ceník",
+      "about": "O nás",
+      "contact": "Kontakt",
+      "terms": "Podmínky",
+      "privacy": "Soukromí",
+      "copyright": "© {year} CaféBoard. Všechna práva vyhrazena."
+    }
   },
   "menuManagement": {
     "badge": "Menu",

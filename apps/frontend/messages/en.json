@@ -15,7 +15,8 @@
     "language": "Language",
     "live": "Live",
     "done": "Done",
-    "selectLanguage": "Select Language"
+    "selectLanguage": "Select Language",
+    "logOut": "Log out"
   },
   "publicMenu": {
     "headerTitle": "Menu",
@@ -562,7 +563,99 @@
     "orderSpeed": "Order speed",
     "avgCheck": "Average check lift",
     "dashboard": "Dashboard",
-    "logIn": "Log in"
+    "logIn": "Log in",
+    "comparison": {
+      "badge": "Comparison",
+      "title": "Why not just a QR code to a PDF",
+      "typicalTitle": "Typical QR menu",
+      "typical1": "Static PDF that's hard to update from a phone",
+      "typical2": "Slow to load on weak in-house Wi-Fi",
+      "typical3": "Every guest has their own separate cart",
+      "typical4": "The server splits the bill by hand",
+      "qoreTitle": "CaféBoard",
+      "qore1": "Server-rendered, ready in under a second",
+      "qore2": "One shared table cart, updated in real time",
+      "qore3": "Guests split the bill themselves — evenly or by item",
+      "qore4": "Menu is edited in the dashboard and updates instantly"
+    },
+    "howItWorks": {
+      "badge": "At the table",
+      "title": "How it works at one table",
+      "step1Title": "Scan the QR",
+      "step1Desc": "The menu opens instantly in the browser — no app, no sign-up.",
+      "step2Title": "Order together",
+      "step2Desc": "Everyone at the table sees one cart and what others add, in real time.",
+      "step3Title": "Split the bill",
+      "step3Desc": "Evenly or by chosen items — guests pay themselves, no server needed."
+    },
+    "features": {
+      "badge": "Free features",
+      "title": "Everything a venue needs — free",
+      "description": "Live cart, split billing, order-ahead, and the 86 list are all on the Free plan. We don't hold these back to upsell you — only AI is paid.",
+      "liveCartTitle": "Live Table Cart",
+      "liveCartDesc": "Several guests at one table see the same menu and one shared cart, updated live.",
+      "splitBillTitle": "Split Bill",
+      "splitBillDesc": "Evenly or by chosen items — guests settle up themselves, no server needed.",
+      "orderAheadTitle": "Order-ahead",
+      "orderAheadDesc": "Guests order on the way and skip the line the moment they arrive.",
+      "stopListTitle": "86 list",
+      "stopListDesc": "86 a dish from the kitchen and it disappears from every active table session instantly.",
+      "happyHourTitle": "Happy Hour",
+      "happyHourDesc": "A discount with a live countdown; prices recalculate automatically when it ends.",
+      "npsTitle": "NPS scores",
+      "npsDesc": "Guests rate their visit right after paying — a low score pings you on Telegram instantly."
+    },
+    "aiShowcase": {
+      "badge": "Pro & Business",
+      "titlePart1": "AI",
+      "titlePart2": "that makes money, not just a demo",
+      "subtitle": "The core product is free and built to spread on its own. We deliberately kept expensive LLM calls behind the paid tiers — that's a growth engine, not a hook.",
+      "upgradeCta": "Upgrade to Pro",
+      "waiterTitle": "AI waiter concierge",
+      "promptPill": "Design from a prompt",
+      "upsellPill": "Upsell in cart",
+      "npsSummaryPill": "AI NPS summaries"
+    },
+    "splitBill": {
+      "badge": "Split Bill",
+      "title": "The check, split in seconds",
+      "description": "Guests pay for what they actually ordered. No awkward math with the server, no mistakes — every item is tagged with the guest who added it.",
+      "benefit1": "Every item remembers who ordered it",
+      "benefit2": "Pay just your share or split evenly",
+      "benefit3": "Lock items before paying — no race conditions"
+    },
+    "splitBillDemo": {
+      "tableLive": "table 4 · live",
+      "aiUpsell": "AI upsell",
+      "upsellText": "Cappuccino pairs well with a croissant — add for $5.50?",
+      "check": "check #0192",
+      "total": "Total",
+      "splitEvenly": "Split evenly"
+    },
+    "pricing": {
+      "badge": "No hidden terms",
+      "title": "Pricing"
+    },
+    "ctaBanner": {
+      "title": "Get your venue live in one evening",
+      "description": "Menu migration, table QR setup, and team onboarding — free to get started.",
+      "button": "Try CaféBoard"
+    },
+    "footer": {
+      "tagline": "Live QR menus, reservations, and AI for cafés and restaurants.",
+      "domain": "cafeboard.app",
+      "product": "Product",
+      "company": "Company",
+      "legal": "Legal",
+      "features": "Features",
+      "howItWorks": "How it works",
+      "pricing": "Pricing",
+      "about": "About",
+      "contact": "Contact",
+      "terms": "Terms",
+      "privacy": "Privacy",
+      "copyright": "© {year} CaféBoard. All rights reserved."
+    }
   },
   "menuManagement": {
     "badge": "Menu",

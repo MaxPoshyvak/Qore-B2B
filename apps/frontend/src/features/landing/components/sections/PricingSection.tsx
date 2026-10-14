@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { display } from '@/shared/lib/fonts';
 import { PRICING_PLANS } from '@my-app/types';
 import { Eyebrow } from '@/shared/ui/Eyebrow';
@@ -7,6 +8,8 @@ import { Reveal } from '../ui/Reveal';
 import { PricingCard } from '@/shared/ui/PricingCard';
 
 export function PricingSection() {
+    const t = useTranslations('landing.pricing');
+
     return (
         <section
             id="pricing"
@@ -14,9 +17,9 @@ export function PricingSection() {
             <div className="mx-auto max-w-6xl px-6 py-24">
                 <Reveal className="text-center">
                     <div className="flex justify-center">
-                        <Eyebrow>No hidden terms</Eyebrow>
+                        <Eyebrow>{t('badge')}</Eyebrow>
                     </div>
-                    <h2 className={`${display.className} text-[26px] font-bold sm:text-[34px]`}>Pricing</h2>
+                    <h2 className={`${display.className} text-[26px] font-bold sm:text-[34px]`}>{t('title')}</h2>
                 </Reveal>
 
                 <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-3 md:items-center">

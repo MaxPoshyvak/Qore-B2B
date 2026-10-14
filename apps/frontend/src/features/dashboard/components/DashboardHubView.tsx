@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Copy, Check, Plus, Store, Sparkles } from 'lucide-react';
+import { ArrowRight, Copy, Check, Plus, Store, Sparkles, LogOut } from 'lucide-react';
+import { signOut } from 'next-auth/react';
 
 import { useTheme } from '@/shared/hooks/useTheme';
 import { ThemeToggle } from '@/shared/ui/ThemeToggle';
@@ -34,6 +35,7 @@ function planLabel(plan?: string | null): { text: string; business: boolean } {
 
 export function DashboardHubView({ tenants, userName }: { tenants: Tenant[]; userName?: string }) {
     const t = useTranslations('dashboard.hub');
+    const tCommon = useTranslations('common');
     const { theme, toggle, mounted } = useTheme();
     const [copied, setCopied] = useState<string | null>(null);
     const isBusinessPlan = tenants.some((tenant) => tenant.subscriptionPlan?.toLowerCase() === 'business');
@@ -63,11 +65,19 @@ export function DashboardHubView({ tenants, userName }: { tenants: Tenant[]; use
                 {isBusinessPlan && (
                     <Link
                         href="/onboarding"
-                        className="flex items-center gap-1.5 rounded-full bg-[#0A0A0C] px-4 py-2 text-[13.5px] font-medium text-white transition-colors hover:bg-[#232327] dark:bg-[#F5F4F2] dark:text-[#0A0A0C] dark:hover:bg-white">
+                        className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-[#0A0A0C] px-4 py-2 text-[13.5px] font-medium text-white transition-colors hover:bg-[#232327] dark:bg-[#F5F4F2] dark:text-[#0A0A0C] dark:hover:bg-white">
                         <Plus size={15} strokeWidth={2.25} />
                         {t('addVenue')}
                     </Link>
                 )}
+                <button
+                    type="button"
+                    onClick={() => signOut({ callbackUrl: '/login' })}
+                    title={tCommon('logOut')}
+                    className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-[#E7E5E0] bg-white/60 px-3.5 py-1.5 text-[13px] font-medium text-[#6B6A65] transition-colors hover:border-[#EF4444]/40 hover:text-[#EF4444] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D] dark:hover:text-[#F87171]">
+                    <LogOut size={14} />
+                    <span>{tCommon('logOut')}</span>
+                </button>
             </BaseHeader>
 
             <main className="mx-auto max-w-6xl px-4 py-14 sm:px-6">

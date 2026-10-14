@@ -21,7 +21,9 @@ import {
     Crown,
     Plus,
     Sparkles,
+    LogOut,
 } from 'lucide-react';
+import { signOut } from 'next-auth/react';
 
 import { useTranslations } from 'next-intl';
 import { Logo } from '@/shared/ui/Logo';
@@ -109,6 +111,7 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
     const tSidebar = useTranslations('dashboard.sidebar');
     const tSettings = useTranslations('dashboard.settings');
     const tTables = useTranslations('tablesFloor');
+    const tCommon = useTranslations('common');
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const { theme, toggle, mounted } = useTheme();
@@ -334,23 +337,35 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
             )} */}
 
             {/* Footer */}
-            <div className="mt-4 flex items-center justify-between border-t border-[#E7E5E0]/80 pt-4 dark:border-white/10">
-                {hasMultipleVenues ? (
-                    <Link
-                        href="/dashboard"
-                        className="flex items-center gap-2 text-[13px] text-[#6B6A65] transition-colors hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:text-[#F5F4F2]">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] text-white">
-                            <User size={15} />
-                        </span>
-                        <span className="flex items-center gap-1">
-                            <ArrowLeft size={13} />
-                            {tSidebar('allVenues')}
-                        </span>
-                    </Link>
-                ) : (
-                    <span />
-                )}
-                <div className="flex items-center gap-2">
+            <div className="mt-4 border-t border-[#E7E5E0]/80 pt-3 dark:border-white/10">
+                <div className="mb-3 flex items-center justify-between">
+                    {hasMultipleVenues ? (
+                        <Link
+                            href="/dashboard"
+                            className="flex items-center gap-2 text-[13px] font-medium text-[#6B6A65] transition-colors hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:text-[#F5F4F2]">
+                            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-[#3B82F6] to-[#8B5CF6] text-white">
+                                <User size={13} />
+                            </span>
+                            <span className="flex items-center gap-1">
+                                <ArrowLeft size={12} />
+                                {tSidebar('allVenues')}
+                            </span>
+                        </Link>
+                    ) : (
+                        <span className="text-[12px] font-medium text-[#9C9B95] dark:text-[#6E6D68]">CaféBoard</span>
+                    )}
+
+                    <button
+                        type="button"
+                        onClick={() => signOut({ callbackUrl: '/login' })}
+                        title={tCommon('logOut')}
+                        className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-[12px] font-medium text-[#6B6A65] transition-colors hover:bg-[#EF4444]/10 hover:text-[#EF4444] dark:text-[#94938D] dark:hover:bg-[#EF4444]/15 dark:hover:text-[#F87171]">
+                        <LogOut size={14} />
+                        <span>{tCommon('logOut')}</span>
+                    </button>
+                </div>
+
+                <div className="flex items-center justify-between">
                     <div className="hidden md:block">{mounted && <ThemeToggle theme={theme} toggle={toggle} />}</div>
                     <LanguageSwitcher direction="up" align="right" />
                 </div>

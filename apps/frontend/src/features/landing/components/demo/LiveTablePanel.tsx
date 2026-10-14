@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Wand2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { display, mono } from '@/shared/lib/fonts';
 import { EASE } from '@/shared/config/animations';
@@ -10,6 +11,7 @@ import { TICKET_EVENTS } from '../../config/landing-data';
 import { TiltCard } from '../ui/TiltCard';
 
 export function LiveTablePanel() {
+    const t = useTranslations('landing.splitBillDemo');
     const [phase, setPhase] = useState(0);
     const [showUpsell, setShowUpsell] = useState(false);
     const totalPhases = TICKET_EVENTS.length + 2;
@@ -69,7 +71,7 @@ export function LiveTablePanel() {
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white/60" />
                     <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white" />
                 </span>
-                table 4 · live
+                {t('tableLive')}
             </motion.div>
 
             {/* AI upsell bubble */}
@@ -82,9 +84,9 @@ export function LiveTablePanel() {
                         transition={{ duration: 0.35, ease: EASE }}
                         className={`${mono.className} absolute -right-7 top-16 z-30 w-[192px] rounded-2xl border border-[#8B5CF6]/30 bg-white/95 p-3 text-[10.5px] leading-relaxed text-[#0A0A0C] shadow-lg backdrop-blur-xl dark:bg-[#16151D]/95 dark:text-[#F5F4F2]`}>
                         <div className="mb-1.5 flex items-center gap-1.5 text-[#8B5CF6]">
-                            <Wand2 size={11} /> AI upsell
+                            <Wand2 size={11} /> {t('aiUpsell')}
                         </div>
-                        Cappuccino pairs well with a croissant — add for $5.50?
+                        {t('upsellText')}
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -98,7 +100,7 @@ export function LiveTablePanel() {
                         </span>
                         <span
                             className={`${mono.className} text-[10px] uppercase tracking-widest text-[#6B6A65] dark:text-[#94938D]`}>
-                            check #0192
+                            {t('check')}
                         </span>
                     </div>
 
@@ -133,7 +135,7 @@ export function LiveTablePanel() {
                         className={`${mono.className} relative mt-4 flex items-center justify-between border-t border-[#0A0A0C]/10 pt-3 text-[13px] font-semibold text-[#0A0A0C] transition-opacity duration-300 dark:border-white/10 dark:text-[#F5F4F2] ${
                             showTotal ? 'opacity-100' : 'opacity-0'
                         }`}>
-                        <span>Total</span>
+                        <span>{t('total')}</span>
                         <span className="tabular-nums">${total.toFixed(2)}</span>
                     </div>
 
@@ -142,7 +144,7 @@ export function LiveTablePanel() {
                             showSplit ? 'max-h-40 opacity-100' : 'pointer-events-none max-h-0 overflow-hidden opacity-0'
                         }`}>
                         <div className="mb-1 uppercase tracking-widest text-[10px] text-[#6B6A65] dark:text-[#94938D]">
-                            Split evenly
+                            {t('splitEvenly')}
                         </div>
                         {perGuest.map(([guest, v]) => (
                             <div key={guest} className="flex items-center justify-between">

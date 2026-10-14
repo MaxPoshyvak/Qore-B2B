@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 
 import { display } from '@/shared/lib/fonts';
 import { EASE, stagger } from '@/shared/config/animations';
@@ -10,12 +11,35 @@ import { Reveal } from '../ui/Reveal';
 import { StepCard } from '../ui/StepCard';
 
 export function HowItWorksSection() {
+    const t = useTranslations('landing.howItWorks');
+
+    const steps = [
+        {
+            n: '01',
+            icon: HOW_STEPS[0].icon,
+            title: t('step1Title'),
+            desc: t('step1Desc'),
+        },
+        {
+            n: '02',
+            icon: HOW_STEPS[1].icon,
+            title: t('step2Title'),
+            desc: t('step2Desc'),
+        },
+        {
+            n: '03',
+            icon: HOW_STEPS[2].icon,
+            title: t('step3Title'),
+            desc: t('step3Desc'),
+        },
+    ];
+
     return (
         <section id="how" className="mx-auto max-w-6xl px-6 py-24">
             <Reveal>
-                <Eyebrow>At the table</Eyebrow>
+                <Eyebrow>{t('badge')}</Eyebrow>
                 <h2 className={`${display.className} max-w-xl text-[26px] font-bold leading-tight sm:text-[34px]`}>
-                    How it works at one table
+                    {t('title')}
                 </h2>
             </Reveal>
 
@@ -25,7 +49,7 @@ export function HowItWorksSection() {
                 viewport={{ once: true, margin: '-80px' }}
                 variants={stagger}
                 className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-3">
-                {HOW_STEPS.map((s, i) => (
+                {steps.map((s, i) => (
                     <motion.div
                         key={s.n}
                         initial={{ opacity: 0, y: 50 }}
