@@ -10,6 +10,7 @@ import { type GenerateDishOutput } from '@my-app/types';
 import { useGenerateDish } from '../api/useGenerateDish';
 import { ProUpgradeModal } from './ProUpgradeModal';
 import { useTranslations } from 'next-intl';
+import { InfoTooltip } from '@/shared/ui/Tooltip';
 
 type AiDishGeneratorBarProps = {
     /** Whether the active venue is on a PRO (or higher) plan. */
@@ -110,6 +111,7 @@ export function AiDishGeneratorBar({ isPro, categories, onPopulate, onUpgrade, c
                                 <span className="rounded-md bg-[#8B5CF6]/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#8B5CF6]">
                                     {t('aiBadge')}
                                 </span>
+                                <InfoTooltip content={t('aiBarTooltip')} />
                             </div>
 
                             {isPro ? (

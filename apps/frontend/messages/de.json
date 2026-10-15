@@ -225,7 +225,63 @@
       "businessPlan": "Business-Tarif",
       "proPlan": "Pro-Tarif",
       "freePlan": "Kostenloser Tarif",
-      "activeBadge": "Aktiv"
+      "activeBadge": "Aktiv",
+      "productTour": "Produkt-Tour"
+    },
+    "tour": {
+      "productTour": "Produkt-Tour",
+      "stepCounter": "Schritt {current} von {total}",
+      "skip": "Überspringen",
+      "back": "Zurück",
+      "next": "Weiter",
+      "finish": "Abschließen & Lokal einrichten ✨",
+      "steps": {
+        "overview": {
+          "title": "Kontrollzentrum & Übersicht",
+          "desc": "Verfolgen Sie heutigen Umsatz, Bestellungen und besetzte Tische in Echtzeit.",
+          "tip": "Klicken Sie auf den Menü-Link oben, um die Speisekarte aus Gastsicht zu sehen."
+        },
+        "menuBuilder": {
+          "title": "Menü-Baukasten & Gerichte",
+          "desc": "Kategorien anlegen, Fotos hochladen, Preise, Allergene und Modifikatoren verwalten.",
+          "tip": "Nutzen Sie den 'AI Dish Generator' für appetitliche Beschreibungen in Sekunden."
+        },
+        "promotions": {
+          "title": "Automatische Happy Hours",
+          "desc": "Zeitgesteuerte Rabatte für ruhigere Stunden mit automatischer Preisanpassung.",
+          "tip": "Steigern Sie Nachmittags-Umsätze mit automatisierten Angeboten."
+        },
+        "tables": {
+          "title": "Tische & QR-Codes",
+          "desc": "Tische verwalten und A4-Druckvorlagen für QR-Aufsteller herunterladen.",
+          "tip": "QR-Token neu generieren, falls ein Code außerhalb des Lokals geteilt wurde."
+        },
+        "reservations": {
+          "title": "Tisch-Reservierungen",
+          "desc": "Online-Buchungen entgegennehmen und Tische ohne Doppelbelegungen zuweisen.",
+          "tip": "Alle Reservierungsdetails auf einen Blick in der Übersicht."
+        },
+        "liveOrders": {
+          "title": "Live-Bestellungen & KDS",
+          "desc": "Echtzeit-Kanban für Küche und Bar mit automatischem Ton-Signal bei Neubestellungen.",
+          "tip": "Bestellkarte anklicken für Gast-Hinweise, Sonderwünsche und Zahlungsstatus."
+        },
+        "orderHistory": {
+          "title": "Bestellverlauf & Audit",
+          "desc": "Abgeschlossene Bestellungen, Trinkgelder und geteilte Rechnungen prüfen.",
+          "tip": "Schneller Beleg-Zugriff für den täglichen Kassenabschluss."
+        },
+        "analytics": {
+          "title": "Analytics & CSV-Export",
+          "desc": "Stoßzeiten und Bestseller analysieren sowie Finanzberichte als CSV exportieren.",
+          "tip": "CSV-Dateien sind mit UTF-8 für Microsoft Excel formatiert."
+        },
+        "settings": {
+          "title": "Branding & Lokal-Start!",
+          "desc": "Alles bereit! Logo hochladen, Öffnungszeiten einstellen und Küchen-PIN festlegen.",
+          "tip": "Lokal-Informationen speichern und die ersten Gäste begrüßen!"
+        }
+      }
     },
     "menuBoard": {
       "title": "Speisekarten-Verwaltung",

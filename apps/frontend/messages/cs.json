@@ -225,7 +225,63 @@
       "businessPlan": "Business Plan",
       "proPlan": "Pro Plan",
       "freePlan": "Bezplatný plán",
-      "activeBadge": "Aktivní"
+      "activeBadge": "Aktivní",
+      "productTour": "Průvodce"
+    },
+    "tour": {
+      "productTour": "Průvodce platformou",
+      "stepCounter": "Krok {current} z {total}",
+      "skip": "Přeskočit",
+      "back": "Zpět",
+      "next": "Další",
+      "finish": "Dokončit a nastavit podnik ✨",
+      "steps": {
+        "overview": {
+          "title": "Řídicí centrum a přehled",
+          "desc": "Sledujte dnešní tržby, počet objednávek a obsazené stoly v reálném čase.",
+          "tip": "Kliknutím na odkaz podniku nahoře uvidíte menu očima hosta."
+        },
+        "menuBuilder": {
+          "title": "Tvůrce menu a jídla",
+          "desc": "Vytvářejte kategorie, nahrávejte fotky jídel, ceny, alergeny a modifikátory.",
+          "tip": "Použijte 'AI Dish Generator' pro lákavé popisy jídel během několika sekund."
+        },
+        "promotions": {
+          "title": "Automatické Happy Hours",
+          "desc": "Časově omezené slevy pro klidnější hodiny s automatickou změnou cen.",
+          "tip": "Zvyšte návštěvnost v odpoledních hodinách speciálními nabídkami."
+        },
+        "tables": {
+          "title": "Stoly a QR kódy",
+          "desc": "Spravujte stoly a tiskněte připravené A4 šablony pro stojánky s QR kódy.",
+          "tip": "Vygenerujte nový QR token, pokud byl kód vyfocen mimo podnik."
+        },
+        "reservations": {
+          "title": "Rezervace stolů",
+          "desc": "Přijímejte online rezervace a přiřazujte stoly bez dvojitých rezervací.",
+          "tip": "Veškeré podrobnosti rezervací v přehledné tabulce."
+        },
+        "liveOrders": {
+          "title": "Živé objednávky a KDS",
+          "desc": "Kanban pro kuchyň a bar se zvukovým signálem při nové objednávce.",
+          "tip": "Kliknutím na objednávku zobrazíte poznámky hosta a stav platby."
+        },
+        "orderHistory": {
+          "title": "Historie objednávek a audit",
+          "desc": "Procházejte dokončené objednávky, spropitné a rozdělené účty.",
+          "tip": "Rychlý přístup k účtenkám pro večerní vyúčtování."
+        },
+        "analytics": {
+          "title": "Analytika a export CSV",
+          "desc": "Analyzujte špičky a bestsellery a stahujte finanční reporty v CSV.",
+          "tip": "CSV soubory jsou formátovány s kódováním UTF-8 pro Microsoft Excel."
+        },
+        "settings": {
+          "title": "Branding a spuštění podniku!",
+          "desc": "Vše je připraveno! Nahrajte logo, banner a nastavte PIN pro kuchyňský tablet.",
+          "tip": "Uložte nastavení podniku a přivítejte první hosty!"
+        }
+      }
     },
     "menuBoard": {
       "title": "Správa menu",

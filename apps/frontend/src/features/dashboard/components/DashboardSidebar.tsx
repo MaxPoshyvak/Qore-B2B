@@ -32,6 +32,7 @@ import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
 import { useTheme } from '@/shared/hooks/useTheme';
 import { useGetTenantBySlug, useGetMyTenants } from '@/entities/tenant/hooks/useTenants';
 import { useActiveOrders } from '@/features/dashboard-orders/hooks/useOrders';
+import { useOnboardingTour, TOUR_STEPS } from '../model/useOnboardingTour';
 
 type NavKey = 'overview' | 'menu' | 'tables' | 'orders' | 'analytics' | 'settings';
 
@@ -127,6 +128,9 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
     // Live count of unacknowledged (new) orders for the badge on the Live Orders link.
     const { data: activeOrders } = useActiveOrders(tenant?.data.id);
     const newOrdersCount = (activeOrders ?? []).filter((o) => o.status === 'new').length;
+
+    const { isOpen: isTourOpen, stepIndex: tourStepIndex, startTour } = useOnboardingTour();
+    const activeTourStep = isTourOpen ? TOUR_STEPS[tourStepIndex] : null;
 
     const others = (myTenants?.data ?? []).filter((t) => t.slug !== slug);
     const hasMultipleVenues = (myTenants?.data?.length || 0) > 1;
@@ -232,12 +236,14 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                         isSettings || isTablesReservations || isAnalytics || isMenu || isOrders
                             ? pathname.startsWith(baseHref)
                             : pathname === href;
+                    const isTourTarget = isTourOpen && activeTourStep?.navKey === item.key;
                     const showDropdown =
                         (isSettings && pathname.includes('/settings')) ||
                         (isMenu && pathname.includes('/menu')) ||
                         (isTablesReservations && pathname.includes('/tables-reservations')) ||
                         (isAnalytics && pathname.includes('/analytics')) ||
-                        (isOrders && pathname.includes('/orders'));
+                        (isOrders && pathname.includes('/orders')) ||
+                        isTourTarget;
                     const sections = isSettings
                         ? SETTINGS_SECTIONS
                         : isMenu
@@ -254,10 +260,12 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                             <Link
                                 href={href}
                                 onClick={onNavigate}
-                                className={`relative flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-[14px] transition-colors ${
-                                    active
-                                        ? 'bg-[#3B82F6]/10 text-[#3B82F6] dark:bg-white/5 dark:text-[#F5F4F2]'
-                                        : 'text-[#6B6A65] hover:bg-black/5 hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:bg-white/5 dark:hover:text-[#F5F4F2]'
+                                className={`relative flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-[14px] transition-all ${
+                                    isTourTarget
+                                        ? 'bg-[#3B82F6]/15 text-[#3B82F6] font-semibold ring-2 ring-[#3B82F6] ring-offset-2 shadow-lg shadow-[#3B82F6]/20 dark:bg-[#3B82F6]/25 dark:text-[#60A5FA] dark:ring-offset-[#0A0A0C]'
+                                        : active
+                                          ? 'bg-[#3B82F6]/10 text-[#3B82F6] dark:bg-white/5 dark:text-[#F5F4F2]'
+                                          : 'text-[#6B6A65] hover:bg-black/5 hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:bg-white/5 dark:hover:text-[#F5F4F2]'
                                 }`}>
                                 <span
                                     className={`absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-full bg-[#3B82F6] transition-opacity ${active ? 'opacity-100' : 'opacity-0'}`}
@@ -331,6 +339,15 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                     )}
                 </div>
             </div>
+
+            {/* Take Product Tour button */}
+            <button
+                type="button"
+                onClick={() => startTour(slug, true)}
+                className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl border border-[#3B82F6]/25 bg-[#3B82F6]/5 py-2 text-[12px] font-semibold text-[#2563EB] transition-all hover:border-[#3B82F6]/50 hover:bg-[#3B82F6]/10 active:scale-95 dark:text-[#60A5FA]">
+                <Sparkles size={13} className="text-[#3B82F6]" />
+                <span>{tSidebar('productTour')}</span>
+            </button>
 
             {/* Workspace switcher */}
             {/* {(others.length > 0 || plan.isBusiness) && (

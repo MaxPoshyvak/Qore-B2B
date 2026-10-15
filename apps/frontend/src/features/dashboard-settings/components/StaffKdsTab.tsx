@@ -6,6 +6,7 @@ import { Check, Copy, KeyRound, Link2, Loader2, RotateCcw, ShieldCheck } from 'l
 
 import { type TenantSettingsResponse } from '@my-app/types';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
+import { InfoTooltip } from '@/shared/ui/Tooltip';
 import { mono } from '@/shared/lib/fonts';
 import { useKdsAuth } from '../hooks/use-kds-auth';
 
@@ -116,8 +117,9 @@ export function StaffKdsTab({ slug, settings }: { slug: string; settings?: Tenan
                 ) : (
                     <div className="mt-5 space-y-4">
                         <label className="block">
-                            <span className="mb-1.5 block text-[12px] font-medium uppercase tracking-wider text-[#6B6A65] dark:text-[#94938D]">
+                            <span className="mb-1.5 flex items-center gap-1.5 text-[12px] font-medium uppercase tracking-wider text-[#6B6A65] dark:text-[#94938D]">
                                 {t('kitchenLink')}
+                                <InfoTooltip content={t('kdsUrlTooltip')} />
                             </span>
                             <div className="flex items-center gap-2">
                                 <input
@@ -137,8 +139,9 @@ export function StaffKdsTab({ slug, settings }: { slug: string; settings?: Tenan
                         </label>
 
                         <div>
-                            <span className="mb-1.5 block text-[12px] font-medium uppercase tracking-wider text-[#6B6A65] dark:text-[#94938D]">
+                            <span className="mb-1.5 flex items-center gap-1.5 text-[12px] font-medium uppercase tracking-wider text-[#6B6A65] dark:text-[#94938D]">
                                 {t('pin')}
+                                <InfoTooltip content={t('kdsPinTooltip')} />
                             </span>
                             <div className="flex items-center gap-2">
                                 <div className="flex items-center gap-1.5 rounded-xl border border-[#8B5CF6]/30 bg-[#8B5CF6]/10 px-3 py-2.5">

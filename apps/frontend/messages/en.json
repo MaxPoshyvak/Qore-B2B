@@ -225,7 +225,63 @@
       "businessPlan": "Business Plan",
       "proPlan": "Pro Plan",
       "freePlan": "Free Plan",
-      "activeBadge": "Active"
+      "activeBadge": "Active",
+      "productTour": "Product Tour"
+    },
+    "tour": {
+      "productTour": "Product Tour",
+      "stepCounter": "Step {current} of {total}",
+      "skip": "Skip tour",
+      "back": "Back",
+      "next": "Next step",
+      "finish": "Finish & Set Up Venue ✨",
+      "steps": {
+        "overview": {
+          "title": "Control Center & Live Overview",
+          "desc": "Track today's live revenue, order counts, and occupied tables at a glance, with instant access to your public QR venue link.",
+          "tip": "Click your public URL anytime to experience your menu exactly as your guests see it."
+        },
+        "menuBuilder": {
+          "title": "Menu Categories & Dishes",
+          "desc": "Organize categories, upload imagery, and specify dietary tags, allergens, and modifier choices with add-on pricing.",
+          "tip": "Use the AI Dish Generator to write appetizing descriptions and suggest tags in seconds."
+        },
+        "promotions": {
+          "title": "Automated Happy Hours",
+          "desc": "Schedule recurring discounts for off-peak days and hours. Prices adjust dynamically and revert automatically with no manual updates.",
+          "tip": "Boost weekday afternoon sales with automated cocktail or appetizer promotions."
+        },
+        "tables": {
+          "title": "Tables & Anti-Intruder QR Codes",
+          "desc": "Manage your floor plan and generate cryptographic QR codes. Print complete A4 stand batches or download individual stickers.",
+          "tip": "Regenerate QR tokens if compromised to block unauthorized remote orders from outside your venue."
+        },
+        "reservations": {
+          "title": "Guest Table Reservations",
+          "desc": "Accept online table bookings from guests, manage party sizes and arrival dates, and assign tables without overbooking.",
+          "tip": "Confirmed bookings keep guests updated automatically with reservation time and party details."
+        },
+        "liveOrders": {
+          "title": "Live Orders Kanban & KDS",
+          "desc": "Real-time kitchen and bar dispatch board. Incoming orders chime audibly and update live with drag-and-drop status stages.",
+          "tip": "Click any order to inspect guest split payments, item modifiers, and delivery status."
+        },
+        "orderHistory": {
+          "title": "Order History & Audit Logs",
+          "desc": "Review all completed and paid orders, search by table number or payment ID, and audit tips and guest shares.",
+          "tip": "Quickly look up past receipts to handle customer questions or end-of-day reconciliation."
+        },
+        "analytics": {
+          "title": "Revenue Analytics & CSV Export",
+          "desc": "Analyze peak ordering hours, high-margin bestsellers, repeat customer trends, and export accounting-ready CSV files.",
+          "tip": "All CSV exports include UTF-8 formatting so spreadsheets open seamlessly in Excel and Google Sheets."
+        },
+        "settings": {
+          "title": "Venue Branding & Launch!",
+          "desc": "You're all set! Upload your venue logo, cover banner, set operating hours, and configure your staff KDS tablet PIN.",
+          "tip": "Save your basic venue settings right here to officially launch your digital ordering experience!"
+        }
+      }
     },
     "menuBoard": {
       "title": "Menu Management",
@@ -323,13 +379,16 @@
       "paymentMethodLabel": "Payment method",
       "cardOnFileStripe": "Card on file (Stripe)",
       "confirmAndUpgrade": "Confirm & Upgrade",
-      "venueLanguageDesc": "Choose the default language for your venue interface and guests."
+      "venueLanguageDesc": "Choose the default language for your venue interface and guests.",
+      "kdsPinTooltip": "Kitchen staff enter this PIN on the station tablet. Protects your admin dashboard from unauthorized access.",
+      "kdsUrlTooltip": "Isolated order screen URL for kitchen/bar iPads. Orders update in real time with audio chime."
     },
     "analytics": {
       "badge": "Analytics",
       "title": "Venue",
       "titleHighlight": "Performance",
       "subtitle": "Track revenue, best-selling dishes, and how your guests choose to order.",
+      "exportCsvTooltip": "Downloads complete orders and sales records formatted with UTF-8 BOM for Microsoft Excel and Google Sheets.",
       "totalRevenue": "Total Revenue",
       "totalOrders": "Total Orders",
       "avgOrderValue": "Avg Order Value",
@@ -626,7 +685,10 @@
     "nameExistsError": "A table with this name already exists",
     "deleteTitle": "Delete table?",
     "deleteDesc": "\"{name}\" will be permanently removed. Any active guest sessions on this table will be disconnected.",
-    "deleteConfirm": "Delete table"
+    "deleteConfirm": "Delete table",
+    "regenerateTooltip": "Generates a new cryptographic QR token. Immediately invalidates old links and physical photos to prevent unauthorized remote orders.",
+    "activeToggleTooltip": "When inactive, scanning this QR code will not open the menu or allow orders.",
+    "bulkPrintTooltip": "Generate high-resolution printable table tent cards formatted for standard A4 paper."
   },
   "landing": {
     "nav": {
@@ -841,7 +903,8 @@
     "unlockAiFeature1": "Turn a rough idea into a polished, appetizing dish entry.",
     "unlockAiFeature2": "Auto-detect HoReCa allergens and dietary tags.",
     "unlockAiFeature3": "Generate modifier groups and pricing in one click.",
-    "upgradeToPro": "Upgrade to Pro"
+    "upgradeToPro": "Upgrade to Pro",
+    "aiBarTooltip": "AI Co-Pilot drafts full menu entries from a simple prompt — including title, enticing culinary description, dietary tags, and allergens."
   },
   "kds": {
     "title": "Enter KDS PIN",
@@ -902,6 +965,7 @@
     "titlePrefix": "Promotions that",
     "titleHighlight": "fill the room",
     "subtitle": "Run time-boxed discounts on specific days and dishes to boost your off-peak sales.",
+    "autoPricingTooltip": "Promotions activate and deactivate automatically on guest menus based on your schedule without manual menu edits.",
     "newRule": "New Rule",
     "emptyTitle": "Boost your off-peak sales",
     "emptyDesc": "Create your first Happy Hour to drive traffic when it's quiet — set the days, hours and discount in seconds.",

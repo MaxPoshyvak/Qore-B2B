@@ -225,7 +225,63 @@
       "businessPlan": "Plan Business",
       "proPlan": "Plan Pro",
       "freePlan": "Plan darmowy",
-      "activeBadge": "Aktywny"
+      "activeBadge": "Aktywny",
+      "productTour": "Przewodnik"
+    },
+    "tour": {
+      "productTour": "Przewodnik po platformie",
+      "stepCounter": "Krok {current} z {total}",
+      "skip": "Pomiń",
+      "back": "Wstecz",
+      "next": "Dalej",
+      "finish": "Zakończ i skonfiguruj lokal ✨",
+      "steps": {
+        "overview": {
+          "title": "Centrum kontroli i przegląd",
+          "desc": "Śledź dzisiejsze przychody, liczbę zamówień i aktywne stoliki w czasie rzeczywistym.",
+          "tip": "Kliknij link lokalu na górze paska bocznego, aby zobaczyć menu oczami gościa."
+        },
+        "menuBuilder": {
+          "title": "Kreator menu i dania",
+          "desc": "Twórz kategorie, dodawaj zdjęcia dań, ceny, modyfikatory i alergeny.",
+          "tip": "Użyj 'AI Dish Generator', aby błyskawicznie stworzyć apetyczne opisy."
+        },
+        "promotions": {
+          "title": "Automatyczne Happy Hours",
+          "desc": "Ustawiaj cykliczne zniżki na wybrane dni i godziny z automatyczną zmianą cen.",
+          "tip": "Przyciągaj gości w spokojniejszych godzinach specjalnymi promocjami."
+        },
+        "tables": {
+          "title": "Stoliki i kody QR",
+          "desc": "Zarządzaj stolikami i pobieraj gotowe szablony kodów QR do druku w formacie A4.",
+          "tip": "Wygeneruj nowy token QR, jeśli kod został sfotografowany poza lokalem."
+        },
+        "reservations": {
+          "title": "Rezerwacje stolików",
+          "desc": "Przyjmuj rezerwacje online i przydzielaj stoliki bez podwójnych rezerwacji.",
+          "tip": "Wszystkie szczegóły rezerwacji są widoczne w przejrzystej tabeli."
+        },
+        "liveOrders": {
+          "title": "KDS kuchni i zamówienia",
+          "desc": "Tablica Kanban dla kuchni i baru z dźwiękowym powiadomieniem o nowych zamówieniach.",
+          "tip": "Kliknij zamówienie, aby zobaczyć uwagi gościa i status płatności."
+        },
+        "orderHistory": {
+          "title": "Historia zamówień i audyt",
+          "desc": "Przeglądaj zrealizowane zamówienia, napiwki i podziały rachunków.",
+          "tip": "Szybki podgląd rachunków ułatwia wieczorne rozliczenie kasy."
+        },
+        "analytics": {
+          "title": "Analityka i eksport CSV",
+          "desc": "Analizuj godziny szczytu, bestsellery i pobieraj raporty finansowe w formacie CSV.",
+          "tip": "Pliki CSV są formatowane z kodowaniem UTF-8 dla programu Microsoft Excel."
+        },
+        "settings": {
+          "title": "Branding i start lokalu!",
+          "desc": "Wszystko gotowe! Dodaj logo, banner i ustaw PIN do tabletu kuchennego.",
+          "tip": "Skonfiguruj dane lokalu, aby zacząć przyjmować pierwsze zamówienia!"
+        }
+      }
     },
     "menuBoard": {
       "title": "Zarządzanie menu",

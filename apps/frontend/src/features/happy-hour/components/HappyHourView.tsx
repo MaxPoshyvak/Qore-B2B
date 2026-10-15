@@ -9,6 +9,7 @@ import { type CreateHappyHourDto, type HappyHourRuleResponse, type UpdateHappyHo
 
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { PrimaryButton } from '@/shared/ui/PrimaryButton';
+import { InfoTooltip } from '@/shared/ui/Tooltip';
 import { cn } from '@/shared/lib/utils';
 import { EASE } from '@/shared/config/animations';
 import { useGetTenantBySlug } from '@/entities/tenant/hooks/useTenants';
@@ -92,10 +93,13 @@ export function HappyHourView({ slug }: HappyHourViewProps) {
                 transition={{ duration: 0.5, ease: EASE }}
                 className="flex flex-wrap items-end justify-between gap-4">
                 <div>
-                    <span className="inline-flex items-center gap-2 rounded-full border border-[#8B5CF6]/25 bg-[#8B5CF6]/5 px-3 py-1 text-xs font-medium text-[#6D28D9] dark:text-[#C4B5FD]">
-                        <span className="flex h-1.5 w-1.5 rounded-full bg-[#8B5CF6]" />
-                        {t('badge')}
-                    </span>
+                    <div className="flex items-center gap-2">
+                        <span className="inline-flex items-center gap-2 rounded-full border border-[#8B5CF6]/25 bg-[#8B5CF6]/5 px-3 py-1 text-xs font-medium text-[#6D28D9] dark:text-[#C4B5FD]">
+                            <span className="flex h-1.5 w-1.5 rounded-full bg-[#8B5CF6]" />
+                            {t('badge')}
+                        </span>
+                        <InfoTooltip content={t('autoPricingTooltip')} />
+                    </div>
                     <h1 className="mt-4 text-2xl sm:text-3xl font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]">
                         {t('titlePrefix')}{' '}
                         <span className="bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] bg-clip-text text-transparent">

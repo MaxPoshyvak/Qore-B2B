@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { DashboardSidebar, DashboardMobileNav } from '@/features/dashboard/components/DashboardSidebar';
+import { DashboardTourGuide } from '@/features/dashboard/components/DashboardTourGuide';
 import { AmbientBackground } from '@/shared/ui/AmbientBackground';
 
 export default async function DashboardLayout({
@@ -9,7 +10,7 @@ export default async function DashboardLayout({
     children: ReactNode;
     params: Promise<{ slug: string }>;
 }) {
-    await params;
+    const { slug } = await params;
 
     return (
         <div className="relative flex min-h-screen flex-col bg-[#FAFAF9] text-[#0A0A0C] dark:bg-[#0A0A0C] dark:text-[#F5F4F2] md:h-screen md:flex-row md:overflow-hidden">
@@ -19,6 +20,7 @@ export default async function DashboardLayout({
             <main className="relative z-10 flex-1 px-4 py-8 sm:px-8 md:h-full md:overflow-y-auto md:py-10">
                 {children}
             </main>
+            <DashboardTourGuide slug={slug} />
         </div>
     );
 }

@@ -9,6 +9,7 @@ import { type Table } from '@my-app/database';
 import { Modal } from '@/shared/ui/Modal';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { PrimaryButton, SecondaryButton } from '@/shared/ui/PrimaryButton';
+import { Tooltip } from '@/shared/ui/Tooltip';
 import { useRefreshQrToken } from '../hooks/useRefreshQrToken';
 
 type TableQrModalProps = {
@@ -92,18 +93,20 @@ export function TableQrModal({ open, onClose, slug, table, venueName, onRegenera
                             <Printer size={16} className="mr-1.5" />
                             {t('printQr')}
                         </SecondaryButton>
-                        <SecondaryButton
-                            type="button"
-                            className="flex-1"
-                            onClick={() => setConfirmOpen(true)}
-                            disabled={refreshMutation.isPending}>
-                            {refreshMutation.isPending ? (
-                                <Loader2 size={16} className="mr-1.5 animate-spin" />
-                            ) : (
-                                <RefreshCw size={16} className="mr-1.5" />
-                            )}
-                            {t('regenerate')}
-                        </SecondaryButton>
+                        <Tooltip content={t('regenerateTooltip')} side="top" className="text-center">
+                            <SecondaryButton
+                                type="button"
+                                className="flex-1"
+                                onClick={() => setConfirmOpen(true)}
+                                disabled={refreshMutation.isPending}>
+                                {refreshMutation.isPending ? (
+                                    <Loader2 size={16} className="mr-1.5 animate-spin" />
+                                ) : (
+                                    <RefreshCw size={16} className="mr-1.5" />
+                                )}
+                                {t('regenerate')}
+                            </SecondaryButton>
+                        </Tooltip>
                     </div>
                 </div>
 

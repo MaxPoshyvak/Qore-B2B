@@ -14,6 +14,7 @@ import { TableFormModal } from './TableFormModal';
 import { TableQrModal } from './TableQrModal';
 import { BulkQrPrintModal } from './BulkQrPrintModal';
 import { TablesEmptyState } from './TablesEmptyState';
+import { Tooltip } from '@/shared/ui/Tooltip';
 
 type TableGridProps = {
     slug: string;
@@ -64,13 +65,15 @@ export function TableGrid({ slug, venueName }: TableGridProps) {
                 </p>
                 {tables && tables.length > 0 && (
                     <div className="flex items-center gap-3">
-                        <button
-                            type="button"
-                            onClick={() => setBulkPrintOpen(true)}
-                            className="inline-flex items-center gap-2 rounded-2xl border border-[#E7E5E0] bg-white px-3.5 py-2.5 text-sm font-semibold text-[#0A0A0C] shadow-sm transition-colors hover:border-[#3B82F6]/40 dark:border-[#232327] dark:bg-[#141417] dark:text-[#F5F4F2] cursor-pointer">
-                            <Printer size={16} />
-                            <span>{t('printAllQr')}</span>
-                        </button>
+                        <Tooltip content={t('bulkPrintTooltip')} side="bottom">
+                            <button
+                                type="button"
+                                onClick={() => setBulkPrintOpen(true)}
+                                className="inline-flex items-center gap-2 rounded-2xl border border-[#E7E5E0] bg-white px-3.5 py-2.5 text-sm font-semibold text-[#0A0A0C] shadow-sm transition-colors hover:border-[#3B82F6]/40 dark:border-[#232327] dark:bg-[#141417] dark:text-[#F5F4F2] cursor-pointer">
+                                <Printer size={16} />
+                                <span>{t('printAllQr')}</span>
+                            </button>
+                        </Tooltip>
 
                         <button
                             type="button"
