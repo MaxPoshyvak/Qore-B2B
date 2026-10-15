@@ -198,6 +198,18 @@ export class PaymentsService {
         }
 
         const baseUrl = dto.originUrl || `${env.FRONTEND_URL}/${order.tenant.slug}/order/${order.id}`;
+
+        if (order.tenant.slug === 'demo') {
+            await this.fulfillPaymentTransaction(txn.id, `demo_pi_${Date.now()}`);
+            return {
+                url: `${baseUrl}?payment=success&demo=1`,
+                transactionId: txn.id,
+                amount: remainingAmount,
+                tipAmount,
+                total: totalCharged,
+            };
+        }
+
         const session = await this.stripe.checkout.sessions.create({
             mode: 'payment',
             line_items: lineItems,
@@ -305,6 +317,18 @@ export class PaymentsService {
         }
 
         const baseUrl = dto.originUrl || `${env.FRONTEND_URL}/${order.tenant.slug}/order/${order.id}`;
+
+        if (order.tenant.slug === 'demo') {
+            await this.fulfillPaymentTransaction(txn.id, `demo_pi_${Date.now()}`);
+            return {
+                url: `${baseUrl}?payment=success&demo=1`,
+                transactionId: txn.id,
+                amount: share,
+                tipAmount,
+                total: totalCharged,
+            };
+        }
+
         const session = await this.stripe.checkout.sessions.create({
             mode: 'payment',
             line_items: lineItems,
@@ -454,6 +478,18 @@ export class PaymentsService {
         }
 
         const baseUrl = dto.originUrl || `${env.FRONTEND_URL}/${order.tenant.slug}/order/${order.id}`;
+
+        if (order.tenant.slug === 'demo') {
+            await this.fulfillPaymentTransaction(txn.id, `demo_pi_${Date.now()}`);
+            return {
+                url: `${baseUrl}?payment=success&demo=1`,
+                transactionId: txn.id,
+                amount: itemsSum,
+                tipAmount: dto.tipAmount || 0,
+                total: totalCharged,
+            };
+        }
+
         const session = await this.stripe.checkout.sessions.create({
             mode: 'payment',
             line_items: lineItems,

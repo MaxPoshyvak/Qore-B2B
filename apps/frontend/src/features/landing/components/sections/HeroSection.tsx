@@ -72,7 +72,7 @@ export function HeroSection() {
                             <ArrowRight size={16} />
                         </MagneticButton>
                         <MagneticButton
-                            href="#how"
+                            href="/demo/menu"
                             className={`${body.className} cursor-pointer rounded-full border border-[#E7E5E0] px-6 py-3.5 text-[14px] font-medium text-[#0A0A0C] transition-colors hover:border-[#3B82F6]/40 dark:border-[#232327] dark:text-[#F5F4F2]`}>
                             {t('viewDemo')}
                         </MagneticButton>

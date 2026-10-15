@@ -1,5 +1,6 @@
 import type { Metadata, ResolvingMetadata } from 'next';
 import { isReservedSlug } from '@my-app/types';
+import { DemoTopBanner } from '@/features/public-menu/components/DemoTopBanner';
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -67,6 +68,19 @@ export async function generateMetadata(
     }
 }
 
-export default function VenueLayout({ children }: { children: React.ReactNode }) {
-    return <>{children}</>;
+export default async function VenueLayout({
+    children,
+    params,
+}: {
+    children: React.ReactNode;
+    params: Promise<{ slug: string }>;
+}) {
+    const { slug } = await params;
+
+    return (
+        <>
+            <DemoTopBanner slug={slug} />
+            {children}
+        </>
+    );
 }

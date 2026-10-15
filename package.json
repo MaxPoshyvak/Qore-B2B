@@ -14,6 +14,7 @@
         "start": "turbo run start --filter=backend...",
         "start:backend": "turbo run start --filter=backend...",
         "start:frontend": "turbo run start --filter=frontend...",
+        "db:seed": "bun run --cwd packages/database seed",
         "lint": "turbo run lint"
     },
     "devDependencies": {

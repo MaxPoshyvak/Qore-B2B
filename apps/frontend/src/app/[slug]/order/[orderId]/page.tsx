@@ -80,21 +80,28 @@ export default function OrderTrackingPage() {
         const paymentParam = searchParams.get('payment');
         const sessionId = searchParams.get('session_id');
 
-        if (paymentParam === 'success' && sessionId) {
-            verifyMutation.mutate(
-                { sessionId },
-                {
-                    onSuccess: (data) => {
-                        if (data.paid) {
-                            toast.success(
-                                data.paymentStatus === 'paid'
-                                    ? 'Bill settled in full! Thank you.'
-                                    : 'Your share was paid successfully!',
-                            );
-                        }
+        if (paymentParam === 'success') {
+            if (sessionId) {
+                verifyMutation.mutate(
+                    { sessionId },
+                    {
+                        onSuccess: (data) => {
+                            if (data.paid) {
+                                toast.success(
+                                    data.paymentStatus === 'paid'
+                                        ? 'Bill settled in full! Thank you.'
+                                        : 'Your share was paid successfully!',
+                                );
+                            }
+                        },
                     },
-                },
-            );
+                );
+            } else if (searchParams.get('demo') === '1') {
+                toast.success('Demo bill settled in full! Real cards are never charged in demo mode.');
+                try {
+                    import('canvas-confetti').then((c) => c.default());
+                } catch {}
+            }
             router.replace(pathname, { scroll: false });
         } else if (paymentParam === 'cancelled') {
             if (guestSessionId) {
