@@ -1,14 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, ChefHat, Check, CheckCircle2, Clock, ShoppingBag, ArrowLeft } from 'lucide-react';
+import { AlertTriangle, ChefHat, Check, CheckCircle2, Clock, ShoppingBag, ArrowLeft, Volume2, VolumeX } from 'lucide-react';
 
 import { type OrderResponse, type OrderStatusType } from '@my-app/types';
 import { useTranslations } from 'next-intl';
 import { display, mono } from '@/shared/lib/fonts';
 import { cn } from '@/shared/lib/utils';
+import { playOrderNotificationSound } from '@/shared/lib/sound';
 import { useActiveOrders, useUpdateOrderStatus, useKdsOrders, useUpdateKdsOrderStatus } from '../hooks/useOrders';
 import { useKdsStore } from '@/shared/store/useKdsStore';
 
@@ -232,12 +233,77 @@ export function LiveOrdersBoard({
 
     const { data: orders, isLoading } = isKds ? kds : dashboard;
 
+    const [soundEnabled, setSoundEnabled] = useState(true);
+    const knownOrderIdsRef = useRef<Set<string> | null>(null);
+
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem('qore_sound_chime_enabled');
+            if (saved !== null) {
+                setSoundEnabled(saved === 'true');
+            }
+        } catch {
+            // localStorage might be unavailable
+        }
+    }, []);
+
+    const toggleSound = () => {
+        setSoundEnabled((prev) => {
+            const next = !prev;
+            try {
+                localStorage.setItem('qore_sound_chime_enabled', String(next));
+            } catch {}
+            if (next) {
+                playOrderNotificationSound();
+            }
+            return next;
+        });
+    };
+
+    useEffect(() => {
+        if (!orders) return;
+
+        const currentIds = new Set(orders.map((o) => o.id));
+
+        if (knownOrderIdsRef.current !== null) {
+            const hasNewIncoming = orders.some(
+                (o) => o.status === 'new' && !knownOrderIdsRef.current!.has(o.id),
+            );
+
+            if (hasNewIncoming && soundEnabled) {
+                playOrderNotificationSound();
+            }
+        }
+
+        knownOrderIdsRef.current = currentIds;
+    }, [orders, soundEnabled]);
+
     const byColumn = (key: ColumnKey) => (orders ?? []).filter((o) => o.status === key);
 
     const Card = isKds ? KdsOrderCard : DashboardOrderCard;
 
     const board = (
         <div className="mx-auto max-w-6xl px-1">
+            <div className="mb-4 flex items-center justify-end">
+                <button
+                    type="button"
+                    onClick={toggleSound}
+                    title={soundEnabled ? t('soundOn') : t('soundOff')}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-black/10 bg-white/70 px-3 py-1.5 text-[12px] font-medium text-[#6B6A65] shadow-xs backdrop-blur-md transition-all hover:border-[#3B82F6]/30 hover:bg-white hover:text-[#0A0A0C] dark:border-white/10 dark:bg-white/[0.05] dark:text-[#94938D] dark:hover:border-white/20 dark:hover:bg-white/10 dark:hover:text-[#F5F4F2]">
+                    {soundEnabled ? (
+                        <>
+                            <Volume2 size={14} className="text-[#10B981]" />
+                            <span>{t('soundOn')}</span>
+                        </>
+                    ) : (
+                        <>
+                            <VolumeX size={14} className="text-[#9C9B95]" />
+                            <span>{t('soundOff')}</span>
+                        </>
+                    )}
+                </button>
+            </div>
+
             {!isKds && (
                 <div className="mb-6 flex items-start gap-3 rounded-2xl border border-[#F59E0B]/30 bg-[#F59E0B]/[0.08] px-4 py-3 dark:border-[#F59E0B]/20 dark:bg-[#F59E0B]/[0.06]">
                     <AlertTriangle size={18} className="mt-0.5 shrink-0 text-[#F59E0B]" />

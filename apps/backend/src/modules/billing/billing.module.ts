@@ -1,9 +1,12 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { BillingController } from './billing.controller';
 import { BillingService } from './billing.service';
+import { StripeWebhookController } from './stripe-webhook.controller';
+import { PaymentsModule } from '../payments/payments.module';
 
 @Module({
-  controllers: [BillingController],
+  imports: [forwardRef(() => PaymentsModule)],
+  controllers: [BillingController, StripeWebhookController],
   providers: [BillingService],
   exports: [BillingService],
 })

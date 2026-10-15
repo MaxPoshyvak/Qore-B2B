@@ -524,6 +524,8 @@
     "markAsReady": "Mark as Ready",
     "markAsDelivered": "Mark as Delivered",
     "undo": "Undo status change",
+    "soundOn": "Sound On",
+    "soundOff": "Sound Off",
     "columns": {
       "new": "New",
       "preparing": "Preparing",

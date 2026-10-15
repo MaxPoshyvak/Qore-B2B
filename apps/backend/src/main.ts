@@ -16,7 +16,28 @@ async function bootstrap() {
         env.FRONTEND_URL,
         'http://localhost:3000',
         'http://127.0.0.1:3000',
+        ...(process.env.ADDITIONAL_ALLOWED_ORIGINS
+            ? process.env.ADDITIONAL_ALLOWED_ORIGINS.split(',').map((o) => o.trim())
+            : []),
     ].filter(Boolean);
+
+    const isTrustedVercelPreview = (candidateOrigin: string) => {
+        if (!env.FRONTEND_URL) return false;
+        try {
+            const parsed = new URL(env.FRONTEND_URL);
+            if (parsed.hostname.endsWith('.vercel.app')) {
+                const projectPrefix = parsed.hostname.replace('.vercel.app', '').split('-git-')[0];
+                const candidateHost = new URL(candidateOrigin).hostname;
+                return (
+                    candidateHost.endsWith('.vercel.app') &&
+                    (candidateHost === parsed.hostname || candidateHost.startsWith(`${projectPrefix}-`))
+                );
+            }
+        } catch {
+            return false;
+        }
+        return false;
+    };
 
     app.enableCors({
         origin: (
@@ -27,7 +48,7 @@ async function bootstrap() {
             if (!origin) return callback(null, true);
             if (
                 allowedOrigins.includes(origin) ||
-                origin.endsWith('.vercel.app') ||
+                isTrustedVercelPreview(origin) ||
                 process.env.NODE_ENV !== 'production'
             ) {
                 return callback(null, true);

@@ -15,6 +15,7 @@ const VERIFICATION_TTL_MS = 15 * 60 * 1000;
 @Injectable()
 export class AuthService {
     private readonly logger = new Logger(AuthService.name);
+    private readonly otpAttempts = new Map<string, number>();
 
     constructor(
         private readonly prisma: PrismaService,
@@ -109,6 +110,8 @@ export class AuthService {
             },
         });
 
+        this.otpAttempts.delete(email.toLowerCase());
+
         const magicLink = `${env.FRONTEND_URL}/api/auth/verify-link?token=${token}`;
 
         // Fire-and-forget in background so register & resend-code HTTP responses return instantly
@@ -141,9 +144,32 @@ export class AuthService {
             throw new BadRequestException('Verification code expired. Please resend a new one.');
         }
 
+        const normalizedEmail = user.email.toLowerCase();
+
         if (user.emailVerifyOtp !== dto.code) {
-            throw new BadRequestException('Invalid verification code');
+            const currentAttempts = (this.otpAttempts.get(normalizedEmail) || 0) + 1;
+            this.otpAttempts.set(normalizedEmail, currentAttempts);
+
+            if (currentAttempts >= 5) {
+                this.otpAttempts.delete(normalizedEmail);
+                await this.prisma.user.update({
+                    where: { id: user.id },
+                    data: {
+                        emailVerifyOtp: null,
+                        emailVerifyToken: null,
+                        emailVerifyExpiresAt: null,
+                    },
+                });
+                throw new BadRequestException(
+                    'Too many invalid attempts. Your verification code has been invalidated for security. Please request a new code.',
+                );
+            }
+
+            const remaining = 5 - currentAttempts;
+            throw new BadRequestException(`Invalid verification code. ${remaining} attempt(s) remaining.`);
         }
+
+        this.otpAttempts.delete(normalizedEmail);
 
         await this.prisma.user.update({
             where: { id: user.id },
