@@ -656,7 +656,9 @@
     "eyebrow": "QR-меню · Бронювання · AI",
     "activeVenues": "Активних закладів",
     "orderSpeed": "Швидкість замовлення",
-    "avgCheck": "Приріст чеку",
+    "avgCheck": "Зростання середнього чеку",
+    "tableTurnover": "Швидший обіг столів",
+    "paymentSpeed": "Миттєва оплата рахунку",
     "dashboard": "Панель керування",
     "logIn": "Увійти",
     "comparison": {

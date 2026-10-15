@@ -35,9 +35,9 @@ export type HeroMetric = {
 };
 
 export const HERO_METRICS: HeroMetric[] = [
-    { value: 1, prefix: '<', suffix: 's', label: 'load time' },
-    { value: 38, suffix: '%', label: 'higher check with AI' },
-    { value: 24, suffix: '/7', label: 'AI concierge' },
+    { value: 28, prefix: '+', suffix: '%', label: 'Average check lift' },
+    { value: 3, suffix: 'x', label: 'Faster table turnover' },
+    { value: 15, prefix: '<', suffix: 's', label: 'Instant bill payment' },
 ];
 
 /* ------------------------------------------------------------------ */

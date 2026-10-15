@@ -19,9 +19,9 @@ export function HeroSection() {
     const heroLines = [t('heroLine1'), t('heroLine2')];
 
     const metricLabels: Record<number, string> = {
-        0: t('activeVenues'),
-        1: t('orderSpeed'),
-        2: t('avgCheck'),
+        0: t('avgCheck'),
+        1: t('tableTurnover'),
+        2: t('paymentSpeed'),
     };
 
     return (
