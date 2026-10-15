@@ -45,6 +45,7 @@ async function bootstrap() {
 
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api-docs', app, document);
+    SwaggerModule.setup('api/docs', app, document);
     app.setGlobalPrefix('api');
     app.useGlobalPipes(new ZodValidationPipe());
     app.useGlobalFilters(new HttpExceptionFilter());

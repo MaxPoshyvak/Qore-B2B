@@ -15,6 +15,7 @@ import { MediaModule } from './modules/media/media.module';
 import { AiModule } from './modules/ai/ai.module';
 import { BillingModule } from './modules/billing/billing.module';
 import { PaymentsModule } from './modules/payments/payments.module';
+import { AppController } from './app.controller';
 
 @Module({
     imports: [
@@ -35,7 +36,7 @@ import { PaymentsModule } from './modules/payments/payments.module';
         BillingModule,
         PaymentsModule,
     ],
-    controllers: [],
+    controllers: [AppController],
     providers: [],
 })
 export class AppModule {}
