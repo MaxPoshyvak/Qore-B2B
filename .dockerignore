@@ -2,6 +2,15 @@ node_modules
 apps/*/node_modules
 packages/*/node_modules
 .next
-dist
+**/dist
 .turbo
 packages/database/generated
+.git
+.github
+.vscode
+.idea
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example

@@ -2,8 +2,8 @@ FROM oven/bun:1.3.14-alpine AS base
 
 WORKDIR /app
 
-# Install openssl and nodejs for runtime
-RUN apk add --no-cache openssl nodejs npm
+# Install openssl, nodejs, and build tools for native modules (bcrypt) on Alpine
+RUN apk add --no-cache openssl nodejs npm build-base python3
 
 # Copy workspace package manifests
 COPY package.json bun.lock* turbo.json ./
@@ -18,9 +18,9 @@ RUN bun install
 COPY packages ./packages
 COPY apps/backend ./apps/backend
 
-# Generate Prisma client and build packages
-RUN cd packages/database && bunx prisma generate && bunx tsc -p tsconfig.json
-RUN cd packages/types && bunx tsc -p tsconfig.json
+# Generate Prisma client and build shared packages
+RUN cd packages/database && bun run build
+RUN cd packages/types && bun run build
 
 # Build backend NestJS application
 RUN cd apps/backend && bun run build
