@@ -340,7 +340,12 @@
       "deadStock": "Непопулярні",
       "sold": "продано",
       "ofRevenue": "від доходу",
-      "noSales": "Немає продажів"
+      "noSales": "Немає продажів",
+      "exportCsv": "Експорт у CSV",
+      "exportOrders": "Замовлення та виручка (CSV)",
+      "exportSales": "Продажі страв та меню (CSV)",
+      "exporting": "Експорт...",
+      "exportSuccess": "Звіт успішно завантажено"
     },
     "overview": {
       "liveOrdersBadge": "Онлайн та приймаємо замовлення",

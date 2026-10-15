@@ -340,7 +340,12 @@
       "deadStock": "Dead Stock",
       "sold": "sold",
       "ofRevenue": "of revenue",
-      "noSales": "No sales"
+      "noSales": "No sales",
+      "exportCsv": "Export to CSV",
+      "exportOrders": "Orders & Revenue (CSV)",
+      "exportSales": "Item Sales & Menu (CSV)",
+      "exporting": "Exporting...",
+      "exportSuccess": "Export downloaded successfully"
     },
     "overview": {
       "liveOrdersBadge": "Live & Accepting Orders",

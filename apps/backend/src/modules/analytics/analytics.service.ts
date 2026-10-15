@@ -298,4 +298,140 @@ export class AnalyticsService {
             cancelledReservations,
         };
     }
+
+    private escapeCsv(val: any): string {
+        if (val === null || val === undefined) return '';
+        const str = String(val);
+        if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+            return `"${str.replace(/"/g, '""')}"`;
+        }
+        return str;
+    }
+
+    async exportOrdersToCsv(tenantId: string, startDate?: string, endDate?: string): Promise<string> {
+        const dateFilter: Prisma.DateTimeFilter = {};
+        if (startDate) dateFilter.gte = new Date(startDate);
+        if (endDate) dateFilter.lte = new Date(endDate);
+
+        const orders = await this.prisma.order.findMany({
+            where: {
+                tenantId,
+                ...(Object.keys(dateFilter).length ? { createdAt: dateFilter } : {}),
+            },
+            include: {
+                table: { select: { name: true } },
+                items: {
+                    include: {
+                        menuItem: { select: { name: true } },
+                    },
+                },
+            },
+            orderBy: { createdAt: 'desc' },
+        });
+
+        const headers = [
+            'Order ID',
+            'Date & Time',
+            'Type',
+            'Table / Customer',
+            'Items Summary',
+            'Total Amount',
+            'Paid Amount',
+            'Payment Status',
+            'Payment Method',
+            'Order Status',
+        ];
+
+        const rows = orders.map((order) => {
+            const shortId = `#${order.id.slice(-6).toUpperCase()}`;
+            const dateStr = order.createdAt.toISOString().replace('T', ' ').slice(0, 19);
+            const type = order.isOrderAhead ? 'Takeaway' : 'Dine-In';
+            const location = order.isOrderAhead
+                ? order.customerName
+                    ? `${order.customerName} (Takeaway)`
+                    : 'Takeaway'
+                : order.table?.name
+                  ? `Table ${order.table.name}`
+                  : 'Unassigned';
+
+            const itemsSummary = order.items
+                .map((i) => `${i.menuItem?.name || 'Item'} (x${i.quantity})`)
+                .join('; ');
+
+            return [
+                shortId,
+                dateStr,
+                type,
+                location,
+                itemsSummary,
+                Number(order.totalAmount).toFixed(2),
+                Number(order.paidAmount).toFixed(2),
+                order.paymentStatus,
+                order.paymentMethod || 'unspecified',
+                order.status,
+            ]
+                .map((v) => this.escapeCsv(v))
+                .join(',');
+        });
+
+        return [headers.join(','), ...rows].join('\r\n');
+    }
+
+    async exportSalesToCsv(tenantId: string, startDate?: string, endDate?: string): Promise<string> {
+        const orderWhere = this.buildOrderWhere(tenantId, startDate, endDate);
+
+        const orderItems = await this.prisma.orderItem.findMany({
+            where: {
+                order: orderWhere,
+            },
+            include: {
+                menuItem: {
+                    select: {
+                        name: true,
+                        category: { select: { name: true } },
+                    },
+                },
+            },
+        });
+
+        const itemMap = new Map<string, { name: string; category: string; quantity: number; revenue: number }>();
+
+        for (const item of orderItems) {
+            const name = item.menuItem?.name ?? 'Unknown Item';
+            const category = item.menuItem?.category?.name ?? 'Uncategorized';
+            const price = Number(item.priceAtOrder);
+            const lineRev = price * item.quantity;
+
+            const existing = itemMap.get(name);
+            if (existing) {
+                existing.quantity += item.quantity;
+                existing.revenue += lineRev;
+            } else {
+                itemMap.set(name, {
+                    name,
+                    category,
+                    quantity: item.quantity,
+                    revenue: lineRev,
+                });
+            }
+        }
+
+        const sorted = Array.from(itemMap.values()).sort((a, b) => b.revenue - a.revenue);
+
+        const headers = ['Item Name', 'Category', 'Quantity Sold', 'Total Revenue', 'Avg Unit Price'];
+        const rows = sorted.map((row) => {
+            const avgPrice = row.quantity > 0 ? (row.revenue / row.quantity).toFixed(2) : '0.00';
+            return [
+                row.name,
+                row.category,
+                row.quantity,
+                row.revenue.toFixed(2),
+                avgPrice,
+            ]
+                .map((v) => this.escapeCsv(v))
+                .join(',');
+        });
+
+        return [headers.join(','), ...rows].join('\r\n');
+    }
 }

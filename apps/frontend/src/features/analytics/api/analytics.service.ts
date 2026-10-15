@@ -54,4 +54,62 @@ export class AnalyticsApi {
             body: JSON.stringify(tableId ? { tableId } : {}),
         });
     }
+
+    /** Downloads full orders & revenue history as an Excel-compatible UTF-8 CSV. */
+    static async downloadOrdersCsv(tenantId: string, range?: AnalyticsDateRange): Promise<void> {
+        const { getSession } = await import('next-auth/react');
+        const session = await getSession();
+        const token = session?.accessToken as string | undefined;
+        const query = buildQueryString(range);
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+        const res = await fetch(`${apiUrl}/analytics/${tenantId}/export/orders${query}`, {
+            headers: {
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+            credentials: 'include',
+        });
+
+        if (!res.ok) {
+            throw new Error(`Failed to export orders CSV (${res.status})`);
+        }
+
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `qore-orders-${new Date().toISOString().slice(0, 10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    /** Downloads item sales performance breakdown as an Excel-compatible UTF-8 CSV. */
+    static async downloadSalesCsv(tenantId: string, range?: AnalyticsDateRange): Promise<void> {
+        const { getSession } = await import('next-auth/react');
+        const session = await getSession();
+        const token = session?.accessToken as string | undefined;
+        const query = buildQueryString(range);
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+        const res = await fetch(`${apiUrl}/analytics/${tenantId}/export/sales${query}`, {
+            headers: {
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+            credentials: 'include',
+        });
+
+        if (!res.ok) {
+            throw new Error(`Failed to export sales CSV (${res.status})`);
+        }
+
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `qore-sales-${new Date().toISOString().slice(0, 10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
 }

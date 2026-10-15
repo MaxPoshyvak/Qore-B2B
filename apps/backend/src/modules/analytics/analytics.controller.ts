@@ -6,8 +6,10 @@ import {
     Param,
     Post,
     Query,
+    Res,
     UseGuards,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { AnalyticsService } from './analytics.service';
 import { AnalyticsQueryDto } from './dto/analytics.dto';
 import {
@@ -76,5 +78,43 @@ export class AnalyticsController {
             query.endDate,
         );
         return { success: true, data };
+    }
+
+    @UseGuards(JwtAuthGuard, TenantGuard)
+    @Get(':tenantId/export/orders')
+    async exportOrders(
+        @Param('tenantId') tenantId: string,
+        @Query() query: AnalyticsQueryDto,
+        @Res({ passthrough: true }) res: Response,
+    ): Promise<string> {
+        const csvString = await this.analyticsService.exportOrdersToCsv(
+            tenantId,
+            query.startDate,
+            query.endDate,
+        );
+
+        const filename = `qore-orders-${new Date().toISOString().slice(0, 10)}.csv`;
+        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        return '\uFEFF' + csvString;
+    }
+
+    @UseGuards(JwtAuthGuard, TenantGuard)
+    @Get(':tenantId/export/sales')
+    async exportSales(
+        @Param('tenantId') tenantId: string,
+        @Query() query: AnalyticsQueryDto,
+        @Res({ passthrough: true }) res: Response,
+    ): Promise<string> {
+        const csvString = await this.analyticsService.exportSalesToCsv(
+            tenantId,
+            query.startDate,
+            query.endDate,
+        );
+
+        const filename = `qore-sales-${new Date().toISOString().slice(0, 10)}.csv`;
+        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        return '\uFEFF' + csvString;
     }
 }

@@ -9,7 +9,7 @@ import { display } from '@/shared/lib/fonts';
 import { EASE } from '@/shared/config/animations';
 import { cn } from '@/shared/lib/utils';
 import { useGetTenantBySlug } from '@/entities/tenant/hooks/useTenants';
-import { FeedbackView, GuestsView, OverviewView, SalesView } from '@/features/analytics';
+import { FeedbackView, GuestsView, OverviewView, SalesView, ExportCsvDropdown } from '@/features/analytics';
 import { useTranslations } from 'next-intl';
 
 const TABS = [
@@ -74,6 +74,12 @@ export default function AnalyticsPage() {
                         {tAnalytics('subtitle')}
                     </p>
                 </div>
+
+                {tenantId && (
+                    <div className="flex items-center gap-3">
+                        <ExportCsvDropdown tenantId={tenantId} />
+                    </div>
+                )}
             </motion.header>
 
             {/* Top tab navigation */}
