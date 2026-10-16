@@ -29,6 +29,8 @@ import { usePublicHappyHour } from '@/features/public-menu/hooks/usePublicHappyH
 import { ReservationAlert } from '@/features/reservations/components/ReservationAlert';
 import { useSharedCart, useAddCartItem, useStartNewCartSession } from '@/features/public-menu/hooks/useSharedCart';
 import { useCartStore } from '@/features/public-menu/store/useCartStore';
+import { AiWaiterButton } from '@/features/public-menu/components/AiWaiterButton';
+import { AiWaiterModal } from '@/features/public-menu/components/AiWaiterModal';
 
 // Відстеження перегляду публічного меню: гарантуємо рівно один виклик на slug
 // за сесію перегляду (захист від StrictMode-подвійного виклику та ре-рендерів).
@@ -161,12 +163,15 @@ export default function PublicMenuPage() {
     const guestSessionId = useTableSessionStore((s) => s.guestSessionId);
     const takeawaySessionId = useCartStore((s) => s.takeawaySessionId);
     const setTakeawaySessionId = useCartStore((s) => s.setTakeawaySessionId);
+    const isCartDrawerOpen = useCartStore((s) => s.isCartDrawerOpen);
+    const isDishModalOpen = useCartStore((s) => s.isDishModalOpen);
     const setCartDrawerOpen = useCartStore((s) => s.setCartDrawerOpen);
     const setNameModalOpen = useCartStore((s) => s.setNameModalOpen);
     const setOrderTypeModalOpen = useCartStore((s) => s.setOrderTypeModalOpen);
     const setTakeawayCheckoutOpen = useCartStore((s) => s.setTakeawayCheckoutOpen);
     const setPendingCartItem = useCartStore((s) => s.setPendingCartItem);
     const setCurrency = useCartStore((s) => s.setCurrency);
+    const [isAiWaiterOpen, setIsAiWaiterOpen] = useState(false);
 
     useEffect(() => {
         if (data?.venue?.currency) {
@@ -287,6 +292,26 @@ export default function PublicMenuPage() {
             <GuestNameModal />
             <OrderTypeModal />
             <TakeawayCheckoutModal onComplete={(orderId) => void router.push(`/${resolvedSlug}/order/${orderId}`)} />
+
+            {/* AI Waiter & Sommelier FAB and Chat Modal */}
+            <AiWaiterButton
+                hasCartItems={Boolean(cart && cart.items.length > 0 && cart.isActive !== false)}
+                isOpen={isAiWaiterOpen}
+                onClick={() => setIsAiWaiterOpen(true)}
+                isCartDrawerOpen={isCartDrawerOpen}
+                isDishModalOpen={isDishModalOpen}
+            />
+            <AiWaiterModal
+                isOpen={isAiWaiterOpen}
+                onClose={() => setIsAiWaiterOpen(false)}
+                venueSlug={resolvedSlug}
+                subscriptionPlan={data?.venue?.subscriptionPlan}
+                tableId={tableId}
+                takeawaySessionId={takeawaySessionId}
+                cart={cart}
+                categories={data?.categories}
+                activeHappyHourRules={activeHappyHourRules}
+            />
 
             <AnimatePresence>
                 {showDineInSuccess ? (

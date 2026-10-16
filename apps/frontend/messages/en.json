@@ -144,7 +144,31 @@
     "options": "Options",
     "attentionTableReserved": "Attention: This table is reserved for {time}.",
     "keepInMindMove": "Please keep this in mind, or kindly move to a free table.",
-    "goToQore": "Go to Qore"
+    "goToQore": "Go to Qore",
+    "aiWaiter": {
+      "button": "Ask AI Waiter",
+      "proBadge": "PRO",
+      "title": "AI Waiter & Sommelier",
+      "subtitle": "Personal recommendations from our menu",
+      "emptyGreeting": "Welcome! I'm your digital sommelier and waiter. Looking for a wine pairing, dietary options, or a recommendation within a budget? Just ask me!",
+      "inputPlaceholder": "Ask about dishes, wine pairings, diets...",
+      "send": "Send",
+      "clearChat": "Clear",
+      "addToCart": "Add",
+      "addedToCart": "Added ✓",
+      "chooseOptions": "Customize",
+      "thinking": "Consulting our kitchen...",
+      "suggestedPrompt1": "What pairs well with white wine?",
+      "suggestedPrompt2": "Hearty vegan recommendation",
+      "suggestedPrompt3": "Dinner for two on a budget",
+      "suggestedPrompt4": "Chef's specials and bestsellers",
+      "suggestedQuestionsTitle": "Suggested questions",
+      "disclaimer": "AI analyzes real-time menu, ingredients, and prices",
+      "proTeaserTitle": "AI Waiter is a Pro feature",
+      "proTeaserDesc": "Our intelligent assistant boosts average order value with tailored dish recommendations and wine pairings.",
+      "proTeaserClose": "Got it",
+      "rateLimitWarning": "Too many requests. Please wait a moment before sending another message."
+    }
   },
   "billing": {
     "payBill": "Pay Bill",

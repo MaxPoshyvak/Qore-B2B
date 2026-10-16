@@ -144,7 +144,31 @@
     "options": "Optionen",
     "attentionTableReserved": "Achtung: Dieser Tisch ist für {time} reserviert.",
     "keepInMindMove": "Bitte beachten Sie dies oder wechseln Sie an einen freien Tisch.",
-    "goToQore": "Zu Qore"
+    "goToQore": "Zu Qore",
+    "aiWaiter": {
+      "button": "AI-Kellner fragen",
+      "proBadge": "PRO",
+      "title": "AI Kellner & Sommelier",
+      "subtitle": "Persönliche Empfehlungen aus der Karte",
+      "emptyGreeting": "Willkommen! Ich bin Ihr digitaler Sommelier und Kellner. Suchen Sie nach Weinbegleitung, veganen Gerichten oder Empfehlungen für Ihr Budget? Fragen Sie mich gern!",
+      "inputPlaceholder": "Fragen Sie nach Gerichten, Wein, Zutaten...",
+      "send": "Senden",
+      "clearChat": "Löschen",
+      "addToCart": "Hinzufügen",
+      "addedToCart": "Hinzugefügt ✓",
+      "chooseOptions": "Anpassen",
+      "thinking": "Wähle passende Empfehlungen aus...",
+      "suggestedPrompt1": "Was passt zu Weißwein?",
+      "suggestedPrompt2": "Herzhaftes veganes Gericht",
+      "suggestedPrompt3": "Abendessen für zwei im Budget",
+      "suggestedPrompt4": "Bestseller & Spezialitäten",
+      "suggestedQuestionsTitle": "Empfohlene Fragen",
+      "disclaimer": "KI analysiert aktuelle Speisekarte, Zutaten und Preise",
+      "proTeaserTitle": "AI-Kellner ist ein Pro-Feature",
+      "proTeaserDesc": "Der intelligente Assistent steigert den Durchschnittsbon durch individuelle Empfehlungen und Wein-Pairings.",
+      "proTeaserClose": "Verstanden",
+      "rateLimitWarning": "Zu viele Anfragen. Bitte warten Sie kurz."
+    }
   },
   "billing": {
     "payBill": "Rechnung bezahlen",

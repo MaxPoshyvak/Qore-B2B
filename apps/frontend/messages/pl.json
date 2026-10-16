@@ -144,7 +144,31 @@
     "options": "Opcje",
     "attentionTableReserved": "Uwaga: Ten stolik jest zarezerwowany na {time}.",
     "keepInMindMove": "Prosimy o wzięcie tego pod uwagę lub zajęcie wolnego stolika.",
-    "goToQore": "Przejdź do Qore"
+    "goToQore": "Przejdź do Qore",
+    "aiWaiter": {
+      "button": "Zapytaj kelnera AI",
+      "proBadge": "PRO",
+      "title": "Kelner & Sommelier AI",
+      "subtitle": "Personalne rekomendacje z karty dań",
+      "emptyGreeting": "Cześć! Jestem Twoim cyfrowym kelnerem i sommelierem. Szukasz idealnego wina, dań wegańskich lub propozycji w określonym budżecie? Chętnie doradzę!",
+      "inputPlaceholder": "Zapytaj o dania, wina, smaki...",
+      "send": "Wyślij",
+      "clearChat": "Wyczyść",
+      "addToCart": "Dodaj",
+      "addedToCart": "Dodano ✓",
+      "chooseOptions": "Wybierz opcje",
+      "thinking": "Dobieram rekomendacje...",
+      "suggestedPrompt1": "Co polecasz do białego wina?",
+      "suggestedPrompt2": "Syte danie wegańskie",
+      "suggestedPrompt3": "Kolacja dla dwojga w budżecie",
+      "suggestedPrompt4": "Bestsellery i dania szefa",
+      "suggestedQuestionsTitle": "Sugerowane pytania",
+      "disclaimer": "AI analizuje aktualne menu, składniki i ceny",
+      "proTeaserTitle": "Kelner AI jest dostępny w planie Pro",
+      "proTeaserDesc": "Inteligentny asystent podnosi średni rachunek dzięki spersonalizowanym rekomendacjom i pairingom winnym.",
+      "proTeaserClose": "Rozumiem",
+      "rateLimitWarning": "Zbyt wiele zapytań. Odczekaj chwilę przed kolejną wiadomością."
+    }
   },
   "billing": {
     "payBill": "Zapłać rachunek",

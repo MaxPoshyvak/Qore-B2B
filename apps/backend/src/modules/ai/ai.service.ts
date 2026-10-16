@@ -1,4 +1,11 @@
-import { BadGatewayException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import {
+    BadGatewayException,
+    ForbiddenException,
+    Injectable,
+    InternalServerErrorException,
+    Logger,
+    NotFoundException,
+} from '@nestjs/common';
 import OpenAI from 'openai';
 import { env } from 'src/config/env';
 import { GENERATE_DISH_SYSTEM_PROMPT, buildGenerateDishUserPrompt } from './prompts/generate-dish.prompt';
@@ -8,6 +15,12 @@ import {
     filterCandidatesForCart,
 } from './prompts/cart-upsell.prompt';
 import {
+    WAITER_CHAT_SYSTEM_PROMPT,
+    formatMenuForPrompt,
+    buildWaiterUserPrompt,
+    CompactMenuItem,
+} from './prompts/waiter-chat.prompt';
+import {
     GenerateDishInput,
     GenerateDishOutput,
     CartUpsellInput,
@@ -16,6 +29,11 @@ import {
     aiCartUpsellRawOutputSchema,
     MenuItemResponse,
     generateDishOutputSchema,
+    AiWaiterChatInput,
+    AiWaiterChatResponse,
+    AiWaiterRawOutput,
+    aiWaiterRawOutputSchema,
+    AiWaiterRecommendedDish,
 } from '@my-app/types';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { UpsellCacheService } from './services/upsell-cache.service';
@@ -346,5 +364,176 @@ export class AiService {
             this.logger.error(`Error processing cart upsell: ${(error as Error)?.message}`);
             return fallbackResponse;
         }
+    }
+
+    async getWaiterChat(dto: AiWaiterChatInput): Promise<AiWaiterChatResponse> {
+        if (!env.OPENROUTER_API_KEY) {
+            throw new InternalServerErrorException('OpenRouter API key is not configured');
+        }
+
+        // 1. Fetch tenant with subscription plan & settings
+        const tenant = await this.prisma.tenant.findUnique({
+            where: { slug: dto.venueSlug },
+            select: {
+                id: true,
+                name: true,
+                slug: true,
+                subscriptionPlan: true,
+                settings: {
+                    select: {
+                        currency: true,
+                    },
+                },
+            },
+        });
+
+        if (!tenant) {
+            throw new NotFoundException('Venue not found');
+        }
+
+        // 2. Check Pro subscription plan (skip check if demo)
+        const isDemo = dto.venueSlug === 'admin-cafe' || dto.venueSlug.startsWith('demo-');
+        if (!isDemo && tenant.subscriptionPlan === 'free') {
+            throw new ForbiddenException('AI Waiter & Sommelier requires a Pro or Business subscription.');
+        }
+
+        const currency = tenant.settings?.currency ?? 'USD';
+
+        // 3. Fetch active menu categories and items for this tenant
+        const menuItems = await this.prisma.menuItem.findMany({
+            where: {
+                tenantId: tenant.id,
+                isActive: true,
+            },
+            include: {
+                category: { select: { id: true, name: true } },
+                modifiers: {
+                    orderBy: { sortOrder: 'asc' },
+                    include: {
+                        options: {
+                            orderBy: { sortOrder: 'asc' },
+                        },
+                    },
+                },
+            },
+            orderBy: [{ category: { sortOrder: 'asc' } }, { sortOrder: 'asc' }],
+        });
+
+        if (menuItems.length === 0) {
+            return {
+                success: true,
+                data: {
+                    reply: dto.language.startsWith('uk')
+                        ? 'На жаль, наше меню зараз оновлюється. Будь ласка, зверніться до офіціанта в залі.'
+                        : 'Our menu is currently being updated. Please ask your server for assistance.',
+                    recommendedDishes: [],
+                },
+            };
+        }
+
+        // 4. Compact menu serialization
+        const compactItems: CompactMenuItem[] = menuItems.map((item) => ({
+            id: item.id,
+            name: item.name,
+            categoryName: item.category?.name ?? 'Other',
+            price: item.price.toString(),
+            description: item.description,
+            isAvailable: true,
+        }));
+
+        const menuText = formatMenuForPrompt(compactItems, currency);
+
+        // 5. Format cart items if any
+        let cartText = '';
+        if (dto.cartItemIds && dto.cartItemIds.length > 0) {
+            const inCart = menuItems.filter((i) => dto.cartItemIds.includes(i.id));
+            if (inCart.length > 0) {
+                cartText = inCart.map((i) => `- ${i.name} (${i.category?.name})`).join('\n');
+            }
+        }
+
+        // 6. Sliding window of conversation history (max 6 messages)
+        const history = (dto.history ?? []).slice(-6);
+
+        // 7. Build user prompt
+        const userPrompt = buildWaiterUserPrompt({
+            venueName: tenant.name,
+            currency,
+            menuText,
+            cartText,
+            history,
+            message: dto.message,
+            language: dto.language,
+        });
+
+        // 8. Call OpenRouter
+        let rawContent: string | null = null;
+        try {
+            const response = await this.client.chat.completions.create({
+                model: this.upsellModel,
+                response_format: { type: 'json_object' },
+                temperature: 0.6,
+                max_tokens: 350,
+                messages: [
+                    { role: 'system', content: WAITER_CHAT_SYSTEM_PROMPT },
+                    { role: 'user', content: userPrompt },
+                ],
+            });
+
+            rawContent = response.choices?.[0]?.message?.content ?? null;
+        } catch (error) {
+            this.logger.error('Failed to reach AI provider for waiter chat', error);
+            throw new BadGatewayException('Failed to reach the AI Waiter provider. Please try again.');
+        }
+
+        if (!rawContent) {
+            throw new InternalServerErrorException('AI Waiter returned an empty response');
+        }
+
+        let parsedOutput: AiWaiterRawOutput;
+        try {
+            const parsed = JSON.parse(rawContent);
+            parsedOutput = aiWaiterRawOutputSchema.parse(parsed);
+        } catch {
+            this.logger.warn(`Failed to parse AI Waiter JSON: ${rawContent}`);
+            parsedOutput = {
+                reply: rawContent.replace(/[{}"\\]/g, '').trim(),
+                recommendedItemIds: [],
+            };
+        }
+
+        // 9. Enrich recommended items with full MenuItemResponse
+        const itemsMap = new Map(menuItems.map((item) => [item.id, item]));
+        const recommendedDishes: AiWaiterRecommendedDish[] = [];
+
+        for (const id of parsedOutput.recommendedItemIds) {
+            const dbItem = itemsMap.get(id);
+            if (dbItem) {
+                const hasRequiredModifiers = (dbItem.modifiers ?? []).some((m) => m.minSelections > 0);
+                recommendedDishes.push({
+                    item: {
+                        ...dbItem,
+                        price: dbItem.price.toString(),
+                        happyHourPrice: dbItem.happyHourPrice?.toString() ?? null,
+                        modifiers: (dbItem.modifiers ?? []).map((group) => ({
+                            ...group,
+                            options: (group.options ?? []).map((option) => ({
+                                ...option,
+                                priceAdjustment: option.priceAdjustment.toString(),
+                            })),
+                        })),
+                    } as unknown as MenuItemResponse,
+                    hasRequiredModifiers,
+                });
+            }
+        }
+
+        return {
+            success: true,
+            data: {
+                reply: parsedOutput.reply,
+                recommendedDishes,
+            },
+        };
     }
 }

@@ -144,7 +144,31 @@
     "options": "Možnosti",
     "attentionTableReserved": "Upozornění: Tento stůl je rezervován na {time}.",
     "keepInMindMove": "Mějte to prosím na paměti, nebo se přesuňte k volnému stolu.",
-    "goToQore": "Přejít na Qore"
+    "goToQore": "Přejít na Qore",
+    "aiWaiter": {
+      "button": "Zeptat se AI číšníka",
+      "proBadge": "PRO",
+      "title": "AI Číšník & Someliér",
+      "subtitle": "Osobní doporučení z jídelního lístku",
+      "emptyGreeting": "Vítejte! Jsem váš digitální číšník a someliér. Hledáte párování s vínem, dietní možnosti nebo doporučení do určitého rozpočtu? Neváhejte se zeptat!",
+      "inputPlaceholder": "Zeptejte se na jídla, vína, chutě...",
+      "send": "Odeslat",
+      "clearChat": "Vymazat",
+      "addToCart": "Přidat",
+      "addedToCart": "Přidáno ✓",
+      "chooseOptions": "Upravit",
+      "thinking": "Přemýšlím nad doporučením...",
+      "suggestedPrompt1": "Co se hodí k bílému vínu?",
+      "suggestedPrompt2": "Syté veganské jídlo",
+      "suggestedPrompt3": "Večeře pro dva s rozpočtem",
+      "suggestedPrompt4": "Bestsellery a speciality",
+      "suggestedQuestionsTitle": "Doporučené otázky",
+      "disclaimer": "AI analyzuje aktuální jídelní lístek, suroviny a ceny",
+      "proTeaserTitle": "AI Číšník je funkce tarifu Pro",
+      "proTeaserDesc": "Inteligentní asistent zvyšuje průměrnou útratu díky personalizovaným doporučením a párování s vínem.",
+      "proTeaserClose": "Rozumím",
+      "rateLimitWarning": "Příliš mnoho požadavků. Počkejte prosím chvíli."
+    }
   },
   "billing": {
     "payBill": "Zaplatit účet",

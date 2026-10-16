@@ -3,10 +3,11 @@ import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { AiService } from './ai.service';
 import { GenerateDishDto } from './dto/generate-dish.dto';
 import { CartUpsellDto } from './dto/cart-upsell.dto';
+import { WaiterChatDto } from './dto/waiter-chat.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { SubscriptionGuard } from 'src/common/guards/subscription.guard';
 import { RequirePlan } from 'src/common/decorators/require-plan.decorator';
-import { GenerateDishOutput, SuccessResponse, CartUpsellResponse } from '@my-app/types';
+import { GenerateDishOutput, SuccessResponse, CartUpsellResponse, AiWaiterChatResponse } from '@my-app/types';
 
 @Controller('ai')
 export class AiController {
@@ -26,5 +27,12 @@ export class AiController {
     @Throttle({ default: { limit: 15, ttl: 60000 } })
     async getCartUpsell(@Body() dto: CartUpsellDto): Promise<CartUpsellResponse> {
         return this.aiService.getCartUpsell(dto);
+    }
+
+    @Post('waiter-chat')
+    @UseGuards(ThrottlerGuard)
+    @Throttle({ default: { limit: 12, ttl: 60000 } })
+    async getWaiterChat(@Body() dto: WaiterChatDto): Promise<AiWaiterChatResponse> {
+        return this.aiService.getWaiterChat(dto);
     }
 }
