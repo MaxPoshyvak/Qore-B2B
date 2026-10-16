@@ -11,6 +11,7 @@ import { useGetTenantBySlug } from '@/entities/tenant/hooks/useTenants';
 import { useTables } from '@/features/dashboard-tables/hooks/useTables';
 import { useTenantReservations, useUpdateReservation } from '@/features/reservations/hooks/useReservations';
 import { ReservationCard } from '@/features/reservations/components/ReservationCard';
+import { InfoTooltip } from '@/shared/ui/Tooltip';
 import type { ReservationResponse } from '@my-app/types';
 
 function dateKey(iso: string): string {
@@ -101,6 +102,7 @@ export function ReservationsView({ slug }: { slug: string }) {
                         className={`${display.className} text-[18px] font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]`}>
                         {t('todaysBookings')}
                     </h2>
+                    <InfoTooltip content={t('antiDoubleBookingTooltip')} size={12} side="right" />
                     <span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-black/5 px-1.5 text-[11px] font-semibold tabular-nums text-[#6B6A65] dark:bg-white/10 dark:text-[#94938D]">
                         {today.length}
                     </span>

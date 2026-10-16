@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, ChevronDown } from 'lucide-react';
 
 type FormTextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
-    label: string;
+    label: React.ReactNode;
     error?: string;
 };
 
@@ -44,7 +44,7 @@ export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(f
 });
 
 type FormToggleProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> & {
-    label: string;
+    label: React.ReactNode;
     description?: string;
 };
 
@@ -76,7 +76,7 @@ export const FormToggle = forwardRef<HTMLInputElement, FormToggleProps>(function
 });
 
 type FormSelectProps = React.SelectHTMLAttributes<HTMLSelectElement> & {
-    label: string;
+    label: React.ReactNode;
     error?: string;
     description?: string;
 };

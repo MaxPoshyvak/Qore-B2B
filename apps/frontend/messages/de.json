@@ -234,52 +234,83 @@
       "skip": "Überspringen",
       "back": "Zurück",
       "next": "Weiter",
-      "finish": "Abschließen & Lokal einrichten ✨",
+      "finish": "Abschließen ✨",
+      "mobileMenuHint": "Hier tippen, um das Menü zu öffnen",
+      "showInMenu": "Wo im Menü? ☰",
+      "mobileNavigatingTo": "Bereich im Menü anzeigen...",
+      "mobileViewPage": "Seite öffnen →",
       "steps": {
         "overview": {
           "title": "Kontrollzentrum & Übersicht",
           "desc": "Verfolgen Sie heutigen Umsatz, Bestellungen und besetzte Tische in Echtzeit.",
-          "tip": "Klicken Sie auf den Menü-Link oben, um die Speisekarte aus Gastsicht zu sehen."
+          "tip": "Klicken Sie auf den Menü-Link oben, um die Speisekarte aus Gastsicht zu sehen.",
+          "breadcrumb": "Dashboard ☰ → Übersicht"
         },
         "menuBuilder": {
           "title": "Menü-Baukasten & Gerichte",
           "desc": "Kategorien anlegen, Fotos hochladen, Preise, Allergene und Modifikatoren verwalten.",
-          "tip": "Nutzen Sie den 'AI Dish Generator' für appetitliche Beschreibungen in Sekunden."
+          "tip": "Nutzen Sie den 'AI Dish Generator' für appetitliche Beschreibungen in Sekunden.",
+          "breadcrumb": "Menü ☰ → Menü-Baukasten"
         },
         "promotions": {
           "title": "Automatische Happy Hours",
           "desc": "Zeitgesteuerte Rabatte für ruhigere Stunden mit automatischer Preisanpassung.",
-          "tip": "Steigern Sie Nachmittags-Umsätze mit automatisierten Angeboten."
+          "tip": "Steigern Sie Nachmittags-Umsätze mit automatisierten Angeboten.",
+          "breadcrumb": "Menü ☰ → Happy Hour"
         },
         "tables": {
           "title": "Tische & QR-Codes",
           "desc": "Tische verwalten und A4-Druckvorlagen für QR-Aufsteller herunterladen.",
-          "tip": "QR-Token neu generieren, falls ein Code außerhalb des Lokals geteilt wurde."
+          "tip": "QR-Token neu generieren, falls ein Code außerhalb des Lokals geteilt wurde.",
+          "breadcrumb": "Tische ☰ → Tischplan"
         },
         "reservations": {
           "title": "Tisch-Reservierungen",
           "desc": "Online-Buchungen entgegennehmen und Tische ohne Doppelbelegungen zuweisen.",
-          "tip": "Alle Reservierungsdetails auf einen Blick in der Übersicht."
+          "tip": "Alle Reservierungsdetails auf einen Blick in der Übersicht.",
+          "breadcrumb": "Tische ☰ → Reservierungen"
         },
         "liveOrders": {
           "title": "Live-Bestellungen & KDS",
           "desc": "Echtzeit-Kanban für Küche und Bar mit automatischem Ton-Signal bei Neubestellungen.",
-          "tip": "Bestellkarte anklicken für Gast-Hinweise, Sonderwünsche und Zahlungsstatus."
+          "tip": "Bestellkarte anklicken für Gast-Hinweise, Sonderwünsche und Zahlungsstatus.",
+          "breadcrumb": "Bestellungen ☰ → Live KDS"
         },
         "orderHistory": {
           "title": "Bestellverlauf & Audit",
           "desc": "Abgeschlossene Bestellungen, Trinkgelder und geteilte Rechnungen prüfen.",
-          "tip": "Schneller Beleg-Zugriff für den täglichen Kassenabschluss."
+          "tip": "Schneller Beleg-Zugriff für den täglichen Kassenabschluss.",
+          "breadcrumb": "Bestellungen ☰ → Bestellverlauf"
         },
         "analytics": {
           "title": "Analytics & CSV-Export",
           "desc": "Stoßzeiten und Bestseller analysieren sowie Finanzberichte als CSV exportieren.",
-          "tip": "CSV-Dateien sind mit UTF-8 für Microsoft Excel formatiert."
+          "tip": "CSV-Dateien sind mit UTF-8 für Microsoft Excel formatiert.",
+          "breadcrumb": "Analytics ☰ → Übersicht"
+        },
+        "sales": {
+          "title": "Verkäufe & Bestseller",
+          "desc": "Erkennen Sie margenstarke Spitzenreiter und die Entwicklung des durchschnittlichen Bestellwerts.",
+          "tip": "Nutzen Sie die Verkaufsdaten zur vorausschauenden Zutatenplanung und Angebotsgestaltung.",
+          "breadcrumb": "Analytics ☰ → Verkäufe"
+        },
+        "feedback": {
+          "title": "Gästefeedback & Bewertungen",
+          "desc": "Echte Gästestimmen und Bewertungen im Blick behalten für erstklassigen Service.",
+          "tip": "Hervorragende Bewertungen stärken das Vertrauen neuer Besucher.",
+          "breadcrumb": "Analytics ☰ → Feedback"
+        },
+        "staffKds": {
+          "title": "Personal & KDS-Sicherheit",
+          "desc": "Sichern Sie Küchen-Tablets mit eigenem PIN-Code ohne Zugriff auf Finanzen und Einstellungen.",
+          "tip": "Küchenmitarbeiter sehen nur relevante Bestellungen, sensible Geschäftsdaten bleiben geschützt.",
+          "breadcrumb": "Einstellungen ☰ → Personal & KDS"
         },
         "settings": {
           "title": "Branding & Lokal-Start!",
-          "desc": "Alles bereit! Logo hochladen, Öffnungszeiten einstellen und Küchen-PIN festlegen.",
-          "tip": "Lokal-Informationen speichern und die ersten Gäste begrüßen!"
+          "desc": "Alles bereit! Logo hochladen, Öffnungszeiten einstellen und Währung prüfen.",
+          "tip": "Lokal-Informationen speichern und die ersten Gäste begrüßen!",
+          "breadcrumb": "Einstellungen ☰ → Allgemein"
         }
       }
     },
@@ -379,13 +410,18 @@
       "paymentMethodLabel": "Zahlungsmethode",
       "cardOnFileStripe": "Hinterlegte Karte (Stripe)",
       "confirmAndUpgrade": "Bestätigen & upgraden",
-      "venueLanguageDesc": "Wählen Sie die Standardsprache für Ihre Menüoberfläche und Gäste."
+      "venueLanguageDesc": "Wählen Sie die Standardsprache für Ihre Menüoberfläche und Gäste.",
+      "kdsPinTooltip": "Das Küchenpersonal gibt diese PIN am Stationstablet ein. Schützt Ihr Admin-Dashboard vor unbefugtem Zugriff.",
+      "kdsUrlTooltip": "Isolierte Bildschirmoberfläche für Küchen-/Bar-Tablets. Bestellungen aktualisieren sich live mit Signalton.",
+      "hoursTooltip": "Ihr Betrieb zeigt automatisch den Geöffnet/Geschlossen-Status an und beschränkt Reservierungen auf Ihre Öffnungszeiten.",
+      "currencyTooltip": "Wählen Sie die Hauptwährung. Bei einem Wechsel können alle Menüpreise automatisch nach Wechselkurs umgerechnet werden."
     },
     "analytics": {
       "badge": "Analytik",
       "title": "Leistung",
       "titleHighlight": "des Betriebs",
       "subtitle": "Behalte Umsatz, Bestseller und Gästepräferenzen im Blick.",
+      "exportCsvTooltip": "Lädt detaillierte Bestell- und Verkaufsberichte im CSV-Format mit UTF-8 BOM für Excel und Google Tabellen herunter.",
       "totalRevenue": "Gesamtumsatz",
       "totalOrders": "Bestellungen gesamt",
       "avgOrderValue": "Durchschnittsbon",
@@ -544,7 +580,8 @@
     "markCompleted": "Als abgeschlossen markieren",
     "assignTable": "Tisch zuweisen",
     "unassign": "Zuweisung aufheben",
-    "booked": "Gebucht"
+    "booked": "Gebucht",
+    "antiDoubleBookingTooltip": "Überbuchungsschutz: Tische mit aktiven Reservierungen für diesen Tag werden automatisch gesperrt."
   },
   "reviews": {
     "title": "Was Gäste sagen",
@@ -580,6 +617,9 @@
     "markAsReady": "Als fertig markieren",
     "markAsDelivered": "Als serviert markieren",
     "undo": "Zurücksetzen",
+    "soundOn": "Ton an",
+    "soundOff": "Ton aus",
+    "soundTooltip": "Ein Echtzeit-Tonsignal benachrichtigt die Küche sofort über jede eingehende Bestellung.",
     "columns": {
       "new": "Neu",
       "preparing": "In Zubereitung",
@@ -675,7 +715,11 @@
     "nameExistsError": "Ein Tisch mit diesem Namen existiert bereits",
     "deleteTitle": "Tisch löschen?",
     "deleteDesc": "„{name}“ wird dauerhaft entfernt. Alle aktiven Gastsitzungen an diesem Tisch werden getrennt.",
-    "deleteConfirm": "Tisch löschen"
+    "deleteConfirm": "Tisch löschen",
+    "regenerateTooltip": "Generiert ein neues kryptografisches QR-Token. Macht alte Links und Fotos sofort ungültig, um externe Fake-Bestellungen zu verhindern.",
+    "activeToggleTooltip": "Wenn inaktiv, öffnet das Scannen des QR-Codes die Speisekarte nicht und blockiert Bestellungen.",
+    "bulkPrintTooltip": "Erstellt druckfertige Tischaufsteller im Standard-A4-Format für alle Tische.",
+    "antiIntruderTooltip": "Kryptografische Sicherheit: Jeder Tisch besitzt ein individuelles Token. Ein Neugenerieren macht alte QR-Fotos sofort ungültig."
   },
   "landing": {
     "nav": {
@@ -890,7 +934,8 @@
     "unlockAiFeature1": "Verwandeln Sie eine Idee in einen appetitlichen Menüeintrag.",
     "unlockAiFeature2": "Automatische Erkennung von HoReCa-Allergenen und Diät-Tags.",
     "unlockAiFeature3": "Modifikatorgruppen und Preise mit einem Klick generieren.",
-    "upgradeToPro": "Auf Pro upgraden"
+    "upgradeToPro": "Auf Pro upgraden",
+    "aiBarTooltip": "Der KI-Co-Pilot erstellt vollständige Speisekartenkarten aus einem einfachen Text: Titel, ansprechende Beschreibung, Diät-Tags und Allergene."
   },
   "kds": {
     "title": "KDS-PIN eingeben",
@@ -951,6 +996,7 @@
     "titlePrefix": "Aktionen, die",
     "titleHighlight": "den Raum füllen",
     "subtitle": "Starten Sie zeitlich begrenzte Rabatte an bestimmten Tagen und für ausgewählte Gerichte, um den Umsatz in Nebenzeiten zu steigern.",
+    "autoPricingTooltip": "Aktionen aktivieren und deaktivieren sich automatisch in der digitalen Gästekarte nach Ihrem Zeitplan, ohne manuelle Preisänderungen.",
     "newRule": "Neue Regel",
     "emptyTitle": "Steigern Sie Ihren Umsatz in Nebenzeiten",
     "emptyDesc": "Erstellen Sie Ihre erste Happy Hour, um Besucher in ruhigen Zeiten anzulocken — stellen Sie Tage, Uhrzeiten und Rabatte sekundenschnell ein.",

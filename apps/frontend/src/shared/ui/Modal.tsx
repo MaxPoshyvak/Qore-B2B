@@ -73,8 +73,7 @@ export function Modal({
                             default: { duration: 0.2, ease: EASE },
                         }}
                         className={cn(
-                            // ВИДАЛЕНО: transition-transform duration-75 та overflow-y-scroll
-                            'relative flex flex-col overflow-y-scroll rounded-3xl bg-white/80 backdrop-blur-2xl shadow-xl dark:bg-[#121215]/95 border border-black/10 dark:border-white/10',
+                            'relative flex flex-col w-full overflow-hidden rounded-3xl bg-white/80 backdrop-blur-2xl shadow-xl dark:bg-[#121215]/95 border border-black/10 dark:border-white/10',
                             className || 'max-w-md',
                             scrollable ? maxHeightClass : 'max-h-[85vh]',
                         )}>

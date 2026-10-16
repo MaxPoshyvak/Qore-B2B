@@ -7,7 +7,7 @@ import { Pencil, QrCode, Trash2, Users } from 'lucide-react';
 import { type Table } from '@my-app/database';
 import { Badge } from '@/shared/ui/shadcn/Badge';
 import { Switch } from '@/shared/ui/shadcn/Switch';
-import { Tooltip } from '@/shared/ui/Tooltip';
+import { InfoTooltip } from '@/shared/ui/Tooltip';
 import { EASE } from '@/shared/config/animations';
 
 type TableCardProps = {
@@ -60,17 +60,16 @@ export function TableCard({ table, onViewQr, onEdit, onDelete, onToggleActive }:
                                 }`}
                             />
                             {table.isActive ? t('active') : t('inactive')}
+                            <InfoTooltip content={t('activeToggleTooltip')} size={10} side="top" />
                         </span>
                     </div>
                 </div>
 
-                <Tooltip content={t('activeToggleTooltip')} side="left">
-                    <Switch
-                        checked={table.isActive}
-                        onCheckedChange={(next) => onToggleActive(table, next)}
-                        aria-label={`Toggle ${table.name} active`}
-                    />
-                </Tooltip>
+                <Switch
+                    checked={table.isActive}
+                    onCheckedChange={(next) => onToggleActive(table, next)}
+                    aria-label={`Toggle ${table.name} active`}
+                />
             </div>
 
             <div className="relative mt-6 flex items-center gap-2 border-t border-[#E7E5E0] pt-4 dark:border-[#232327]">

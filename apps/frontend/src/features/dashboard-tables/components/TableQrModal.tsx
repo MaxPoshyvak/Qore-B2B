@@ -3,13 +3,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { QRCodeCanvas, QRCodeSVG } from 'qrcode.react';
-import { Download, Printer, RefreshCw, Loader2 } from 'lucide-react';
+import { Download, Printer, RefreshCw, Loader2, ShieldCheck } from 'lucide-react';
 
 import { type Table } from '@my-app/database';
 import { Modal } from '@/shared/ui/Modal';
 import { ConfirmDialog } from '@/shared/ui/ConfirmDialog';
 import { PrimaryButton, SecondaryButton } from '@/shared/ui/PrimaryButton';
-import { Tooltip } from '@/shared/ui/Tooltip';
+import { InfoTooltip } from '@/shared/ui/Tooltip';
 import { useRefreshQrToken } from '../hooks/useRefreshQrToken';
 
 type TableQrModalProps = {
@@ -79,6 +79,12 @@ export function TableQrModal({ open, onClose, slug, table, venueName, onRegenera
                         <p className="mt-0.5 font-mono text-[11px] uppercase tracking-widest text-[#9C9B95] dark:text-[#6E6D68]">
                             {t('seatsCount', { count: currentTable.capacity })} · {currentTable.isActive ? t('active') : t('inactive')}
                         </p>
+
+                        <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-[#3B82F6]/25 bg-[#3B82F6]/5 px-3 py-1 text-[11px] font-medium text-[#2563EB] dark:border-[#3B82F6]/30 dark:bg-[#3B82F6]/10 dark:text-[#60A5FA]">
+                            <ShieldCheck size={13} className="shrink-0 text-[#3B82F6] dark:text-[#60A5FA]" />
+                            <span>QR Anti-Intruder</span>
+                            <InfoTooltip content={t('regenerateTooltip')} size={11} side="bottom" />
+                        </div>
                     </div>
 
                     <div className="mt-6 flex flex-col gap-2 sm:flex-row">
@@ -93,20 +99,18 @@ export function TableQrModal({ open, onClose, slug, table, venueName, onRegenera
                             <Printer size={16} className="mr-1.5" />
                             {t('printQr')}
                         </SecondaryButton>
-                        <Tooltip content={t('regenerateTooltip')} side="top" className="text-center">
-                            <SecondaryButton
-                                type="button"
-                                className="flex-1"
-                                onClick={() => setConfirmOpen(true)}
-                                disabled={refreshMutation.isPending}>
-                                {refreshMutation.isPending ? (
-                                    <Loader2 size={16} className="mr-1.5 animate-spin" />
-                                ) : (
-                                    <RefreshCw size={16} className="mr-1.5" />
-                                )}
-                                {t('regenerate')}
-                            </SecondaryButton>
-                        </Tooltip>
+                        <SecondaryButton
+                            type="button"
+                            className="flex-1"
+                            onClick={() => setConfirmOpen(true)}
+                            disabled={refreshMutation.isPending}>
+                            {refreshMutation.isPending ? (
+                                <Loader2 size={16} className="mr-1.5 animate-spin" />
+                            ) : (
+                                <RefreshCw size={16} className="mr-1.5" />
+                            )}
+                            {t('regenerate')}
+                        </SecondaryButton>
                     </div>
                 </div>
 

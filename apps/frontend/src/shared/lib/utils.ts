@@ -1,3 +1,5 @@
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 import { formatCurrencyPrice } from '@my-app/types';
 
 /**
@@ -11,30 +13,11 @@ export function formatPrice(value: string | number, currency = 'USD'): string {
 }
 
 /**
- * Tiny class-name combiner (clsx + tailwind-merge style, dependency-free).
- * Filters out falsy values and merges conflicting Tailwind utilities so later
- * classes win over earlier ones (e.g. `px-2 px-4` -> `px-4`, `bg-red bg-blue` -> `bg-blue`).
+ * Merges Tailwind CSS classes without style conflicts using clsx and tailwind-merge.
+ * Reliably handles multi-part prefixes (e.g. max-w vs max-h), variants, and conditional classes.
  */
-export function cn(...classes: Array<string | false | null | undefined>): string {
-    const classList: string[] = [];
-
-    for (const entry of classes) {
-        if (!entry) continue;
-        for (const part of entry.split(' ')) {
-            const trimmed = part.trim();
-            if (!trimmed) continue;
-            // Strip the conflicting utility if a later one with the same base arrives.
-            const base = trimmed.split('-')[0];
-            for (let i = classList.length - 1; i >= 0; i--) {
-                if (classList[i].split('-')[0] === base) {
-                    classList.splice(i, 1);
-                }
-            }
-            classList.push(trimmed);
-        }
-    }
-
-    return classList.join(' ');
+export function cn(...inputs: ClassValue[]): string {
+    return twMerge(clsx(inputs));
 }
 
 export function cyrillicToSlug(text: string): string {

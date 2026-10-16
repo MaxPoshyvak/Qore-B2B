@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -18,6 +18,9 @@ import {
     X,
     CheckCircle2,
     Lightbulb,
+    ShoppingBag,
+    MessageSquareHeart,
+    ChefHat,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -33,6 +36,9 @@ const STEP_ICONS: Record<string, typeof LayoutDashboard> = {
     'orders-live': Bell,
     'orders-history': Clock,
     'analytics-overview': TrendingUp,
+    'analytics-sales': ShoppingBag,
+    'analytics-feedback': MessageSquareHeart,
+    'settings-kds': ChefHat,
     'settings-general': Settings,
 };
 
@@ -48,7 +54,20 @@ export function DashboardTourGuide({ slug }: { slug: string }) {
         prevStep,
         skipTour,
         finishTour,
+        openMobilePreview,
+        isMobileMenuOpen,
     } = useOnboardingTour();
+
+    const [isMobileScreen, setIsMobileScreen] = useState(false);
+
+    useEffect(() => {
+        const check = () => setIsMobileScreen(window.innerWidth < 768);
+        check();
+        window.addEventListener('resize', check);
+        return () => window.removeEventListener('resize', check);
+    }, []);
+
+    const isHiddenByMobileDrawer = isMobileScreen && isMobileMenuOpen;
 
     // Auto-start for first-time visitors of this tenant
     useEffect(() => {
@@ -77,23 +96,22 @@ export function DashboardTourGuide({ slug }: { slug: string }) {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [isOpen, nextStep, prevStep, skipTour, router]);
 
-    if (!isOpen) return null;
-
     const currentStep = TOUR_STEPS[stepIndex];
     const isLastStep = stepIndex === TOUR_STEPS.length - 1;
     const progressPercent = ((stepIndex + 1) / TOUR_STEPS.length) * 100;
-    const StepIcon = STEP_ICONS[currentStep.id] || LayoutDashboard;
+    const StepIcon = currentStep ? (STEP_ICONS[currentStep.id] || LayoutDashboard) : LayoutDashboard;
 
     const navigate = (url: string) => router.push(url);
 
     return (
         <AnimatePresence>
-            <motion.div
-                initial={{ opacity: 0, y: 30, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                transition={{ duration: 0.35, ease: EASE }}
-                className="fixed bottom-5 right-5 z-50 w-96 max-w-[calc(100vw-2.5rem)] overflow-hidden rounded-3xl border border-black/10 bg-white/95 p-5 text-[#0A0A0C] shadow-2xl backdrop-blur-2xl dark:border-white/15 dark:bg-[#141417]/95 dark:text-[#F5F4F2]">
+            {isOpen && !isHiddenByMobileDrawer && currentStep && (
+                <motion.div
+                    initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                    transition={{ duration: 0.35, ease: EASE }}
+                    className="fixed bottom-5 right-5 z-50 w-96 max-w-[calc(100vw-2.5rem)] overflow-hidden rounded-3xl border border-black/10 bg-white/95 p-5 text-[#0A0A0C] shadow-2xl backdrop-blur-2xl dark:border-white/15 dark:bg-[#141417]/95 dark:text-[#F5F4F2]">
                 {/* Ambient Top Glow */}
                 <div className="pointer-events-none absolute -top-12 left-1/2 h-24 w-48 -translate-x-1/2 rounded-full bg-gradient-to-r from-[#3B82F6]/25 to-[#8B5CF6]/25 blur-2xl" />
 
@@ -133,6 +151,24 @@ export function DashboardTourGuide({ slug }: { slug: string }) {
                         animate={{ width: `${progressPercent}%` }}
                         transition={{ duration: 0.35, ease: EASE }}
                     />
+                </div>
+
+                {/* Navigation Breadcrumb & Mobile Menu Trigger */}
+                <div className="relative mt-3 flex items-center justify-between gap-1.5 rounded-xl border border-black/5 bg-black/[0.02] px-2.5 py-1.5 text-[11px] font-medium text-[#6B6A65] dark:border-white/5 dark:bg-white/[0.03] dark:text-[#A1A1AA]">
+                    <div className="flex items-center gap-1.5 truncate">
+                        <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded bg-[#3B82F6]/10 text-[9px] font-bold text-[#3B82F6] dark:bg-[#3B82F6]/20 dark:text-[#60A5FA]">
+                            ☰
+                        </span>
+                        <span className="truncate font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
+                            {t(currentStep.breadcrumbKey)}
+                        </span>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={openMobilePreview}
+                        className="md:hidden shrink-0 flex items-center gap-1 rounded-lg bg-[#3B82F6]/10 px-2 py-0.5 text-[10.5px] font-bold text-[#2563EB] transition-colors hover:bg-[#3B82F6]/20 active:scale-95 dark:text-[#60A5FA]">
+                        <span>{t('dashboard.tour.showInMenu')}</span>
+                    </button>
                 </div>
 
                 {/* Step Content */}
@@ -186,7 +222,7 @@ export function DashboardTourGuide({ slug }: { slug: string }) {
                         <button
                             type="button"
                             onClick={() => (isLastStep ? finishTour(navigate) : nextStep(navigate))}
-                            className="flex h-8 items-center gap-1.5 rounded-xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-3.5 text-xs font-semibold text-white shadow-md shadow-[#3B82F6]/20 transition-all hover:opacity-95 active:scale-95">
+                            className="flex h-8 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-3.5 text-xs font-semibold text-white shadow-md shadow-[#3B82F6]/20 transition-all hover:opacity-95 active:scale-95">
                             {isLastStep ? (
                                 <>
                                     <CheckCircle2 size={13} />
@@ -202,6 +238,7 @@ export function DashboardTourGuide({ slug }: { slug: string }) {
                     </div>
                 </div>
             </motion.div>
+            )}
         </AnimatePresence>
     );
 }

@@ -16,6 +16,7 @@
         "@tailwindcss/postcss": "^4.3.3",
         "@tanstack/react-query": "latest",
         "canvas-confetti": "^1.9.4",
+        "clsx": "^2.1.1",
         "framer-motion": "^13.0.0",
         "lucide-react": "^1.30.0",
         "next": "latest",
@@ -27,6 +28,7 @@
         "react-dropzone": "^20.1.1",
         "react-hook-form": "^7.85.0",
         "recharts": "^3.10.1",
+        "tailwind-merge": "^3.7.0",
         "zustand": "^5.0.15"
     },
     "devDependencies": {

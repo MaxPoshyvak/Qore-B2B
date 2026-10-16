@@ -234,52 +234,83 @@
       "skip": "Pomiń",
       "back": "Wstecz",
       "next": "Dalej",
-      "finish": "Zakończ i skonfiguruj lokal ✨",
+      "finish": "Zakończ ✨",
+      "mobileMenuHint": "Kliknij tutaj, aby otworzyć menu",
+      "showInMenu": "Gdzie to jest? ☰",
+      "mobileNavigatingTo": "Pokazujemy sekcję w menu...",
+      "mobileViewPage": "Otwórz stronę →",
       "steps": {
         "overview": {
           "title": "Centrum kontroli i przegląd",
           "desc": "Śledź dzisiejsze przychody, liczbę zamówień i aktywne stoliki w czasie rzeczywistym.",
-          "tip": "Kliknij link lokalu na górze paska bocznego, aby zobaczyć menu oczami gościa."
+          "tip": "Kliknij link lokalu na górze paska bocznego, aby zobaczyć menu oczami gościa.",
+          "breadcrumb": "Panel ☰ → Główny przegląd"
         },
         "menuBuilder": {
           "title": "Kreator menu i dania",
           "desc": "Twórz kategorie, dodawaj zdjęcia dań, ceny, modyfikatory i alergeny.",
-          "tip": "Użyj 'AI Dish Generator', aby błyskawicznie stworzyć apetyczne opisy."
+          "tip": "Użyj 'AI Dish Generator', aby błyskawicznie stworzyć apetyczne opisy.",
+          "breadcrumb": "Menu ☰ → Kreator menu"
         },
         "promotions": {
           "title": "Automatyczne Happy Hours",
           "desc": "Ustawiaj cykliczne zniżki na wybrane dni i godziny z automatyczną zmianą cen.",
-          "tip": "Przyciągaj gości w spokojniejszych godzinach specjalnymi promocjami."
+          "tip": "Przyciągaj gości w spokojniejszych godzinach specjalnymi promocjami.",
+          "breadcrumb": "Menu ☰ → Happy Hour"
         },
         "tables": {
           "title": "Stoliki i kody QR",
           "desc": "Zarządzaj stolikami i pobieraj gotowe szablony kodów QR do druku w formacie A4.",
-          "tip": "Wygeneruj nowy token QR, jeśli kod został sfotografowany poza lokalem."
+          "tip": "Wygeneruj nowy token QR, jeśli kod został sfotografowany poza lokalem.",
+          "breadcrumb": "Stoliki ☰ → Plan sali"
         },
         "reservations": {
           "title": "Rezerwacje stolików",
           "desc": "Przyjmuj rezerwacje online i przydzielaj stoliki bez podwójnych rezerwacji.",
-          "tip": "Wszystkie szczegóły rezerwacji są widoczne w przejrzystej tabeli."
+          "tip": "Wszystkie szczegóły rezerwacji są widoczne w przejrzystej tabeli.",
+          "breadcrumb": "Stoliki ☰ → Rezerwacje"
         },
         "liveOrders": {
           "title": "KDS kuchni i zamówienia",
           "desc": "Tablica Kanban dla kuchni i baru z dźwiękowym powiadomieniem o nowych zamówieniach.",
-          "tip": "Kliknij zamówienie, aby zobaczyć uwagi gościa i status płatności."
+          "tip": "Kliknij zamówienie, aby zobaczyć uwagi gościa i status płatności.",
+          "breadcrumb": "Zamówienia ☰ → KDS na żywo"
         },
         "orderHistory": {
           "title": "Historia zamówień i audyt",
           "desc": "Przeglądaj zrealizowane zamówienia, napiwki i podziały rachunków.",
-          "tip": "Szybki podgląd rachunków ułatwia wieczorne rozliczenie kasy."
+          "tip": "Szybki podgląd rachunków ułatwia wieczorne rozliczenie kasy.",
+          "breadcrumb": "Zamówienia ☰ → Historia zamówień"
         },
         "analytics": {
           "title": "Analityka i eksport CSV",
           "desc": "Analizuj godziny szczytu, bestsellery i pobieraj raporty finansowe w formacie CSV.",
-          "tip": "Pliki CSV są formatowane z kodowaniem UTF-8 dla programu Microsoft Excel."
+          "tip": "Pliki CSV są formatowane z kodowaniem UTF-8 dla programu Microsoft Excel.",
+          "breadcrumb": "Analityka ☰ → Przegląd"
+        },
+        "sales": {
+          "title": "Sprzedaż i bestsellery",
+          "desc": "Śledź najchętniej zamawiane dania, marże i dynamikę średniego rachunku.",
+          "tip": "Identyfikuj hity sprzedażowe, aby optymalizować zakupy składników i tworzyć promocje.",
+          "breadcrumb": "Analityka ☰ → Sprzedaż"
+        },
+        "feedback": {
+          "title": "Opinie gości i oceny",
+          "desc": "Przeglądaj recenzje i oceny odwiedzających. Dbaj o satysfakcję gości w czasie rzeczywistym.",
+          "tip": "Wysokie oceny budują zaufanie nowych gości i zachęcają do powrotu.",
+          "breadcrumb": "Analityka ☰ → Opinie"
+        },
+        "staffKds": {
+          "title": "Personel i bezpieczeństwo KDS",
+          "desc": "Ustaw kod PIN i wygeneruj izolowany link dla tabletów kuchennych bez dostępu do finansów.",
+          "tip": "Kucharze widzą tylko bieżące zamówienia, chroniąc Twoje dane finansowe.",
+          "breadcrumb": "Ustawienia ☰ → Personel i KDS"
         },
         "settings": {
           "title": "Branding i start lokalu!",
-          "desc": "Wszystko gotowe! Dodaj logo, banner i ustaw PIN do tabletu kuchennego.",
-          "tip": "Skonfiguruj dane lokalu, aby zacząć przyjmować pierwsze zamówienia!"
+          "desc": "Wszystko gotowe! Dodaj logo, banner, godziny otwarcia i sprawdź walutę lokalu.",
+          "tip": "Skonfiguruj dane lokalu, aby zacząć przyjmować pierwsze zamówienia!",
+          "breadcrumb": "Ustawienia ☰ → Ogólne"
         }
       }
     },
@@ -379,13 +410,18 @@
       "paymentMethodLabel": "Metoda płatności",
       "cardOnFileStripe": "Zapisana karta (Stripe)",
       "confirmAndUpgrade": "Potwierdź i uaktualnij",
-      "venueLanguageDesc": "Wybierz domyślny język interfejsu Twojego lokalu i gości."
+      "venueLanguageDesc": "Wybierz domyślny język interfejsu Twojego lokalu i gości.",
+      "kdsPinTooltip": "Personel kuchni wprowadza ten PIN na tablecie stacji. Chroni panel administracyjny przed nieautoryzowanym dostępem.",
+      "kdsUrlTooltip": "Dedykowany link dla tabletu kuchennego. Zamówienia aktualizują się w czasie rzeczywistym z powiadomieniem dźwiękowym.",
+      "hoursTooltip": "Lokal automatycznie wyświetla status Otwarte/Zamknięte w menu oraz ogranicza godziny rezerwacji według harmonogramu.",
+      "currencyTooltip": "Wybierz główną walutę lokalu. Przy zmianie możesz automatycznie przeliczyć ceny menu według wybranego kursu."
     },
     "analytics": {
       "badge": "Analityka",
       "title": "Wydajność",
       "titleHighlight": "lokalu",
       "subtitle": "Śledź przychody, bestsellery i preferencje swoich gości.",
+      "exportCsvTooltip": "Pobiera szczegółowy raport zamówień i sprzedaży w formacie CSV z kodowaniem UTF-8 BOM dla programów Excel i Arkusze Google.",
       "totalRevenue": "Całkowity przychód",
       "totalOrders": "Wszystkie zamówienia",
       "avgOrderValue": "Średnia wartość zamówienia",
@@ -544,7 +580,8 @@
     "markCompleted": "Oznacz jako zakończone",
     "assignTable": "Przypisz stolik",
     "unassign": "Cofnij przypisanie",
-    "booked": "Zarezerwowany"
+    "booked": "Zarezerwowany",
+    "antiDoubleBookingTooltip": "Ochrona przed nakładaniem: stoliki przypisane do aktywnych rezerwacji są automatycznie blokowane w wybranym dniu."
   },
   "reviews": {
     "title": "Co mówią goście",
@@ -580,6 +617,9 @@
     "markAsReady": "Gotowe do wydania",
     "markAsDelivered": "Oznacz jako wydane",
     "undo": "Cofnij zmianę",
+    "soundOn": "Dźwięk włączony",
+    "soundOff": "Dźwięk wyłączony",
+    "soundTooltip": "Dźwiękowy sygnał w czasie rzeczywistym powiadamia kuchnię i bar o każdym nowym zamówieniu.",
     "columns": {
       "new": "Nowe",
       "preparing": "W przygotowaniu",
@@ -675,7 +715,11 @@
     "nameExistsError": "Stolik o tej nazwie już istnieje",
     "deleteTitle": "Usunąć stolik?",
     "deleteDesc": "„{name}” zostanie trwale usunięty. Wszelkie aktywne sesje gości przy tym stoliku zostaną rozłączone.",
-    "deleteConfirm": "Usuń stolik"
+    "deleteConfirm": "Usuń stolik",
+    "regenerateTooltip": "Generuje nowy token kryptograficzny. Natychmiast unieważnia stare linki i zdjęcia kodu, chroniąc przed fałszywymi zamówieniami zdalnymi.",
+    "activeToggleTooltip": "Gdy stolik jest nieaktywny, zeskanowanie kodu QR nie otworzy menu i zablokuje składanie zamówień.",
+    "bulkPrintTooltip": "Generuje gotowe szablony tabliczek do druku na arkuszach A4 dla wszystkich stolików.",
+    "antiIntruderTooltip": "Ochrona kryptograficzna: każdy stolik posiada unikalny, bezpieczny token. Ponowne wygenerowanie natychmiast unieważnia stary kod."
   },
   "landing": {
     "nav": {
@@ -890,7 +934,8 @@
     "unlockAiFeature1": "Przekształć pomysł w dopracowaną, apetyczną pozycję w menu.",
     "unlockAiFeature2": "Automatyczne wykrywanie alergenów HoReCa i oznaczeń dietetycznych.",
     "unlockAiFeature3": "Generowanie grup modyfikatorów i cen jednym kliknięciem.",
-    "upgradeToPro": "Przejdź na Pro"
+    "upgradeToPro": "Przejdź na Pro",
+    "aiBarTooltip": "AI Co-Pilot tworzy pełną kartę dania na podstawie prostego opisu: nazwę, apetyczny opis, tagi dietetyczne i alergeny."
   },
   "kds": {
     "title": "Wprowadź PIN KDS",
@@ -951,6 +996,7 @@
     "titlePrefix": "Promocje, które",
     "titleHighlight": "zapełniają lokal",
     "subtitle": "Uruchamiaj ograniczone czasowo promocje w wybrane dni na konkretne dania, aby zwiększyć sprzedaż poza godzinami szczytu.",
+    "autoPricingTooltip": "Promocje aktywują się i dezaktywują automatycznie w menu gości według Twojego harmonogramu, bez ręcznej zmiany cen.",
     "newRule": "Nowa reguła",
     "emptyTitle": "Zwiększ sprzedaż poza godzinami szczytu",
     "emptyDesc": "Stwórz swój pierwszy Happy Hour, aby przyciągnąć gości w spokojniejszych godzinach — ustaw dni, godziny i rabat w kilka sekund.",

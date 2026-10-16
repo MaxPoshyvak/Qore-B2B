@@ -234,52 +234,83 @@
       "skip": "Přeskočit",
       "back": "Zpět",
       "next": "Další",
-      "finish": "Dokončit a nastavit podnik ✨",
+      "finish": "Dokončit ✨",
+      "mobileMenuHint": "Klepnutím sem otevřete navigaci",
+      "showInMenu": "Kde v menu? ☰",
+      "mobileNavigatingTo": "Zobrazujeme sekci v menu...",
+      "mobileViewPage": "Otevřít stránku →",
       "steps": {
         "overview": {
           "title": "Řídicí centrum a přehled",
           "desc": "Sledujte dnešní tržby, počet objednávek a obsazené stoly v reálném čase.",
-          "tip": "Kliknutím na odkaz podniku nahoře uvidíte menu očima hosta."
+          "tip": "Kliknutím na odkaz podniku nahoře uvidíte menu očima hosta.",
+          "breadcrumb": "Panel ☰ → Hlavní přehled"
         },
         "menuBuilder": {
           "title": "Tvůrce menu a jídla",
           "desc": "Vytvářejte kategorie, nahrávejte fotky jídel, ceny, alergeny a modifikátory.",
-          "tip": "Použijte 'AI Dish Generator' pro lákavé popisy jídel během několika sekund."
+          "tip": "Použijte 'AI Dish Generator' pro lákavé popisy jídel během několika sekund.",
+          "breadcrumb": "Menu ☰ → Tvůrce menu"
         },
         "promotions": {
           "title": "Automatické Happy Hours",
           "desc": "Časově omezené slevy pro klidnější hodiny s automatickou změnou cen.",
-          "tip": "Zvyšte návštěvnost v odpoledních hodinách speciálními nabídkami."
+          "tip": "Zvyšte návštěvnost v odpoledních hodinách speciálními nabídkami.",
+          "breadcrumb": "Menu ☰ → Happy Hour"
         },
         "tables": {
           "title": "Stoly a QR kódy",
           "desc": "Spravujte stoly a tiskněte připravené A4 šablony pro stojánky s QR kódy.",
-          "tip": "Vygenerujte nový QR token, pokud byl kód vyfocen mimo podnik."
+          "tip": "Vygenerujte nový QR token, pokud byl kód vyfocen mimo podnik.",
+          "breadcrumb": "Stoly ☰ → Plán stolů"
         },
         "reservations": {
           "title": "Rezervace stolů",
           "desc": "Přijímejte online rezervace a přiřazujte stoly bez dvojitých rezervací.",
-          "tip": "Veškeré podrobnosti rezervací v přehledné tabulce."
+          "tip": "Veškeré podrobnosti rezervací v přehledné tabulce.",
+          "breadcrumb": "Stoly ☰ → Rezervace"
         },
         "liveOrders": {
           "title": "Živé objednávky a KDS",
           "desc": "Kanban pro kuchyň a bar se zvukovým signálem při nové objednávce.",
-          "tip": "Kliknutím na objednávku zobrazíte poznámky hosta a stav platby."
+          "tip": "Kliknutím na objednávku zobrazíte poznámky hosta a stav platby.",
+          "breadcrumb": "Objednávky ☰ → Živé KDS"
         },
         "orderHistory": {
           "title": "Historie objednávek a audit",
           "desc": "Procházejte dokončené objednávky, spropitné a rozdělené účty.",
-          "tip": "Rychlý přístup k účtenkám pro večerní vyúčtování."
+          "tip": "Rychlý přístup k účtenkám pro večerní vyúčtování.",
+          "breadcrumb": "Objednávky ☰ → Historie objednávek"
         },
         "analytics": {
           "title": "Analytika a export CSV",
           "desc": "Analyzujte špičky a bestsellery a stahujte finanční reporty v CSV.",
-          "tip": "CSV soubory jsou formátovány s kódováním UTF-8 pro Microsoft Excel."
+          "tip": "CSV soubory jsou formátovány s kódováním UTF-8 pro Microsoft Excel.",
+          "breadcrumb": "Analytika ☰ → Přehled"
+        },
+        "sales": {
+          "title": "Prodeje a nejprodávanější položky",
+          "desc": "Sledujte nejvýdělečnější jídla, marže a vývoj průměrného účtu.",
+          "tip": "Využijte data o prodejích pro včasné plánování zásob a tvorbu akčních nabídek.",
+          "breadcrumb": "Analytika ☰ → Prodeje"
+        },
+        "feedback": {
+          "title": "Zpětná vazba a hodnocení",
+          "desc": "Mějte přehled o spokojenosti a recenzích vašich hostů v reálném čase.",
+          "tip": "Vysoké hodnocení buduje okamžitou důvěru a přivádí stálé hosty.",
+          "breadcrumb": "Analytika ☰ → Hodnocení"
+        },
+        "staffKds": {
+          "title": "Personál a zabezpečení KDS",
+          "desc": "Nastavte bezpečný PIN kód a vygenerujte izolovaný odkaz pro kuchyňské tablety bez přístupu k financím.",
+          "tip": "Kuchaři vidí pouze aktivní objednávky, vaše finanční data zůstávají chráněna.",
+          "breadcrumb": "Nastavení ☰ → Personál a KDS"
         },
         "settings": {
           "title": "Branding a spuštění podniku!",
-          "desc": "Vše je připraveno! Nahrajte logo, banner a nastavte PIN pro kuchyňský tablet.",
-          "tip": "Uložte nastavení podniku a přivítejte první hosty!"
+          "desc": "Vše je připraveno! Nahrajte logo, banner, otevírací dobu a zkontrolujte měnu podniku.",
+          "tip": "Uložte nastavení podniku a přivítejte první hosty!",
+          "breadcrumb": "Nastavení ☰ → Obecné"
         }
       }
     },
@@ -379,13 +410,18 @@
       "paymentMethodLabel": "Způsob platby",
       "cardOnFileStripe": "Uložená karta (Stripe)",
       "confirmAndUpgrade": "Potvrdit a přejít",
-      "venueLanguageDesc": "Vyberte výchozí jazyk pro rozhraní vašeho podniku a hosty."
+      "venueLanguageDesc": "Vyberte výchozí jazyk pro rozhraní vašeho podniku a hosty.",
+      "kdsPinTooltip": "Personál kuchyně zadává tento PIN na tabletu stanice. Chrání váš administrátorský panel před neoprávněným přístupem.",
+      "kdsUrlTooltip": "Vyhrazený odkaz pro kuchyňský tablet. Objednávky se aktualizují v reálném čase se zvukovým signálem.",
+      "hoursTooltip": "Podnik automaticky zobrazuje stav Otevřeno/Zavřeno ve veřejném menu a omezuje hodiny rezervací dle vašeho rozvrhu.",
+      "currencyTooltip": "Vyberte primární měnu podniku. Při změně můžete automaticky přepočítat ceny menu podle zvoleného kurzu."
     },
     "analytics": {
       "badge": "Analytika",
       "title": "Výkon",
       "titleHighlight": "podniku",
       "subtitle": "Sledujte tržby, nejprodávanější jídla a preference vašich hostů.",
+      "exportCsvTooltip": "Stáhne podrobný přehled objednávek a prodejů ve formátu CSV s kódováním UTF-8 BOM pro Excel a Tabulky Google.",
       "totalRevenue": "Celkové tržby",
       "totalOrders": "Celkem objednávek",
       "avgOrderValue": "Průměrná útrata",
@@ -544,7 +580,8 @@
     "markCompleted": "Označit jako dokončené",
     "assignTable": "Přiřadit stůl",
     "unassign": "Zrušit přiřazení",
-    "booked": "Rezervováno"
+    "booked": "Rezervováno",
+    "antiDoubleBookingTooltip": "Ochrana proti překrytí: stoly přiřazené k aktivním rezervacím na vybraný den se automaticky uzamknou."
   },
   "reviews": {
     "title": "Co říkají naši hosté",
@@ -580,6 +617,9 @@
     "markAsReady": "Připraveno k výdeji",
     "markAsDelivered": "Označit jako vydané",
     "undo": "Vrátit změnu",
+    "soundOn": "Zvuk zapnut",
+    "soundOff": "Zvuk vypnut",
+    "soundTooltip": "Zvukový signál v reálném čase okamžitě upozorní kuchyň na každou novou objednávku.",
     "columns": {
       "new": "Nové",
       "preparing": "Příprava",
@@ -675,7 +715,11 @@
     "nameExistsError": "Stůl s tímto názvem již existuje",
     "deleteTitle": "Smazat stůl?",
     "deleteDesc": "„{name}“ bude trvale odstraněn. Všechny aktivní relace hostů u tohoto stolu budou odpojeny.",
-    "deleteConfirm": "Smazat stůl"
+    "deleteConfirm": "Smazat stůl",
+    "regenerateTooltip": "Generuje nový kryptografický token. Okamžitě zneplatní staré odkazy a fotografie kódu pro ochranu před falešnými objednávkami.",
+    "activeToggleTooltip": "Když je stůl neaktivní, naskenování QR kódu neotevře menu a zablokuje objednávky.",
+    "bulkPrintTooltip": "Vytvoří tiskové archy se štítky ve formátu A4 pro všechny stoly.",
+    "antiIntruderTooltip": "Kryptografická ochrana: každý stůl má unikátní bezpečný token. Přegenerování okamžitě zneplatní staré QR kódy."
   },
   "landing": {
     "nav": {
@@ -890,7 +934,8 @@
     "unlockAiFeature1": "Proměňte hrubý nápad ve vyladěnou, lákavou položku menu.",
     "unlockAiFeature2": "Automatická detekce alergenů HoReCa a dietních štítků.",
     "unlockAiFeature3": "Generování skupin modifikátorů a cen jedním kliknutím.",
-    "upgradeToPro": "Přejít na Pro"
+    "upgradeToPro": "Přejít na Pro",
+    "aiBarTooltip": "AI Co-Pilot vytvoří kompletní položku menu z jednoduchého textu: název, lákavý popis, dietní štítky a alergeny."
   },
   "kds": {
     "title": "Zadejte KDS PIN",
@@ -951,6 +996,7 @@
     "titlePrefix": "Akce, které",
     "titleHighlight": "naplní podnik",
     "subtitle": "Spouštějte časově omezené slevy v konkrétní dny na vybraná jídla pro zvýšení tržeb v klidnějších hodinách.",
+    "autoPricingTooltip": "Akce se aktivují a deaktivují automaticky v menu hostů dle vašeho rozvrhu, bez nutnosti ruční úpravy cen.",
     "newRule": "Nové pravidlo",
     "emptyTitle": "Zvyšte prodeje v klidnějších hodinách",
     "emptyDesc": "Vytvořte svůj první Happy Hour pro přilákání hostů v klidnějších hodinách — nastavte dny, hodiny a slevu během několika sekund.",

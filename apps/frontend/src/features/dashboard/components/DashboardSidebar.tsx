@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useParams, usePathname, useSearchParams } from 'next/navigation';
+import { useParams, usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     LayoutDashboard,
@@ -129,7 +129,12 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
     const { data: activeOrders } = useActiveOrders(tenant?.data.id);
     const newOrdersCount = (activeOrders ?? []).filter((o) => o.status === 'new').length;
 
-    const { isOpen: isTourOpen, stepIndex: tourStepIndex, startTour } = useOnboardingTour();
+    const {
+        isOpen: isTourOpen,
+        stepIndex: tourStepIndex,
+        startTour,
+        isMobileMenuOpen,
+    } = useOnboardingTour();
     const activeTourStep = isTourOpen ? TOUR_STEPS[tourStepIndex] : null;
 
     const others = (myTenants?.data ?? []).filter((t) => t.slug !== slug);
@@ -237,13 +242,15 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                             ? pathname.startsWith(baseHref)
                             : pathname === href;
                     const isTourTarget = isTourOpen && activeTourStep?.navKey === item.key;
+                    const hasDropdown = Boolean(isSettings || isMenu || isTablesReservations || isAnalytics || isOrders);
                     const showDropdown =
-                        (isSettings && pathname.includes('/settings')) ||
-                        (isMenu && pathname.includes('/menu')) ||
-                        (isTablesReservations && pathname.includes('/tables-reservations')) ||
-                        (isAnalytics && pathname.includes('/analytics')) ||
-                        (isOrders && pathname.includes('/orders')) ||
-                        isTourTarget;
+                        hasDropdown &&
+                        (((isSettings && pathname.includes('/settings')) ||
+                            (isMenu && pathname.includes('/menu')) ||
+                            (isTablesReservations && pathname.includes('/tables-reservations')) ||
+                            (isAnalytics && pathname.includes('/analytics')) ||
+                            (isOrders && pathname.includes('/orders'))) ||
+                            isTourTarget);
                     const sections = isSettings
                         ? SETTINGS_SECTIONS
                         : isMenu
@@ -252,11 +259,21 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                             ? TABLES_SECTIONS
                             : isAnalytics
                               ? ANALYTICS_SECTIONS
-                              : ORDERS_SECTIONS;
+                              : isOrders
+                                ? ORDERS_SECTIONS
+                                : [];
                     const Icon = item.icon;
                     const label = tSidebar(item.key);
                     return (
-                        <div key={item.key}>
+                        <div
+                            key={item.key}
+                            ref={(el) => {
+                                if (el && isTourTarget && isTourOpen && isMobileMenuOpen) {
+                                    setTimeout(() => {
+                                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    }, 150);
+                                }
+                            }}>
                             <Link
                                 href={href}
                                 onClick={onNavigate}
@@ -285,11 +302,14 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                                         animate={{ opacity: 1, height: 'auto' }}
                                         exit={{ opacity: 0, height: 0 }}
                                         transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                                        className="hidden overflow-hidden border-l border-[#E7E5E0] pl-4 pt-1.5 md:flex md:flex-col md:gap-1 dark:border-white/10">
+                                        className="flex flex-col gap-1 overflow-hidden border-l border-[#E7E5E0] pl-4 pt-1.5 dark:border-white/10">
                                         {sections.map((section) => {
+                                            const isTourSubTarget =
+                                                isTourOpen && isTourTarget && activeTourStep?.subSection === section.value;
                                             const sectionActive =
-                                                active &&
-                                                (searchParams.get('section') ?? defaultSection) === section.value;
+                                                (active &&
+                                                    (searchParams.get('section') ?? defaultSection) === section.value) ||
+                                                isTourSubTarget;
                                             const sectionLabel =
                                                 section.ns === 'settings'
                                                     ? tSettings(section.key as any)
@@ -301,8 +321,17 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                                                     key={section.value}
                                                     href={`${baseHref}?section=${section.value}`}
                                                     onClick={onNavigate}
-                                                    className={`rounded-lg px-3 py-1.5 text-[13px] transition-colors ${sectionActive ? 'bg-[#3B82F6]/10 font-medium text-[#2563EB] dark:text-[#60A5FA]' : 'text-[#6B6A65] hover:bg-black/5 hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:bg-white/5 dark:hover:text-[#F5F4F2]'}`}>
-                                                    {sectionLabel}
+                                                    className={`flex items-center justify-between rounded-lg px-3 py-1.5 text-[13px] transition-colors ${
+                                                        isTourSubTarget
+                                                            ? 'bg-[#3B82F6]/20 font-bold text-[#2563EB] ring-1 ring-[#3B82F6] dark:bg-[#3B82F6]/30 dark:text-[#60A5FA]'
+                                                            : sectionActive
+                                                              ? 'bg-[#3B82F6]/10 font-medium text-[#2563EB] dark:text-[#60A5FA]'
+                                                              : 'text-[#6B6A65] hover:bg-black/5 hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:bg-white/5 dark:hover:text-[#F5F4F2]'
+                                                    }`}>
+                                                    <span>{sectionLabel}</span>
+                                                    {isTourSubTarget && (
+                                                        <span className="flex h-2 w-2 rounded-full bg-[#3B82F6] animate-ping" />
+                                                    )}
                                                 </Link>
                                             );
                                         })}
@@ -340,30 +369,6 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                 </div>
             </div>
 
-            {/* Take Product Tour button */}
-            <button
-                type="button"
-                onClick={() => startTour(slug, true)}
-                className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl border border-[#3B82F6]/25 bg-[#3B82F6]/5 py-2 text-[12px] font-semibold text-[#2563EB] transition-all hover:border-[#3B82F6]/50 hover:bg-[#3B82F6]/10 active:scale-95 dark:text-[#60A5FA]">
-                <Sparkles size={13} className="text-[#3B82F6]" />
-                <span>{tSidebar('productTour')}</span>
-            </button>
-
-            {/* Workspace switcher */}
-            {/* {(others.length > 0 || plan.isBusiness) && (
-                <div className="relative mt-4">
-                    {plan.isBusiness && (
-                        <Link
-                            href="/onboarding"
-                            onClick={onNavigate}
-                            className="mt-2 flex items-center justify-center gap-1.5 rounded-xl border border-[#3B82F6]/25 bg-[#3B82F6]/10 px-3 py-2 text-[12px] font-semibold text-[#2563EB] transition-all hover:border-[#3B82F6]/50 hover:bg-[#3B82F6]/15 dark:text-[#60A5FA]">
-                            <Plus size={14} />
-                            Add venue
-                        </Link>
-                    )}
-                </div>
-            )} */}
-
             {/* Footer */}
             <div className="mt-4 border-t border-[#E7E5E0]/80 pt-3 dark:border-white/10">
                 <div className="mb-3 flex items-center justify-between">
@@ -394,7 +399,16 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                 </div>
 
                 <div className="flex items-center justify-between">
-                    <div className="hidden md:block">{mounted && <ThemeToggle theme={theme} toggle={toggle} />}</div>
+                    <div className="hidden md:flex md:items-center md:gap-1.5">
+                        {mounted && <ThemeToggle theme={theme} toggle={toggle} />}
+                        <button
+                            type="button"
+                            onClick={() => startTour(slug, true)}
+                            title={tSidebar('productTour')}
+                            className="flex h-8 w-8 items-center justify-center rounded-lg text-[#6B6A65] transition-colors hover:bg-[#3B82F6]/10 hover:text-[#3B82F6] dark:text-[#94938D] dark:hover:bg-[#3B82F6]/15 dark:hover:text-[#60A5FA]">
+                            <Sparkles size={14} />
+                        </button>
+                    </div>
                     <LanguageSwitcher direction="up" align="right" />
                 </div>
             </div>
@@ -413,8 +427,28 @@ export function DashboardSidebar() {
 
 export function DashboardMobileNav() {
     const { slug } = useParams<{ slug: string }>();
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
     const { data: tenant } = useGetTenantBySlug(slug ?? '');
-    const [open, setOpen] = useState(false);
+    const {
+        isOpen: isTourOpen,
+        stepIndex,
+        isMobileMenuOpen,
+        setMobileMenuOpen,
+        isMobilePreviewing,
+        closeMobilePreview,
+    } = useOnboardingTour();
+    const tTour = useTranslations('dashboard.tour');
+
+    const open = isMobileMenuOpen;
+    const setOpen = (val: boolean) => {
+        if (!val && isMobilePreviewing) {
+            closeMobilePreview((url) => router.push(url));
+        } else {
+            setMobileMenuOpen(val);
+        }
+    };
 
     return (
         <div className="md:hidden">
@@ -432,13 +466,34 @@ export function DashboardMobileNav() {
                         className="flex h-9 w-9 items-center justify-center rounded-full border border-[#E7E5E0] text-[#6B6A65] dark:border-white/10 dark:text-[#94938D]">
                         <ExternalLink size={16} />
                     </Link>
-                    <button
-                        type="button"
-                        aria-label="Open menu"
-                        onClick={() => setOpen(true)}
-                        className="flex h-9 w-9 items-center justify-center rounded-full border border-[#E7E5E0] text-[#0A0A0C] dark:border-white/10 dark:text-[#F5F4F2]">
-                        <Menu size={18} />
-                    </button>
+
+                    {/* Hamburger button with tour spotlight & beacon tooltip */}
+                    <div className="relative">
+                        <button
+                            type="button"
+                            aria-label="Open menu"
+                            onClick={() => setOpen(!open)}
+                            className={`flex h-9 w-9 items-center justify-center rounded-full border transition-all ${
+                                isTourOpen
+                                    ? 'border-[#3B82F6] bg-[#3B82F6]/15 text-[#3B82F6] ring-2 ring-[#3B82F6] ring-offset-2 animate-pulse dark:ring-offset-[#0A0A0C]'
+                                    : 'border-[#E7E5E0] text-[#0A0A0C] dark:border-white/10 dark:text-[#F5F4F2]'
+                            }`}>
+                            <Menu size={18} />
+                        </button>
+
+                        {/* First-step spotlight beacon */}
+                        {isTourOpen && stepIndex === 0 && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -4, scale: 0.9 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: -4 }}
+                                className="pointer-events-none absolute right-0 top-11 z-50 flex items-center gap-1.5 whitespace-nowrap rounded-xl bg-[#0A0A0C] px-3 py-1.5 text-[11px] font-semibold text-white shadow-xl dark:bg-white dark:text-[#0A0A0C]">
+                                <span className="text-[#3B82F6]">☰</span>
+                                <span>{tTour('mobileMenuHint')}</span>
+                                <div className="absolute -top-1 right-3.5 h-2 w-2 rotate-45 bg-[#0A0A0C] dark:bg-white" />
+                            </motion.div>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -450,7 +505,7 @@ export function DashboardMobileNav() {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setOpen(false)}
-                            className="fixed inset-0 z-40 bg-black/60"
+                            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
                         />
                         <motion.aside
                             initial={{ x: '-100%' }}
@@ -458,16 +513,48 @@ export function DashboardMobileNav() {
                             exit={{ x: '-100%' }}
                             transition={{ type: 'spring', stiffness: 320, damping: 32 }}
                             className="fixed inset-y-0 left-0 z-50 w-72 overflow-y-auto border-r border-[#E7E5E0] bg-white dark:border-white/10 dark:bg-[#0A0A0C]">
-                            <div className="flex justify-end p-3">
+                            <div className="flex items-center justify-between p-3 border-b border-[#E7E5E0]/60 dark:border-white/10">
+                                <span className="text-xs font-semibold text-[#6B6A65] dark:text-[#94938D]">
+                                    {isTourOpen ? tTour('productTour') : 'Qore'}
+                                </span>
                                 <button
                                     type="button"
                                     aria-label="Close menu"
                                     onClick={() => setOpen(false)}
-                                    className="flex h-9 w-9 items-center justify-center rounded-full border border-[#E7E5E0] text-[#0A0A0C] dark:border-white/10 dark:text-[#F5F4F2]">
-                                    <X size={18} />
+                                    className="flex h-8 w-8 items-center justify-center rounded-full border border-[#E7E5E0] text-[#0A0A0C] dark:border-white/10 dark:text-[#F5F4F2]">
+                                    <X size={16} />
                                 </button>
                             </div>
-                            <SidebarContent slug={slug ?? ''} onNavigate={() => setOpen(false)} />
+
+                            {/* Tour preview banner inside drawer on mobile */}
+                            {isTourOpen && isMobilePreviewing && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -6 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="mx-3 mt-3 flex items-center justify-between gap-2 rounded-xl border border-[#3B82F6]/30 bg-[#3B82F6]/10 p-2.5 text-xs text-[#2563EB] shadow-sm dark:text-[#60A5FA]">
+                                    <div className="flex items-center gap-1.5 min-w-0">
+                                        <Sparkles size={14} className="shrink-0 animate-spin text-[#3B82F6]" />
+                                        <span className="truncate font-semibold">{tTour('mobileNavigatingTo')}</span>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => closeMobilePreview((url) => router.push(url))}
+                                        className="shrink-0 rounded-lg bg-[#3B82F6] px-2.5 py-1 text-[11px] font-bold text-white shadow hover:bg-[#2563EB] active:scale-95">
+                                        {tTour('mobileViewPage')}
+                                    </button>
+                                </motion.div>
+                            )}
+
+                            <SidebarContent
+                                slug={slug ?? ''}
+                                onNavigate={() => {
+                                    if (isMobilePreviewing) {
+                                        closeMobilePreview((url) => router.push(url));
+                                    } else {
+                                        setOpen(false);
+                                    }
+                                }}
+                            />
                         </motion.aside>
                     </>
                 )}

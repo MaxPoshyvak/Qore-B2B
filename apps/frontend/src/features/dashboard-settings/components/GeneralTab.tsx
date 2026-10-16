@@ -19,6 +19,7 @@ import { AuthInput } from '@/shared/ui/AuthInput';
 import { FormTextarea, FormSelect } from '@/shared/ui/FormControls';
 import { ImageUpload } from '@/shared/ui/ImageUpload';
 import { LanguageSwitcher } from '@/shared/ui/LanguageSwitcher';
+import { InfoTooltip } from '@/shared/ui/Tooltip';
 
 type GeneralTabProps = {
     initialCurrency?: string;
@@ -115,7 +116,12 @@ export function GeneralTab({ initialCurrency = 'USD' }: GeneralTabProps) {
                     />
                     <FormSelect
                         id="venue-currency"
-                        label={t('venueCurrency')}
+                        label={
+                            <span className="inline-flex items-center gap-1.5">
+                                <span>{t('venueCurrency')}</span>
+                                <InfoTooltip content={t('currencyTooltip')} size={12} side="right" />
+                            </span>
+                        }
                         description={t('currencyRegionDesc')}
                         error={errors.currency?.message}
                         {...register('currency')}>
@@ -160,8 +166,9 @@ export function GeneralTab({ initialCurrency = 'USD' }: GeneralTabProps) {
                                                 className="mt-0.5 h-4 w-4 rounded border-amber-300 text-[#3B82F6] focus:ring-[#3B82F6] dark:border-white/20 dark:bg-[#141417]"
                                             />
                                             <div className="flex flex-col">
-                                                <span className="text-xs font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
-                                                    {t('convertPricesCheckbox', { to: newConfig.code })}
+                                                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0A0A0C] dark:text-[#F5F4F2]">
+                                                    <span>{t('convertPricesCheckbox', { to: newConfig.code })}</span>
+                                                    <InfoTooltip content={t('currencyTooltip')} size={11} side="top" />
                                                 </span>
                                                 <span className="text-[11px] text-[#6B6A65] dark:text-[#94938D]">
                                                     {t('convertPricesDesc')}

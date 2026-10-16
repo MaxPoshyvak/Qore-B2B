@@ -234,52 +234,83 @@
       "skip": "Skip tour",
       "back": "Back",
       "next": "Next step",
-      "finish": "Finish & Set Up Venue ✨",
+      "finish": "Finish ✨",
+      "mobileMenuHint": "Tap here to open sidebar menu",
+      "showInMenu": "Where is it? ☰",
+      "mobileNavigatingTo": "Showing section in menu...",
+      "mobileViewPage": "Open page →",
       "steps": {
         "overview": {
           "title": "Control Center & Live Overview",
           "desc": "Track today's live revenue, order counts, and occupied tables at a glance, with instant access to your public QR venue link.",
-          "tip": "Click your public URL anytime to experience your menu exactly as your guests see it."
+          "tip": "Click your public URL anytime to experience your menu exactly as your guests see it.",
+          "breadcrumb": "Dashboard ☰ → Live Overview"
         },
         "menuBuilder": {
           "title": "Menu Categories & Dishes",
           "desc": "Organize categories, upload imagery, and specify dietary tags, allergens, and modifier choices with add-on pricing.",
-          "tip": "Use the AI Dish Generator to write appetizing descriptions and suggest tags in seconds."
+          "tip": "Use the AI Dish Generator to write appetizing descriptions and suggest tags in seconds.",
+          "breadcrumb": "Menu ☰ → Menu Builder"
         },
         "promotions": {
           "title": "Automated Happy Hours",
           "desc": "Schedule recurring discounts for off-peak days and hours. Prices adjust dynamically and revert automatically with no manual updates.",
-          "tip": "Boost weekday afternoon sales with automated cocktail or appetizer promotions."
+          "tip": "Boost weekday afternoon sales with automated cocktail or appetizer promotions.",
+          "breadcrumb": "Menu ☰ → Happy Hour"
         },
         "tables": {
           "title": "Tables & Anti-Intruder QR Codes",
           "desc": "Manage your floor plan and generate cryptographic QR codes. Print complete A4 stand batches or download individual stickers.",
-          "tip": "Regenerate QR tokens if compromised to block unauthorized remote orders from outside your venue."
+          "tip": "Regenerate QR tokens if compromised to block unauthorized remote orders from outside your venue.",
+          "breadcrumb": "Tables ☰ → Floor Plan"
         },
         "reservations": {
           "title": "Guest Table Reservations",
           "desc": "Accept online table bookings from guests, manage party sizes and arrival dates, and assign tables without overbooking.",
-          "tip": "Confirmed bookings keep guests updated automatically with reservation time and party details."
+          "tip": "Confirmed bookings keep guests updated automatically with reservation time and party details.",
+          "breadcrumb": "Tables ☰ → Reservations"
         },
         "liveOrders": {
           "title": "Live Orders Kanban & KDS",
           "desc": "Real-time kitchen and bar dispatch board. Incoming orders chime audibly and update live with drag-and-drop status stages.",
-          "tip": "Click any order to inspect guest split payments, item modifiers, and delivery status."
+          "tip": "Click any order to inspect guest split payments, item modifiers, and delivery status.",
+          "breadcrumb": "Orders ☰ → Live KDS"
         },
         "orderHistory": {
           "title": "Order History & Audit Logs",
           "desc": "Review all completed and paid orders, search by table number or payment ID, and audit tips and guest shares.",
-          "tip": "Quickly look up past receipts to handle customer questions or end-of-day reconciliation."
+          "tip": "Quickly look up past receipts to handle customer questions or end-of-day reconciliation.",
+          "breadcrumb": "Orders ☰ → Order History"
         },
         "analytics": {
           "title": "Revenue Analytics & CSV Export",
           "desc": "Analyze peak ordering hours, high-margin bestsellers, repeat customer trends, and export accounting-ready CSV files.",
-          "tip": "All CSV exports include UTF-8 formatting so spreadsheets open seamlessly in Excel and Google Sheets."
+          "tip": "All CSV exports include UTF-8 formatting so spreadsheets open seamlessly in Excel and Google Sheets.",
+          "breadcrumb": "Analytics ☰ → Overview"
+        },
+        "sales": {
+          "title": "Sales & Bestselling Items",
+          "desc": "Track your top revenue-generating dishes, margins, and average order value dynamics to optimize your culinary offerings.",
+          "tip": "Identify peak demand dishes to plan ingredient purchases and craft high-converting specials.",
+          "breadcrumb": "Analytics ☰ → Sales & Items"
+        },
+        "feedback": {
+          "title": "Guest Feedback & Ratings",
+          "desc": "Monitor genuine guest ratings and sentiment. Stay on top of guest satisfaction and respond proactively to their experiences.",
+          "tip": "Strong ratings build instant trust with new guests and drive repeat bookings.",
+          "breadcrumb": "Analytics ☰ → Feedback"
+        },
+        "staffKds": {
+          "title": "Staff & KDS Security",
+          "desc": "Set up a secure staff PIN and generate isolated kitchen tablet links with zero access to your finances or settings.",
+          "tip": "Kitchen staff see only dispatch orders, safeguarding your revenue data and sensitive store settings.",
+          "breadcrumb": "Settings ☰ → Staff & KDS"
         },
         "settings": {
           "title": "Venue Branding & Launch!",
-          "desc": "You're all set! Upload your venue logo, cover banner, set operating hours, and configure your staff KDS tablet PIN.",
-          "tip": "Save your basic venue settings right here to officially launch your digital ordering experience!"
+          "desc": "You're all set! Upload your venue logo, cover banner, set operating hours, and verify your store currency.",
+          "tip": "Save your basic venue settings right here to officially launch your digital ordering experience!",
+          "breadcrumb": "Settings ☰ → General Settings"
         }
       }
     },
@@ -381,7 +412,9 @@
       "confirmAndUpgrade": "Confirm & Upgrade",
       "venueLanguageDesc": "Choose the default language for your venue interface and guests.",
       "kdsPinTooltip": "Kitchen staff enter this PIN on the station tablet. Protects your admin dashboard from unauthorized access.",
-      "kdsUrlTooltip": "Isolated order screen URL for kitchen/bar iPads. Orders update in real time with audio chime."
+      "kdsUrlTooltip": "Isolated order screen URL for kitchen/bar iPads. Orders update in real time with audio chime.",
+      "hoursTooltip": "Your venue automatically shows Open/Closed status on the public menu and restricts reservation hours to your schedule.",
+      "currencyTooltip": "Select your venue primary currency. When switching, you can automatically convert all menu prices using your chosen exchange rate."
     },
     "analytics": {
       "badge": "Analytics",
@@ -552,7 +585,8 @@
     "markCompleted": "Mark as Completed",
     "assignTable": "Assign table",
     "unassign": "Unassign",
-    "booked": "Booked"
+    "booked": "Booked",
+    "antiDoubleBookingTooltip": "Anti-Double Booking: tables assigned to active reservations for this date are automatically locked to avoid overlapping bookings."
   },
   "reviews": {
     "title": "What guests are saying",
@@ -590,6 +624,7 @@
     "undo": "Undo status change",
     "soundOn": "Sound On",
     "soundOff": "Sound Off",
+    "soundTooltip": "Real-time sound alert notifies kitchen and bar staff about every incoming order instantly.",
     "columns": {
       "new": "New",
       "preparing": "Preparing",
@@ -688,7 +723,8 @@
     "deleteConfirm": "Delete table",
     "regenerateTooltip": "Generates a new cryptographic QR token. Immediately invalidates old links and physical photos to prevent unauthorized remote orders.",
     "activeToggleTooltip": "When inactive, scanning this QR code will not open the menu or allow orders.",
-    "bulkPrintTooltip": "Generate high-resolution printable table tent cards formatted for standard A4 paper."
+    "bulkPrintTooltip": "Generate high-resolution printable table tent cards formatted for standard A4 paper.",
+    "antiIntruderTooltip": "Cryptographic security: each table generates a unique tamper-proof token. If a QR photo was taken off-site, regenerating immediately invalidates the old code."
   },
   "landing": {
     "nav": {

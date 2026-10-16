@@ -289,7 +289,7 @@ export function LiveOrdersBoard({
                     type="button"
                     onClick={toggleSound}
                     title={soundEnabled ? t('soundOn') : t('soundOff')}
-                    className="inline-flex items-center gap-1.5 rounded-xl border border-black/10 bg-white/70 px-3 py-1.5 text-[12px] font-medium text-[#6B6A65] shadow-xs backdrop-blur-md transition-all hover:border-[#3B82F6]/30 hover:bg-white hover:text-[#0A0A0C] dark:border-white/10 dark:bg-white/[0.05] dark:text-[#94938D] dark:hover:border-white/20 dark:hover:bg-white/10 dark:hover:text-[#F5F4F2]">
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-black/10 bg-white/70 px-3 py-1.5 text-[12px] font-medium text-[#6B6A65] shadow-xs backdrop-blur-md transition-all hover:border-[#3B82F6]/30 hover:bg-white hover:text-[#0A0A0C] dark:border-white/10 dark:bg-white/[0.05] dark:text-[#94938D] dark:hover:border-white/20 dark:hover:bg-white/10 dark:hover:text-[#F5F4F2] cursor-pointer">
                     {soundEnabled ? (
                         <>
                             <Volume2 size={14} className="text-[#10B981]" />

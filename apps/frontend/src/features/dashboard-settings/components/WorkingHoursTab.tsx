@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import type { UpdateTenantSettingsDto } from '@my-app/types';
 import { workingHoursSchema } from '@my-app/types';
 import { ToggleSwitch } from '@/shared/ui/ToggleSwitch';
+import { InfoTooltip } from '@/shared/ui/Tooltip';
 
 type WorkingHours = z.infer<typeof workingHoursSchema>;
 
@@ -36,9 +37,12 @@ export function WorkingHoursTab() {
     return (
         <div className="space-y-6">
             <div>
-                <h2 className="text-lg font-semibold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]">
-                    {t('hoursTitle')}
-                </h2>
+                <div className="flex items-center gap-2">
+                    <h2 className="text-lg font-semibold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]">
+                        {t('hoursTitle')}
+                    </h2>
+                    <InfoTooltip content={t('hoursTooltip')} size={12} side="right" />
+                </div>
                 <p className="mt-1 text-sm text-[#6B6A65] dark:text-[#94938D]">
                     {t('hoursDesc')}
                 </p>
