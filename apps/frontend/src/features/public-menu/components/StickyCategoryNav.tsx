@@ -21,10 +21,12 @@ export function StickyCategoryNav({ categories }: StickyCategoryNavProps) {
         const updateStickyTop = () => {
             const header = document.querySelector('header');
             if (header) {
-                const headerTop = window.innerWidth < 640 ? 12 : 16;
+                const computedHeaderTop =
+                    parseFloat(window.getComputedStyle(header).top) ||
+                    (window.innerWidth < 640 ? 12 : 16);
                 const headerHeight = header.offsetHeight;
                 const gap = window.innerWidth < 640 ? 10 : 12;
-                setStickyTop(headerTop + headerHeight + gap);
+                setStickyTop(computedHeaderTop + headerHeight + gap);
             }
         };
 

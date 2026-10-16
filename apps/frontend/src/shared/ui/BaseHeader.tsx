@@ -20,7 +20,9 @@ interface BaseHeaderProps {
 
 export function BaseHeader({ children, centerContent, bottomContent, scrolled = false, activeRules }: BaseHeaderProps) {
     return (
-        <header className="sticky top-3 z-40 px-3 sm:top-4 sm:px-6">
+        <header
+            className="sticky z-40 px-3 sm:px-6 [--header-base-top:12px] sm:[--header-base-top:16px]"
+            style={{ top: 'calc(var(--demo-banner-height, 0px) + var(--header-base-top, 12px))' }}>
             <motion.div
                 animate={{
                     boxShadow: scrolled ? '0 12px 40px -16px rgba(10,10,12,0.18)' : '0 0px 0px 0px rgba(0,0,0,0)',

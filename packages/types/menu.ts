@@ -216,6 +216,7 @@ export interface PublicMenuVenueResponse {
     coverUrl: string | null;
     currency?: string;
     workingHours?: unknown;
+    subscriptionPlan?: 'free' | 'pro' | 'business';
 }
 
 /** Public category payload — only categories that still contain items. */

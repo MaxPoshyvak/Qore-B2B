@@ -1,11 +1,34 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ChefHat, Sparkles, ArrowRight, X, ExternalLink } from 'lucide-react';
 
 export function DemoTopBanner({ slug }: { slug: string }) {
     const [dismissed, setDismissed] = useState(false);
+    const bannerRef = useRef<HTMLElement>(null);
+
+    useEffect(() => {
+        if (slug !== 'demo' || dismissed) {
+            document.documentElement.style.setProperty('--demo-banner-height', '0px');
+            return;
+        }
+
+        const updateHeight = () => {
+            if (bannerRef.current) {
+                const height = bannerRef.current.offsetHeight;
+                document.documentElement.style.setProperty('--demo-banner-height', `${height}px`);
+            }
+        };
+
+        updateHeight();
+        window.addEventListener('resize', updateHeight);
+
+        return () => {
+            document.documentElement.style.setProperty('--demo-banner-height', '0px');
+            window.removeEventListener('resize', updateHeight);
+        };
+    }, [dismissed, slug]);
 
     if (slug !== 'demo' || dismissed) {
         return null;
@@ -13,6 +36,7 @@ export function DemoTopBanner({ slug }: { slug: string }) {
 
     return (
         <aside
+            ref={bannerRef}
             aria-label="Demo mode announcement"
             className="sticky top-0 z-50 border-b border-black/10 bg-[#0A0A0C]/90 px-3 py-2 text-white shadow-xl backdrop-blur-2xl dark:border-white/15 dark:bg-[#141417]/95">
             <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 text-xs">

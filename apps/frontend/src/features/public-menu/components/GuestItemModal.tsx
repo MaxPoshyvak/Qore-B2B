@@ -97,7 +97,7 @@ export function GuestItemModal({
         const preset: SelectionMap = {};
         for (const group of item.modifiers ?? []) {
             const isRequiredRadio = group.minSelections > 0 && group.maxSelections === 1;
-            preset[group.id] = isRequiredRadio && group.options[0] ? [group.options[0].id] : [];
+            preset[group.id] = isRequiredRadio && group.options?.[0] ? [group.options[0].id] : [];
         }
 
         setSelection(preset);
@@ -130,7 +130,7 @@ export function GuestItemModal({
         const picked: ModifierOptionResponse[] = [];
         for (const group of groups) {
             const ids = selection[group.id] ?? [];
-            for (const option of group.options) {
+            for (const option of group.options ?? []) {
                 if (ids.includes(option.id)) picked.push(option);
             }
         }
@@ -392,7 +392,7 @@ export function GuestItemModal({
                                         )}
 
                                         <div className="mt-3 flex flex-col gap-2.5">
-                                            {group.options.map((option) => {
+                                            {(group.options ?? []).map((option) => {
                                                 const checked = selectedIds.includes(option.id);
                                                 const adjustment = Number.parseFloat(option.priceAdjustment);
                                                 const hasAdjustment =

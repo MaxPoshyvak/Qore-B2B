@@ -162,6 +162,7 @@ export class CategoriesService {
                 coverUrl: tenant.settings?.coverUrl ?? null,
                 currency: tenant.settings?.currency ?? 'USD',
                 workingHours: tenant.settings?.workingHours ?? undefined,
+                subscriptionPlan: tenant.subscriptionPlan,
             },
             categories: categories.map((category) => ({
                 ...category,
