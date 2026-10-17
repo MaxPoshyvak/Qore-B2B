@@ -25,6 +25,7 @@ import { GeneralTab } from './GeneralTab';
 import { WorkingHoursTab } from './WorkingHoursTab';
 import { StaffKdsTab } from './StaffKdsTab';
 import { BillingTab } from './BillingTab';
+import { DesignTab } from './DesignTab';
 
 type WorkingHours = z.infer<typeof workingHoursSchema>;
 
@@ -40,6 +41,7 @@ function emptyWorkingHours(): WorkingHours {
 const TABS = [
     { value: 'general', key: 'general' },
     { value: 'hours', key: 'hours' },
+    { value: 'design', key: 'designTab' },
     { value: 'kds', key: 'staffKds' },
     { value: 'billing', key: 'billing' },
 ] as const;
@@ -166,6 +168,9 @@ export function SettingsForm({ slug, initialData }: SettingsFormProps) {
                                 </TabsContent>
                                 <TabsContent value="hours">
                                     <WorkingHoursTab />
+                                </TabsContent>
+                                <TabsContent value="design">
+                                    <DesignTab slug={slug} initialData={initialData} />
                                 </TabsContent>
                                 <TabsContent value="kds">
                                     <StaffKdsTab slug={slug} settings={settings} />

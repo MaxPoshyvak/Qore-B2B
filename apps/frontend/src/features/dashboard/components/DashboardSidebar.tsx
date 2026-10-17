@@ -56,6 +56,7 @@ const NAV: NavItem[] = [
 const SETTINGS_SECTIONS = [
     { key: 'general', value: 'general', ns: 'settings' },
     { key: 'hours', value: 'hours', ns: 'settings' },
+    { key: 'designTab', value: 'design', ns: 'settings' },
     { key: 'staffKds', value: 'kds', ns: 'settings' },
     { key: 'billing', value: 'billing', ns: 'settings' },
 ] as const;
@@ -132,7 +133,6 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
     const {
         isOpen: isTourOpen,
         stepIndex: tourStepIndex,
-        startTour,
         isMobileMenuOpen,
     } = useOnboardingTour();
     const activeTourStep = isTourOpen ? TOUR_STEPS[tourStepIndex] : null;
@@ -401,13 +401,6 @@ function SidebarContent({ slug, onNavigate }: { slug: string; onNavigate?: () =>
                 <div className="flex items-center justify-between">
                     <div className="hidden md:flex md:items-center md:gap-1.5">
                         {mounted && <ThemeToggle theme={theme} toggle={toggle} />}
-                        <button
-                            type="button"
-                            onClick={() => startTour(slug, true)}
-                            title={tSidebar('productTour')}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg text-[#6B6A65] transition-colors hover:bg-[#3B82F6]/10 hover:text-[#3B82F6] dark:text-[#94938D] dark:hover:bg-[#3B82F6]/15 dark:hover:text-[#60A5FA]">
-                            <Sparkles size={14} />
-                        </button>
                     </div>
                     <LanguageSwitcher direction="up" align="right" />
                 </div>

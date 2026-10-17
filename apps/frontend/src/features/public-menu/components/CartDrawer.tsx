@@ -430,7 +430,12 @@ export function CartDrawer({
                                             setTakeawayCheckoutOpen(true);
                                         }}
                                         disabled={items.length === 0 || isLoading}
-                                        className="inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#3B82F6]/20 transition-opacity hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50">
+                                        style={{
+                                            borderRadius: 'var(--theme-radius)',
+                                            backgroundColor: 'var(--theme-primary)',
+                                            color: 'var(--theme-primary-text)',
+                                        }}
+                                        className="inline-flex w-full items-center justify-center px-5 py-3.5 text-sm font-semibold shadow-lg shadow-black/15 transition-opacity hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50">
                                         {t('proceedToCheckout')}
                                     </button>
                                 ) : (
@@ -449,17 +454,31 @@ export function CartDrawer({
                                                     toggleReady.mutate(localSessionId, {
                                                         onSuccess: (data) => {
                                                             // Лише той гість, що натиснув «Confirm», має потрапити
-                                                             // на трекінг: сервер кладе `createdOrderId` саме у відповідь
+                                                            // на трекінг: сервер кладе `createdOrderId` саме у відповідь
                                                             // на останній підтверджений тап.
                                                             if (data.createdOrderId) onOrderCreated?.(data.createdOrderId);
                                                         },
                                                     })
                                                 }
                                             disabled={items.length === 0 || isLoading || toggleReady.isPending}
+                                            style={
+                                                isMineConfirmed
+                                                    ? {
+                                                          borderRadius: 'var(--theme-radius)',
+                                                          borderColor: 'var(--theme-primary)',
+                                                          color: 'var(--theme-primary)',
+                                                          backgroundColor: 'color-mix(in srgb, var(--theme-primary) 8%, transparent)',
+                                                      }
+                                                    : {
+                                                          borderRadius: 'var(--theme-radius)',
+                                                          backgroundColor: 'var(--theme-primary)',
+                                                          color: 'var(--theme-primary-text)',
+                                                      }
+                                            }
                                             className={
                                                 isMineConfirmed
-                                                    ? 'inline-flex w-full items-center justify-center rounded-2xl border border-[#3B82F6]/30 bg-[#3B82F6]/5 px-5 py-3.5 text-sm font-semibold text-[#2563EB] transition-colors hover:border-[#3B82F6]/60 dark:text-[#60A5FA] disabled:cursor-not-allowed disabled:opacity-50'
-                                                    : 'inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-5 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#3B82F6]/20 transition-opacity hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50'
+                                                    ? 'inline-flex w-full items-center justify-center border px-5 py-3.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50'
+                                                    : 'inline-flex w-full items-center justify-center px-5 py-3.5 text-sm font-semibold shadow-lg shadow-black/15 transition-opacity hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50'
                                             }>
                                             {isMineConfirmed ? t('unlockToAdd') : t('confirmMyOrder')}
                                         </button>

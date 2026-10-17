@@ -118,8 +118,13 @@ export function StickyCategoryNav({ categories }: StickyCategoryNavProps) {
     return (
         <div
             ref={wrapperRef}
-            style={{ top: `${stickyTop}px` }}
-            className="sticky z-30 my-2 rounded-2xl border border-black/5 bg-white/80 p-1 shadow-xs backdrop-blur-xl dark:border-white/10 dark:bg-[#0A0A0C]/80 sm:my-3 sm:p-1.5">
+            style={{
+                top: `${stickyTop}px`,
+                borderRadius: 'var(--theme-radius)',
+                backgroundColor: 'var(--theme-surface)',
+                borderColor: 'var(--theme-surface-border)',
+            }}
+            className="sticky z-30 my-2 border p-1 shadow-xs backdrop-blur-xl sm:my-3 sm:p-1.5">
             <div
                 ref={navRef}
                 className="flex items-center gap-1.5 overflow-x-auto hide-scrollbar px-0.5 py-0.5 scroll-smooth">
@@ -133,9 +138,20 @@ export function StickyCategoryNav({ categories }: StickyCategoryNavProps) {
                             type="button"
                             data-category={sectionId}
                             onClick={(e) => handleCategoryClick(category.id, e)}
-                            className={`${body.className} relative shrink-0 rounded-xl px-3 py-1 text-xs font-semibold whitespace-nowrap transition-colors duration-150 ${
+                            style={
                                 isActive
-                                    ? 'bg-[#3B82F6] text-white shadow-xs'
+                                    ? {
+                                          backgroundColor: 'var(--theme-primary)',
+                                          color: 'var(--theme-primary-text)',
+                                          borderRadius: 'calc(var(--theme-radius) * 0.6)',
+                                      }
+                                    : {
+                                          borderRadius: 'calc(var(--theme-radius) * 0.6)',
+                                      }
+                            }
+                            className={`font-theme-body relative shrink-0 px-3 py-1 text-xs font-semibold whitespace-nowrap transition-colors duration-150 ${
+                                isActive
+                                    ? 'shadow-xs'
                                     : 'text-[#6B6A65] hover:bg-black/5 hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:bg-white/5 dark:hover:text-[#F5F4F2]'
                             }`}>
                             <span>{category.name}</span>

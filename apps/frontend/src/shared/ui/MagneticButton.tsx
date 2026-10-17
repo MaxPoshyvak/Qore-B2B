@@ -9,6 +9,7 @@ export type Spark = { id: number; angle: number; distance: number; duration: num
 type MagneticButtonProps = {
     children: React.ReactNode;
     className?: string;
+    style?: React.CSSProperties;
     href?: string;
     onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
     showSparks?: boolean;
@@ -19,6 +20,7 @@ const MotionLink = motion.create(Link);
 export function MagneticButton({
     children,
     className,
+    style,
     href = '#',
     onClick,
     showSparks = false,
@@ -64,7 +66,7 @@ export function MagneticButton({
         onMouseMove: handleMove,
         onMouseLeave: handleLeave,
         onMouseEnter: triggerSparks,
-        style: { x: springX, y: springY },
+        style: { x: springX, y: springY, ...style },
         whileHover: { scale: 1.03 },
         whileTap: { scale: 0.96 },
         transition: { type: 'spring' as const, stiffness: 400, damping: 25 },

@@ -1,10 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import type { PublicMenuVenueResponse } from '@my-app/types';
+import type { PublicMenuVenueResponse, ThemeConfig } from '@my-app/types';
+import { DEFAULT_THEME_CONFIG } from '@my-app/types';
 
 import { EASE } from '@/shared/config/animations';
-import { display } from '@/shared/lib/fonts';
 import { LiveStatusBadge } from './LiveStatusBadge';
 
 type VenueHeaderProps = {
@@ -16,6 +16,11 @@ export function VenueHeader({ venue }: VenueHeaderProps) {
     const coverUrl = venue.coverUrl ?? undefined;
     const hasCover = Boolean(coverUrl);
 
+    const activeTheme: ThemeConfig =
+        (venue as any).activeTheme?.themeConfig ?? DEFAULT_THEME_CONFIG;
+    const badgeVariant = activeTheme.badgeVariant ?? 'minimal';
+    const brandStamp = activeTheme.brandStamp;
+
     return (
         <motion.header
             initial={{ opacity: 0, y: 16 }}
@@ -23,13 +28,20 @@ export function VenueHeader({ venue }: VenueHeaderProps) {
             transition={{ duration: 0.6, ease: EASE }}
             className="mt-2.5 text-left sm:mt-6">
             {/* Cinematic cover banner with compact modern aspect ratio */}
-            <div className="relative h-28 overflow-hidden rounded-2xl border border-black/5 shadow-xs dark:border-white/10 sm:h-44 sm:rounded-3xl">
+            <div
+                style={{ borderRadius: 'var(--theme-radius)' }}
+                className="relative h-28 overflow-hidden border border-black/5 shadow-xs dark:border-white/10 sm:h-44">
                 {hasCover ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={coverUrl} alt={`${venue.name} cover`} className="h-full w-full object-cover" />
                 ) : (
-                    <div className="h-full w-full bg-gradient-to-br from-[#3B82F6]/25 via-[#8B5CF6]/20 to-[#10B981]/15">
-                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_30%_0%,rgba(59,130,246,0.30),transparent_70%),radial-gradient(ellipse_60%_60%_at_85%_100%,rgba(139,92,246,0.28),transparent_70%)]" />
+                    <div
+                        style={{
+                            background:
+                                'linear-gradient(135deg, color-mix(in srgb, var(--theme-primary) 35%, transparent), color-mix(in srgb, var(--theme-primary) 10%, transparent))',
+                        }}
+                        className="h-full w-full">
+                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_30%_0%,rgba(255,255,255,0.15),transparent_70%)]" />
                     </div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
@@ -39,24 +51,56 @@ export function VenueHeader({ venue }: VenueHeaderProps) {
             <div className="relative -mt-8 px-2 sm:-mt-12 sm:px-4">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                     <div className="flex items-end gap-3 min-w-0 sm:gap-4">
-                        <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border-2 border-white/80 bg-white/40 shadow-lg backdrop-blur-xl dark:border-white/15 dark:bg-[#121215]/80 sm:h-24 sm:w-24">
+                        <div
+                            style={{
+                                borderRadius:
+                                    badgeVariant === 'organic-leaf'
+                                        ? '28px'
+                                        : 'var(--theme-radius)',
+                                backgroundColor: 'var(--theme-surface)',
+                                borderColor:
+                                    badgeVariant === 'luxury-crest'
+                                        ? '#D4AF37'
+                                        : badgeVariant === 'cyber-tag'
+                                          ? '#06B6D4'
+                                          : 'var(--theme-surface-border)',
+                                boxShadow:
+                                    badgeVariant === 'luxury-crest'
+                                        ? '0 8px 20px -4px rgba(212, 175, 55, 0.35)'
+                                        : badgeVariant === 'cyber-tag'
+                                          ? '0 0 16px rgba(6, 182, 212, 0.45)'
+                                          : undefined,
+                            }}
+                            className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden border-2 shadow-lg backdrop-blur-xl sm:h-24 sm:w-24">
                             {venue.logoUrl ? (
                                 // eslint-disable-next-line @next/next/no-img-element
-                                <img src={venue.logoUrl} alt={venue.name} className="h-full w-full rounded-2xl object-cover" />
+                                <img src={venue.logoUrl} alt={venue.name} className="h-full w-full object-cover" />
                             ) : (
-                                <span className={`${display.className} text-2xl font-bold text-white drop-shadow-sm sm:text-4xl`}>
+                                <span className="font-theme-heading text-2xl font-bold text-[var(--theme-text-primary)] drop-shadow-sm sm:text-4xl">
                                     {venue.name.trim().charAt(0).toUpperCase() || '?'}
                                 </span>
                             )}
                         </div>
 
                         <div className="min-w-0 flex-1 pb-0.5">
-                            <h1
-                                className={`${display.className} truncate text-xl font-bold tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2] sm:text-3xl`}>
+                            {brandStamp && (
+                                <div className="mb-1 text-[9.5px] font-bold uppercase tracking-wider text-[var(--theme-primary)] sm:text-[10.5px]">
+                                    {badgeVariant === 'luxury-crest' && '★ '}
+                                    {badgeVariant === 'editorial-flourish' && '✦ '}
+                                    {badgeVariant === 'cyber-tag' && '[ '}
+                                    {badgeVariant === 'organic-leaf' && '🌿 '}
+                                    {badgeVariant === 'minimal' && '● '}
+                                    {brandStamp}
+                                    {badgeVariant === 'cyber-tag' && ' ]'}
+                                    {badgeVariant === 'editorial-flourish' && ' ✦'}
+                                    {badgeVariant === 'luxury-crest' && ' ★'}
+                                </div>
+                            )}
+                            <h1 className="font-theme-heading truncate text-xl font-bold tracking-tight text-[var(--theme-text-primary)] sm:text-3xl">
                                 {venue.name}
                             </h1>
                             {venue.description && (
-                                <p className="mt-0.5 line-clamp-1 max-w-lg text-xs text-[#6B6A65] dark:text-[#94938D] sm:text-[13.5px]">
+                                <p className="font-theme-body mt-0.5 line-clamp-1 max-w-lg text-xs text-[var(--theme-text-secondary)] sm:text-[13.5px]">
                                     {venue.description}
                                 </p>
                             )}

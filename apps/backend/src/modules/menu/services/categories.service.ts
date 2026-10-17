@@ -126,7 +126,7 @@ export class CategoriesService {
 
         const tenant = await this.prisma.tenant.findFirst({
             where: { slug },
-            include: { settings: true },
+            include: { settings: true, activeTheme: true },
         });
 
         if (!tenant) throw new NotFoundException('Venue not found');
@@ -163,6 +163,7 @@ export class CategoriesService {
                 currency: tenant.settings?.currency ?? 'USD',
                 workingHours: tenant.settings?.workingHours ?? undefined,
                 subscriptionPlan: tenant.subscriptionPlan,
+                activeTheme: tenant.activeTheme ?? null,
             },
             categories: categories.map((category) => ({
                 ...category,

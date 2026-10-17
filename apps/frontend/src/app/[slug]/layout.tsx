@@ -1,6 +1,7 @@
 import type { Metadata, ResolvingMetadata } from 'next';
-import { isReservedSlug } from '@my-app/types';
+import { isReservedSlug, type ThemeConfig } from '@my-app/types';
 import { DemoTopBanner } from '@/features/public-menu/components/DemoTopBanner';
+import { PublicThemeInjector } from '@/features/public-venue/theme/PublicThemeInjector';
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -77,10 +78,28 @@ export default async function VenueLayout({
 }) {
     const { slug } = await params;
 
+    let activeTheme: ThemeConfig | null = null;
+    if (slug && !isReservedSlug(slug)) {
+        try {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+            const res = await fetch(`${apiUrl}/tenants/public/${encodeURIComponent(slug)}`, {
+                cache: 'no-store',
+            });
+            if (res.ok) {
+                const json = await res.json();
+                activeTheme = (json?.data?.activeTheme?.themeConfig as ThemeConfig) ?? null;
+            }
+        } catch {
+            // fallback to default
+        }
+    }
+
     return (
         <>
+            <PublicThemeInjector theme={activeTheme} slug={slug} />
             <DemoTopBanner slug={slug} />
             {children}
         </>
     );
 }
+

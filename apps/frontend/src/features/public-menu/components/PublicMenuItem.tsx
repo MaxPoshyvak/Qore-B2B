@@ -54,10 +54,15 @@ export function PublicMenuItem({ item, onSelect, discountedPrice, discountBadge 
                     type="button"
                     onClick={() => onSelect(item)}
                     aria-label={`Customize ${item.name}`}
+                    style={{
+                        borderRadius: 'var(--theme-radius)',
+                        backgroundColor: 'var(--theme-surface)',
+                        borderColor: 'var(--theme-surface-border)',
+                    }}
                     className={cn(
-                        'group flex h-full w-full flex-col overflow-hidden rounded-[28px] border border-white/60 bg-white/80 text-left shadow-xl backdrop-blur-2xl transition-all duration-300 dark:border-white/10 dark:bg-white/[0.04]',
+                        'group flex h-full w-full flex-col overflow-hidden border text-left shadow-lg backdrop-blur-xl transition-all duration-300',
                         // Ховер-ефекти лише для пристроїв зі справжнім курсором.
-                        '[@media(hover:hover)]:hover:-translate-y-1 [@media(hover:hover)]:hover:border-[#3B82F6]/40 [@media(hover:hover)]:hover:shadow-2xl [@media(hover:hover)]:hover:shadow-[#3B82F6]/10',
+                        '[@media(hover:hover)]:hover:-translate-y-1 [@media(hover:hover)]:hover:border-[var(--theme-card-border-hover,var(--theme-primary))] [@media(hover:hover)]:hover:shadow-[var(--theme-card-glow,0_20px_25px_-5px_rgba(0,0,0,0.1))]',
                         !item.isActive && 'opacity-60',
                     )}>
                     {/* Медіа 4:3 */}
@@ -113,12 +118,12 @@ export function PublicMenuItem({ item, onSelect, discountedPrice, discountBadge 
                     {/* Текст + ціна */}
                     <div className="flex flex-1 flex-col p-5">
                         <h3
-                            className={`${display.className} text-[17px] font-bold leading-snug tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]`}>
+                            className="font-theme-heading text-[17px] font-bold leading-snug tracking-tight text-[var(--theme-text-primary)]">
                             {item.name}
                         </h3>
 
                         {item.description && (
-                            <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
+                            <p className="font-theme-body mt-1.5 line-clamp-2 text-sm leading-relaxed text-[var(--theme-text-secondary)]">
                                 {item.description}
                             </p>
                         )}
@@ -130,12 +135,12 @@ export function PublicMenuItem({ item, onSelect, discountedPrice, discountBadge 
                                         <span className="text-xs font-medium text-[#6B6A65] line-through dark:text-[#94938D]">
                                             {formatPrice(item.price, currency)}
                                         </span>
-                                        <span className="text-xl font-bold text-[#F59E0B]">
+                                        <span className="text-xl font-bold text-[var(--theme-accent)]">
                                             {formatPrice(discountedPrice, currency)}
                                         </span>
                                     </div>
                                 ) : (
-                                    <span className="text-xl font-bold text-[#0A0A0C] dark:text-[#F5F4F2]">
+                                    <span className="text-xl font-bold text-[var(--theme-text-primary)]">
                                         {formatPrice(item.price, currency)}
                                     </span>
                                 )}
@@ -143,7 +148,7 @@ export function PublicMenuItem({ item, onSelect, discountedPrice, discountBadge 
 
                             {/* Підказка, що страву можна зібрати під себе */}
                             {hasModifiers && item.isActive && (
-                                <span className="shrink-0 text-[11px] font-semibold text-[#2563EB] dark:text-[#60A5FA]">
+                                <span className="shrink-0 text-[11px] font-semibold text-[var(--theme-primary)]">
                                     {t('customize')}
                                 </span>
                             )}

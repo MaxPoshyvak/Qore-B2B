@@ -24,3 +24,46 @@
 .animate-fade-up {
     animation: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+
+:root {
+    --theme-font-heading: var(--font-space-grotesk), sans-serif;
+    --theme-font-body: var(--font-inter), sans-serif;
+    --theme-radius: 1.25rem;
+    --theme-primary: #3B82F6;
+    --theme-primary-hover: #2563EB;
+    --theme-primary-text: #FFFFFF;
+    --theme-bg: #FAFAF8;
+    --theme-surface: rgba(255, 255, 255, 0.75);
+    --theme-surface-border: rgba(0, 0, 0, 0.08);
+    --theme-text-primary: #0A0A0C;
+    --theme-text-secondary: #6B6A65;
+    --theme-accent: #F59E0B;
+}
+
+.dark {
+    --theme-font-heading: var(--font-space-grotesk), sans-serif;
+    --theme-font-body: var(--font-inter), sans-serif;
+    --theme-radius: 1.25rem;
+    --theme-primary: #3B82F6;
+    --theme-primary-hover: #60A5FA;
+    --theme-primary-text: #FFFFFF;
+    --theme-bg: #0A0A0C;
+    --theme-surface: rgba(18, 18, 21, 0.75);
+    --theme-surface-border: rgba(255, 255, 255, 0.10);
+    --theme-text-primary: #F5F4F2;
+    --theme-text-secondary: #9C9B95;
+    --theme-accent: #FBBF24;
+}
+
+@utility font-theme-heading {
+    font-family: var(--theme-font-heading);
+}
+
+@utility font-theme-body {
+    font-family: var(--theme-font-body);
+}
+
+@utility rounded-theme {
+    border-radius: var(--theme-radius);
+}
+

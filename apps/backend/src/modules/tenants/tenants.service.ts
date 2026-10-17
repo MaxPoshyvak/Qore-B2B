@@ -2,8 +2,17 @@ import { BadRequestException, ConflictException, ForbiddenException, Injectable,
 import { randomInt } from 'crypto';
 import { CreateTenantDto } from './dto/tenants.dto';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
-import { isReservedSlug, PublicTenantResponse, SuccessResponse, UpdateTenantSettingsDto } from '@my-app/types';
-import { Prisma, Tenant } from '@my-app/database';
+import {
+    DEFAULT_THEME_CONFIG,
+    isReservedSlug,
+    PublicTenantResponse,
+    SuccessResponse,
+    THEME_PRESETS,
+    ThemeConfig,
+    UpdateTenantSettingsDto,
+    UpdateTenantThemeDto,
+} from '@my-app/types';
+import { Prisma, Tenant, TenantTheme } from '@my-app/database';
 
 
 @Injectable()
@@ -67,7 +76,7 @@ export class TenantsService {
     async getTenantBySlug(slug: string, userId: string): Promise<SuccessResponse<PublicTenantResponse>> {
         const tenant = await this.prisma.tenant.findUnique({
             where: { slug, ownerId: userId },
-            include: { settings: true },
+            include: { settings: true, activeTheme: true },
         });
 
         if (!tenant) {
@@ -79,14 +88,13 @@ export class TenantsService {
 
     /**
      * Public, auth-free tenant lookup for the B2C venue page. Resolves by slug
-     * only and always joins `settings` so guests see hours, Wi-Fi and location
-     * without a JWT. The 404 must stay indistinguishable from an unauthorized
-     * call, hence no ownership/session check here.
+     * only and always joins `settings` and `activeTheme` so guests see hours,
+     * Wi-Fi, location, and customized themes without a JWT.
      */
     async getPublicTenantBySlug(slug: string): Promise<SuccessResponse<PublicTenantResponse>> {
         const tenant = await this.prisma.tenant.findUnique({
             where: { slug },
-            include: { settings: true },
+            include: { settings: true, activeTheme: true },
         });
 
         if (!tenant) {
@@ -234,4 +242,68 @@ export class TenantsService {
 
         return { success: true, data: { kdsToken: null, kdsPin: null } };
     }
+
+    /** Returns the active theme for a venue, falling back to Modern Minimal default. */
+    async getTenantTheme(slug: string): Promise<SuccessResponse<ThemeConfig>> {
+        const tenant = await this.prisma.tenant.findUnique({
+            where: { slug },
+            include: { activeTheme: true },
+        });
+
+        if (!tenant) {
+            throw new NotFoundException('Tenant not found');
+        }
+
+        const config = (tenant.activeTheme?.themeConfig as ThemeConfig | undefined) ?? DEFAULT_THEME_CONFIG;
+        return { success: true, data: config };
+    }
+
+    /** Updates or sets a venue's active theme (from a preset or custom config). */
+    async updateTenantTheme(
+        slug: string,
+        dto: UpdateTenantThemeDto,
+        userId: string,
+    ): Promise<SuccessResponse<{ id: string; themeConfig: ThemeConfig; isAiGenerated: boolean }>> {
+        const tenant = await this.prisma.tenant.findFirst({
+            where: { slug, ownerId: userId },
+            include: { activeTheme: true },
+        });
+
+        if (!tenant) {
+            throw new NotFoundException('Venue not found or access denied');
+        }
+
+        let resolvedConfig: ThemeConfig = DEFAULT_THEME_CONFIG;
+
+        if (dto.presetId && THEME_PRESETS[dto.presetId]) {
+            resolvedConfig = THEME_PRESETS[dto.presetId];
+        } else if (dto.customConfig) {
+            resolvedConfig = dto.customConfig;
+        }
+
+        const isAi = !dto.presetId && Boolean(dto.customConfig);
+
+        const newTheme = await this.prisma.tenantTheme.create({
+            data: {
+                tenantId: tenant.id,
+                themeConfig: resolvedConfig as unknown as Prisma.InputJsonValue,
+                isAiGenerated: isAi,
+            },
+        });
+
+        await this.prisma.tenant.update({
+            where: { id: tenant.id },
+            data: { activeThemeId: newTheme.id },
+        });
+
+        return {
+            success: true,
+            data: {
+                id: newTheme.id,
+                themeConfig: resolvedConfig,
+                isAiGenerated: isAi,
+            },
+        };
+    }
 }
+

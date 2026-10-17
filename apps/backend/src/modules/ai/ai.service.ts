@@ -21,6 +21,11 @@ import {
     CompactMenuItem,
 } from './prompts/waiter-chat.prompt';
 import {
+    GENERATE_THEME_SYSTEM_PROMPT,
+    buildGenerateThemeUserPrompt,
+    sanitizeAiThemeOutput,
+} from './prompts/generate-theme.prompt';
+import {
     GenerateDishInput,
     GenerateDishOutput,
     CartUpsellInput,
@@ -34,6 +39,8 @@ import {
     AiWaiterRawOutput,
     aiWaiterRawOutputSchema,
     AiWaiterRecommendedDish,
+    GenerateThemeInput,
+    GenerateThemeOutput,
 } from '@my-app/types';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { UpsellCacheService } from './services/upsell-cache.service';
@@ -535,5 +542,46 @@ export class AiService {
                 recommendedDishes,
             },
         };
+    }
+
+    async generateTheme(dto: GenerateThemeInput): Promise<GenerateThemeOutput> {
+        if (!env.OPENROUTER_API_KEY) {
+            throw new InternalServerErrorException('OpenRouter API key is not configured');
+        }
+
+        const userPrompt = buildGenerateThemeUserPrompt(
+            dto.prompt,
+            dto.venueName,
+            dto.venueType,
+            dto.currentTheme,
+            dto.mode,
+        );
+
+        try {
+            const completion = await this.client.chat.completions.create({
+                model: this.upsellModel || this.dishModel,
+                messages: [
+                    { role: 'system', content: GENERATE_THEME_SYSTEM_PROMPT },
+                    { role: 'user', content: userPrompt },
+                ],
+                response_format: { type: 'json_object' },
+                temperature: 0.7,
+                max_tokens: 650,
+            });
+
+            const content = completion.choices[0]?.message?.content;
+            if (!content) {
+                throw new BadGatewayException('OpenRouter returned an empty response');
+            }
+
+            const rawJson = JSON.parse(content);
+            return sanitizeAiThemeOutput(rawJson);
+        } catch (error) {
+            if (error instanceof BadGatewayException || error instanceof InternalServerErrorException) {
+                throw error;
+            }
+            this.logger.error('Failed to generate theme via OpenRouter', error);
+            throw new BadGatewayException('Failed to generate theme. Please try again.');
+        }
     }
 }

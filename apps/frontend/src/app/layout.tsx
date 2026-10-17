@@ -6,6 +6,8 @@ import type { Metadata, Viewport } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 
+import { fontVariables } from '@/shared/lib/fonts';
+
 import './globals.css';
 
 export const viewport: Viewport = {
@@ -72,7 +74,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 
     return (
         <html lang={locale} suppressHydrationWarning>
-            <body>
+            <body className={fontVariables}>
                 <NextIntlClientProvider locale={locale} messages={messages}>
                     <AuthProvider>
                         <QueryProvider>

@@ -4,10 +4,17 @@ import { AiService } from './ai.service';
 import { GenerateDishDto } from './dto/generate-dish.dto';
 import { CartUpsellDto } from './dto/cart-upsell.dto';
 import { WaiterChatDto } from './dto/waiter-chat.dto';
+import { GenerateThemeDto } from './dto/generate-theme.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { SubscriptionGuard } from 'src/common/guards/subscription.guard';
 import { RequirePlan } from 'src/common/decorators/require-plan.decorator';
-import { GenerateDishOutput, SuccessResponse, CartUpsellResponse, AiWaiterChatResponse } from '@my-app/types';
+import {
+    GenerateDishOutput,
+    SuccessResponse,
+    CartUpsellResponse,
+    AiWaiterChatResponse,
+    GenerateThemeOutput,
+} from '@my-app/types';
 
 @Controller('ai')
 export class AiController {
@@ -20,6 +27,15 @@ export class AiController {
     async generateDish(@Body() dto: GenerateDishDto): Promise<SuccessResponse<GenerateDishOutput>> {
         const data = await this.aiService.generateDish(dto);
         return { success: true, data, message: 'Dish generated successfully' };
+    }
+
+    @Post('generate-theme')
+    @UseGuards(JwtAuthGuard, SubscriptionGuard, ThrottlerGuard)
+    @RequirePlan('pro')
+    @Throttle({ default: { limit: 5, ttl: 60000 } })
+    async generateTheme(@Body() dto: GenerateThemeDto): Promise<SuccessResponse<GenerateThemeOutput>> {
+        const data = await this.aiService.generateTheme(dto);
+        return { success: true, data, message: 'Theme generated successfully' };
     }
 
     @Post('cart-upsell')

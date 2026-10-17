@@ -22,3 +22,5 @@ export * from './pricing';
 export * from './payments';
 export * from './currency';
 export * from './locale';
+export * from './theme';
+export * from './theme-presets';

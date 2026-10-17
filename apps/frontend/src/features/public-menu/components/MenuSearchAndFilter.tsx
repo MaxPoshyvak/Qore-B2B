@@ -105,7 +105,13 @@ export function MenuSearchAndFilter({
             {/* Unified Search & Filter Control Bar */}
             <div className="flex items-center gap-2">
                 {/* Search Field */}
-                <div className="relative flex flex-1 items-center rounded-2xl border border-black/10 bg-white/70 px-3 py-1.5 shadow-xs backdrop-blur-xl transition-all focus-within:border-[#3B82F6]/50 focus-within:ring-2 focus-within:ring-[#3B82F6]/20 dark:border-white/10 dark:bg-white/[0.04] sm:px-4 sm:py-2.5">
+                <div
+                    style={{
+                        borderRadius: 'var(--theme-radius)',
+                        backgroundColor: 'var(--theme-surface)',
+                        borderColor: 'var(--theme-surface-border)',
+                    }}
+                    className="relative flex flex-1 items-center border px-3 py-1.5 shadow-xs backdrop-blur-xl transition-all focus-within:border-[var(--theme-primary)] focus-within:ring-2 focus-within:ring-[var(--theme-primary)]/20 sm:px-4 sm:py-2.5">
                     <Search className="mr-2 h-3.5 w-3.5 shrink-0 text-[#6B6A65] dark:text-[#94938D] sm:mr-2.5 sm:h-4 sm:w-4" />
                     <input
                         type="text"
@@ -131,16 +137,30 @@ export function MenuSearchAndFilter({
                     type="button"
                     onClick={() => setIsFilterOpen((prev) => !prev)}
                     aria-expanded={isFilterOpen}
-                    className={cn(
-                        'flex shrink-0 items-center gap-1.5 rounded-2xl border px-3 py-1.5 text-xs font-semibold shadow-xs backdrop-blur-xl transition-all sm:gap-2 sm:px-3.5 sm:py-2.5',
+                    style={
                         activeFilterCount > 0 || isFilterOpen
-                            ? 'border-[#3B82F6]/50 bg-[#3B82F6]/10 text-[#3B82F6] dark:border-[#3B82F6]/60 dark:bg-[#3B82F6]/20 dark:text-[#60A5FA]'
-                            : 'border-black/10 bg-white/70 text-[#6B6A65] hover:border-black/20 hover:text-[#0A0A0C] dark:border-white/10 dark:bg-white/[0.04] dark:text-[#94938D] dark:hover:border-white/20 dark:hover:text-[#F5F4F2]',
-                    )}>
+                            ? {
+                                  borderRadius: 'var(--theme-radius)',
+                                  borderColor: 'var(--theme-primary)',
+                                  backgroundColor: 'color-mix(in srgb, var(--theme-primary) 14%, transparent)',
+                                  color: 'var(--theme-primary)',
+                              }
+                            : {
+                                  borderRadius: 'var(--theme-radius)',
+                                  backgroundColor: 'var(--theme-surface)',
+                                  borderColor: 'var(--theme-surface-border)',
+                              }
+                    }
+                    className="flex shrink-0 items-center gap-1.5 border px-3 py-1.5 text-xs font-semibold shadow-xs backdrop-blur-xl transition-all sm:gap-2 sm:px-3.5 sm:py-2.5">
                     <SlidersHorizontal className="h-4 w-4" />
                     <span className="hidden sm:inline">{t('filters')}</span>
                     {activeFilterCount > 0 && (
-                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#3B82F6] text-[10px] font-bold text-white shadow-sm">
+                        <span
+                            style={{
+                                backgroundColor: 'var(--theme-primary)',
+                                color: 'var(--theme-primary-text)',
+                            }}
+                            className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold shadow-sm">
                             {activeFilterCount}
                         </span>
                     )}
@@ -155,7 +175,12 @@ export function MenuSearchAndFilter({
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -6, scale: 0.98 }}
                         transition={{ duration: 0.15 }}
-                        className="relative z-30 overflow-hidden rounded-2xl border border-black/10 bg-white/95 p-4 shadow-2xl backdrop-blur-2xl dark:border-white/10 dark:bg-[#141418]/95 sm:p-5">
+                        style={{
+                            borderRadius: 'var(--theme-radius)',
+                            backgroundColor: 'var(--theme-surface)',
+                            borderColor: 'var(--theme-surface-border)',
+                        }}
+                        className="relative z-30 overflow-hidden border p-4 shadow-2xl backdrop-blur-2xl sm:p-5">
                         <div className="flex flex-col gap-4">
                             {/* Sort Section */}
                             <div>
@@ -170,10 +195,22 @@ export function MenuSearchAndFilter({
                                                 key={opt.id}
                                                 type="button"
                                                 onClick={() => onSortChange(opt.id)}
-                                                className={cn(
-                                                    'flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all',
+                                                style={
                                                     isSelected
-                                                        ? 'border-[#3B82F6] bg-[#3B82F6] text-white shadow-sm'
+                                                        ? {
+                                                              backgroundColor: 'var(--theme-primary)',
+                                                              color: 'var(--theme-primary-text)',
+                                                              borderColor: 'var(--theme-primary)',
+                                                              borderRadius: 'calc(var(--theme-radius) * 0.65)',
+                                                          }
+                                                        : {
+                                                              borderRadius: 'calc(var(--theme-radius) * 0.65)',
+                                                          }
+                                                }
+                                                className={cn(
+                                                    'flex items-center gap-1.5 border px-3 py-1.5 text-xs font-semibold transition-all',
+                                                    isSelected
+                                                        ? 'shadow-xs'
                                                         : 'border-black/10 bg-black/5 text-[#6B6A65] hover:bg-black/10 hover:text-[#0A0A0C] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D] dark:hover:bg-white/10 dark:hover:text-[#F5F4F2]',
                                                 )}>
                                                 <span>{opt.label}</span>
@@ -222,10 +259,22 @@ export function MenuSearchAndFilter({
                                                     key={tag}
                                                     type="button"
                                                     onClick={() => onTagToggle(tag)}
-                                                    className={cn(
-                                                        'flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all',
+                                                    style={
                                                         isSelected
-                                                            ? 'border-[#3B82F6] bg-[#3B82F6] text-white shadow-sm'
+                                                            ? {
+                                                                  backgroundColor: 'var(--theme-primary)',
+                                                                  color: 'var(--theme-primary-text)',
+                                                                  borderColor: 'var(--theme-primary)',
+                                                                  borderRadius: 'calc(var(--theme-radius) * 0.65)',
+                                                              }
+                                                            : {
+                                                                  borderRadius: 'calc(var(--theme-radius) * 0.65)',
+                                                              }
+                                                    }
+                                                    className={cn(
+                                                        'flex items-center gap-1.5 border px-3 py-1.5 text-xs font-semibold transition-all',
+                                                        isSelected
+                                                            ? 'shadow-xs'
                                                             : 'border-black/10 bg-black/5 text-[#6B6A65] hover:bg-black/10 hover:text-[#0A0A0C] dark:border-white/10 dark:bg-white/5 dark:text-[#94938D] dark:hover:bg-white/10 dark:hover:text-[#F5F4F2]',
                                                     )}>
                                                     <span>{getTranslatedTag(tag, t)}</span>
@@ -259,7 +308,12 @@ export function MenuSearchAndFilter({
                                 <button
                                     type="button"
                                     onClick={() => setIsFilterOpen(false)}
-                                    className="rounded-xl bg-[#3B82F6] px-4 py-1.5 text-xs font-semibold text-white shadow-sm transition-all hover:bg-blue-600">
+                                    style={{
+                                        backgroundColor: 'var(--theme-primary)',
+                                        color: 'var(--theme-primary-text)',
+                                        borderRadius: 'calc(var(--theme-radius) * 0.65)',
+                                    }}
+                                    className="px-4 py-1.5 text-xs font-semibold shadow-sm transition-opacity hover:opacity-90">
                                     {t('close')}
                                 </button>
                             </div>
@@ -276,7 +330,13 @@ export function MenuSearchAndFilter({
                         <button
                             type="button"
                             onClick={() => onSortChange('default')}
-                            className="flex items-center gap-1 rounded-full border border-blue-500/30 bg-blue-500/10 px-2.5 py-1 font-medium text-blue-600 dark:text-blue-400">
+                            style={{
+                                borderRadius: 'calc(var(--theme-radius) * 0.65)',
+                                borderColor: 'color-mix(in srgb, var(--theme-primary) 30%, transparent)',
+                                backgroundColor: 'color-mix(in srgb, var(--theme-primary) 12%, transparent)',
+                                color: 'var(--theme-primary)',
+                            }}
+                            className="flex items-center gap-1 border px-2.5 py-1 font-medium">
                             <ArrowUpDown className="h-2.5 w-2.5" />
                             <span>{currentSortLabel}</span>
                             <X className="h-3 w-3 hover:text-rose-500" />
@@ -301,7 +361,13 @@ export function MenuSearchAndFilter({
                             key={tag}
                             type="button"
                             onClick={() => onTagToggle(tag)}
-                            className="flex items-center gap-1 rounded-full border border-blue-500/30 bg-blue-500/10 px-2.5 py-1 font-medium text-blue-600 dark:text-blue-400">
+                            style={{
+                                borderRadius: 'calc(var(--theme-radius) * 0.65)',
+                                borderColor: 'color-mix(in srgb, var(--theme-primary) 30%, transparent)',
+                                backgroundColor: 'color-mix(in srgb, var(--theme-primary) 12%, transparent)',
+                                color: 'var(--theme-primary)',
+                            }}
+                            className="flex items-center gap-1 border px-2.5 py-1 font-medium">
                             <span>{getTranslatedTag(tag, t)}</span>
                             <X className="h-3 w-3 hover:text-rose-500" />
                         </button>

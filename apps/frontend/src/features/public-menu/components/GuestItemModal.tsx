@@ -309,7 +309,7 @@ export function GuestItemModal({
                         <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-6 py-5">
                             <div className="flex items-start justify-between gap-4">
                                 <h2
-                                    className={`${display.className} text-2xl font-bold leading-tight tracking-tight text-[#0A0A0C] dark:text-[#F5F4F2]`}>
+                                    className="font-theme-heading text-2xl font-bold leading-tight tracking-tight text-[var(--theme-text-primary)]">
                                     {item.name}
                                 </h2>
                                 <div className="shrink-0 text-right">
@@ -506,7 +506,12 @@ export function GuestItemModal({
                                     type="button"
                                     onClick={handleAddToCart}
                                     disabled={!canAdd}
-                                    className="flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#3B82F6]/25 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none [@media(hover:hover)]:hover:opacity-95">
+                                    style={{
+                                        backgroundColor: 'var(--theme-primary)',
+                                        color: 'var(--theme-primary-text)',
+                                        borderRadius: 'var(--theme-radius)',
+                                    }}
+                                    className="flex min-w-0 flex-1 items-center justify-center gap-1.5 px-4 py-3.5 text-sm font-semibold shadow-lg shadow-black/10 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none [@media(hover:hover)]:hover:opacity-95">
                                     {isSoldOut ? (
                                         t('soldOut')
                                     ) : !canAdd ? (

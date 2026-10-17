@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { TenantsService } from './tenants.service';
-import { CreateTenantDto, UpdateTenantSettingsDto } from 'src/modules/tenants/dto/tenants.dto';
+import { CreateTenantDto, UpdateTenantSettingsDto, UpdateTenantThemeDto } from 'src/modules/tenants/dto/tenants.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { Public } from 'src/common/decorators/public.decorator';
@@ -30,6 +30,21 @@ export class TenantsController {
     @Get('/public/:slug')
     getPublicBySlug(@Param('slug') slug: string) {
         return this.tenantsService.getPublicTenantBySlug(slug);
+    }
+
+    @Public()
+    @Get('/:slug/theme')
+    getTenantTheme(@Param('slug') slug: string) {
+        return this.tenantsService.getTenantTheme(slug);
+    }
+
+    @Patch('/:slug/theme')
+    updateTenantTheme(
+        @Param('slug') slug: string,
+        @Body() updateTenantThemeDto: UpdateTenantThemeDto,
+        @CurrentUser('id') userId: string,
+    ) {
+        return this.tenantsService.updateTenantTheme(slug, updateTenantThemeDto, userId);
     }
 
     @Patch('/:slug/settings')
