@@ -116,11 +116,11 @@ export function CookieBanner() {
                                         className={`${display.className} text-[14px] sm:text-[15px] font-bold text-[#0A0A0C] dark:text-[#F5F4F2]`}>
                                         {t('title')}
                                     </h3>
-                                    <p className="mt-1 text-[12px] sm:text-[13px] leading-relaxed text-[#6B6A65] dark:text-[#94938D]">
+                                    <p className="mt-1 text-[12px] sm:text-[13px] leading-relaxed text-[#44403C] dark:text-[#D6D3D1]">
                                         {t('description')}{' '}
                                         <Link
                                             href="/privacy"
-                                            className="font-medium text-[#3B82F6] underline-offset-2 hover:underline dark:text-[#60A5FA]">
+                                            className="font-medium text-[#2563EB] underline-offset-2 hover:underline dark:text-[#60A5FA]">
                                             {t('privacyLink')}
                                         </Link>
                                     </p>
@@ -141,7 +141,7 @@ export function CookieBanner() {
                                         <button
                                             type="button"
                                             onClick={() => setIsModalOpen(true)}
-                                            className="inline-flex items-center gap-1.5 px-2 py-1.5 text-[11.5px] sm:text-[12px] font-medium text-[#6B6A65] transition-colors hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:text-[#F5F4F2]">
+                                            className="inline-flex items-center gap-1.5 px-2 py-1.5 text-[11.5px] sm:text-[12px] font-semibold text-[#44403C] transition-colors hover:text-[#0A0A0C] dark:text-[#D6D3D1] dark:hover:text-[#F5F4F2]">
                                             <SlidersHorizontal size={12} />
                                             {t('customize')}
                                         </button>

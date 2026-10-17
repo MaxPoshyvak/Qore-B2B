@@ -212,12 +212,14 @@ export function usePublicHappyHour({ slug, enabled = true }: UsePublicHappyHourP
 
     const [now, setNow] = useState<Date>(() => new Date());
 
+    const hasRules = (query.data?.length ?? 0) > 0;
+
     useEffect(() => {
-        if (!enabled) return;
-        // 1-секундний тік — достатньо для зворотного відліку "хв:сек".
+        if (!enabled || !hasRules) return;
+        // 1-секундний тік — лише коли є правила, щоб не навантажувати CPU/батарею даремно.
         const id = window.setInterval(() => setNow(new Date()), 1000);
         return () => window.clearInterval(id);
-    }, [enabled]);
+    }, [enabled, hasRules]);
 
     const activeRules = useMemo<ActiveHappyHourRule[]>(() => {
         const rules = query.data ?? [];

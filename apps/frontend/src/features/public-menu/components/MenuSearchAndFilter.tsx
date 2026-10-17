@@ -137,6 +137,7 @@ export function MenuSearchAndFilter({
                     type="button"
                     onClick={() => setIsFilterOpen((prev) => !prev)}
                     aria-expanded={isFilterOpen}
+                    aria-label={t('filters') || 'Filter and sort dishes'}
                     style={
                         activeFilterCount > 0 || isFilterOpen
                             ? {

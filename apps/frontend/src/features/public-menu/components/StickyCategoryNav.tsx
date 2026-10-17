@@ -10,34 +10,9 @@ interface StickyCategoryNavProps {
 
 export function StickyCategoryNav({ categories }: StickyCategoryNavProps) {
     const [activeId, setActiveId] = useState<string>('');
-    const [stickyTop, setStickyTop] = useState<number>(80);
     const activeIdRef = useRef<string>('');
     const navRef = useRef<HTMLDivElement>(null);
-    const wrapperRef = useRef<HTMLDivElement>(null);
     const isClickScrolling = useRef<boolean>(false);
-
-    // Dynamically calculate sticky top offset so category bar never touches or overlaps BaseHeader
-    useEffect(() => {
-        const updateStickyTop = () => {
-            const header = document.querySelector('header');
-            if (header) {
-                const computedHeaderTop =
-                    parseFloat(window.getComputedStyle(header).top) ||
-                    (window.innerWidth < 640 ? 12 : 16);
-                const headerHeight = header.offsetHeight;
-                const gap = window.innerWidth < 640 ? 10 : 12;
-                setStickyTop(computedHeaderTop + headerHeight + gap);
-            }
-        };
-
-        updateStickyTop();
-        window.addEventListener('resize', updateStickyTop);
-        const timer = setTimeout(updateStickyTop, 150);
-        return () => {
-            window.removeEventListener('resize', updateStickyTop);
-            clearTimeout(timer);
-        };
-    }, []);
 
     const centerCategoryPill = (categoryId: string) => {
         const navElement = navRef.current;
@@ -51,12 +26,12 @@ export function StickyCategoryNav({ categories }: StickyCategoryNavProps) {
     };
 
     useEffect(() => {
+        let rafId: number | null = null;
+
         const handleScrollSpy = () => {
             if (isClickScrolling.current || !categories || categories.length === 0) return;
 
-            const navBarHeight = wrapperRef.current?.offsetHeight ?? 38;
-            const triggerLine = stickyTop + navBarHeight + 16;
-
+            const triggerLine = (window.innerWidth < 640 ? 70 : 84) + 54;
             let currentActiveId = '';
 
             for (let i = 0; i < categories.length; i++) {
@@ -84,11 +59,23 @@ export function StickyCategoryNav({ categories }: StickyCategoryNavProps) {
             }
         };
 
-        window.addEventListener('scroll', handleScrollSpy, { passive: true });
-        handleScrollSpy();
+        const onScroll = () => {
+            if (rafId !== null) return;
+            rafId = window.requestAnimationFrame(() => {
+                handleScrollSpy();
+                rafId = null;
+            });
+        };
 
-        return () => window.removeEventListener('scroll', handleScrollSpy);
-    }, [categories, stickyTop]);
+        window.addEventListener('scroll', onScroll, { passive: true });
+        const timer = window.setTimeout(handleScrollSpy, 150);
+
+        return () => {
+            window.removeEventListener('scroll', onScroll);
+            if (rafId !== null) window.cancelAnimationFrame(rafId);
+            window.clearTimeout(timer);
+        };
+    }, [categories]);
 
     const handleCategoryClick = (id: string, e: React.MouseEvent) => {
         e.preventDefault();
@@ -102,9 +89,7 @@ export function StickyCategoryNav({ categories }: StickyCategoryNavProps) {
         setActiveId(sectionId);
         centerCategoryPill(sectionId);
 
-        const navBarHeight = wrapperRef.current?.offsetHeight ?? 38;
-        const offset = stickyTop + navBarHeight + 12;
-
+        const offset = (window.innerWidth < 640 ? 70 : 84) + 48;
         const y = element.getBoundingClientRect().top + window.scrollY - offset;
         window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
 
@@ -117,14 +102,13 @@ export function StickyCategoryNav({ categories }: StickyCategoryNavProps) {
 
     return (
         <div
-            ref={wrapperRef}
             style={{
-                top: `${stickyTop}px`,
+                top: 'calc(var(--demo-banner-height, 0px) + var(--nav-top, 70px))',
                 borderRadius: 'var(--theme-radius)',
                 backgroundColor: 'var(--theme-surface)',
                 borderColor: 'var(--theme-surface-border)',
             }}
-            className="sticky z-30 my-2 border p-1 shadow-xs backdrop-blur-xl sm:my-3 sm:p-1.5">
+            className="sticky z-30 my-2 border p-1 shadow-xs backdrop-blur-xl sm:my-3 sm:p-1.5 [--nav-top:70px] sm:[--nav-top:84px]">
             <div
                 ref={navRef}
                 className="flex items-center gap-1.5 overflow-x-auto hide-scrollbar px-0.5 py-0.5 scroll-smooth">
