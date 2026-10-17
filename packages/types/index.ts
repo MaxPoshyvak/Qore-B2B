@@ -24,3 +24,4 @@ export * from './currency';
 export * from './locale';
 export * from './theme';
 export * from './theme-presets';
+export * from './platform-admin';

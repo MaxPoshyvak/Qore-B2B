@@ -451,3 +451,16 @@ model FeedbackDigest {
 
   @@index([tenantId, contentHash])
 }
+
+model PlatformTrafficLog {
+  id        String   @id @default(cuid())
+  path      String
+  visitorId String
+  referrer  String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([path])
+  @@index([createdAt])
+  @@index([visitorId])
+}

@@ -1,6 +1,7 @@
 import { QueryProvider } from '@/lib/query-client';
 import { AuthProvider } from '@/shared/ui/AuthProvider';
 import { CookieBanner } from '@/shared/ui/CookieBanner';
+import { TrafficTracker } from '@/shared/providers/TrafficTracker';
 import { ReactNode } from 'react';
 import type { Metadata, Viewport } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
@@ -84,6 +85,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
                 <NextIntlClientProvider locale={locale} messages={messages}>
                     <AuthProvider>
                         <QueryProvider>
+                            <TrafficTracker />
                             {children}
                             <CookieBanner />
                         </QueryProvider>

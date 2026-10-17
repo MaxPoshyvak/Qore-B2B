@@ -17,6 +17,7 @@ import { MediaModule } from './modules/media/media.module';
 import { AiModule } from './modules/ai/ai.module';
 import { BillingModule } from './modules/billing/billing.module';
 import { PaymentsModule } from './modules/payments/payments.module';
+import { PlatformAdminModule } from './modules/platform-admin/platform-admin.module';
 import { AppController } from './app.controller';
 
 @Module({
@@ -44,6 +45,7 @@ import { AppController } from './app.controller';
         AiModule,
         BillingModule,
         PaymentsModule,
+        PlatformAdminModule,
     ],
     controllers: [AppController],
     providers: [
