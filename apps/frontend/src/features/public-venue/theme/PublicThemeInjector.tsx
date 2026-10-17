@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import type { ThemeConfig, ThemeFontBody, ThemeFontHeading, ThemeRadius } from '@my-app/types';
 import { DEFAULT_THEME_CONFIG } from '@my-app/types';
 import { useGetPublicTenant } from '@/entities/tenant/hooks/useGetPublicTenant';
+import { playfair, lora, plusJakarta, syne } from '@/shared/lib/fonts';
 
 export function getFontFamily(font: ThemeFontHeading | ThemeFontBody): string {
     switch (font) {
@@ -38,6 +39,21 @@ export function getRadiusValue(radius: ThemeRadius): string {
     }
 }
 
+function getThemeFontVariable(font: ThemeFontHeading | ThemeFontBody): string {
+    switch (font) {
+        case 'playfair':
+            return playfair.variable;
+        case 'lora':
+            return lora.variable;
+        case 'plus-jakarta':
+            return plusJakarta.variable;
+        case 'syne':
+            return syne.variable;
+        default:
+            return '';
+    }
+}
+
 export function PublicThemeInjector({
     theme,
     slug,
@@ -50,6 +66,15 @@ export function PublicThemeInjector({
     const { data: tenant } = useGetPublicTenant(slug ?? '');
     const clientTheme = (tenant?.activeTheme?.themeConfig as ThemeConfig | undefined) ?? null;
     const active = clientTheme ?? theme ?? DEFAULT_THEME_CONFIG;
+
+    const themeFontClasses = useMemo(() => {
+        return [
+            getThemeFontVariable(active.fontHeading),
+            getThemeFontVariable(active.fontBody),
+        ]
+            .filter(Boolean)
+            .join(' ');
+    }, [active.fontHeading, active.fontBody]);
 
     const css = useMemo(() => {
         const headingFont = getFontFamily(active.fontHeading);
@@ -139,5 +164,10 @@ ${darkTarget} {
 `;
     }, [active, scopeSelector]);
 
-    return <style dangerouslySetInnerHTML={{ __html: css }} />;
+    return (
+        <>
+            <style dangerouslySetInnerHTML={{ __html: css }} />
+            {themeFontClasses ? <span className={themeFontClasses} style={{ display: 'none' }} /> : null}
+        </>
+    );
 }

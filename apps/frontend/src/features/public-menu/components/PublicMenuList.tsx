@@ -4,10 +4,15 @@ import { UtensilsCrossed, RotateCcw } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { MenuItemResponse, PublicMenuCategoryResponse, PublicMenuResponseDTO } from '@my-app/types';
 
+import dynamic from 'next/dynamic';
 import { display } from '@/shared/lib/fonts';
-import { GuestItemModal } from './GuestItemModal';
 import { PublicMenuItem } from './PublicMenuItem';
 import { pickBestDiscount, type ActiveHappyHourRule } from '../hooks/usePublicHappyHour';
+
+const GuestItemModal = dynamic(
+    () => import('./GuestItemModal').then((m) => m.GuestItemModal),
+    { ssr: false },
+);
 import { useCartStore } from '../store/useCartStore';
 
 import { formatPrice } from '@/shared/lib/utils';
@@ -98,13 +103,15 @@ export function PublicMenuList({
                 </section>
             ))}
 
-            <GuestItemModal
-                item={selectedItem}
-                tableId={tableId}
-                takeawaySessionId={takeawaySessionId}
-                onClose={() => setSelectedItem(null)}
-                activeHappyHourRules={activeHappyHourRules}
-            />
+            {selectedItem && (
+                <GuestItemModal
+                    item={selectedItem}
+                    tableId={tableId}
+                    takeawaySessionId={takeawaySessionId}
+                    onClose={() => setSelectedItem(null)}
+                    activeHappyHourRules={activeHappyHourRules}
+                />
+            )}
         </div>
     );
 }

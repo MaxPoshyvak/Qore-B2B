@@ -7,7 +7,7 @@ import { AnimatePresence } from 'framer-motion';
 
 import type { PublicMenuResponseDTO } from '@my-app/types';
 import { useGetPublicMenu } from '@/entities/menu/hooks/useGetPublicMenu';
-import { AnalyticsApi } from '@/features/analytics';
+import { AnalyticsApi } from '@/features/analytics/api/analytics.service';
 import { useTableSessionStore } from '@/shared/store/useTableSessionStore';
 import { AmbientBackground } from '@/shared/ui/AmbientBackground';
 import { BaseHeader } from '@/shared/ui/BaseHeader';
@@ -23,10 +23,14 @@ import { MenuSearchAndFilter } from '@/features/public-menu/components/MenuSearc
 import { useMenuFilters } from '@/features/public-menu/hooks/useMenuFilters';
 import { CartBanner } from '@/features/public-menu/components/CartBanner';
 import { usePublicHappyHour } from '@/features/public-menu/hooks/usePublicHappyHour';
-import { ReservationAlert } from '@/features/reservations/components/ReservationAlert';
 import { useSharedCart, useAddCartItem, useStartNewCartSession } from '@/features/public-menu/hooks/useSharedCart';
 import { useCartStore } from '@/features/public-menu/store/useCartStore';
 import { AiWaiterButton } from '@/features/public-menu/components/AiWaiterButton';
+
+const ReservationAlert = dynamic(
+    () => import('@/features/reservations/components/ReservationAlert').then((m) => m.ReservationAlert),
+    { ssr: false },
+);
 
 // Dynamically code-split heavy interactive modals out of critical LCP path
 const AiWaiterModal = dynamic(

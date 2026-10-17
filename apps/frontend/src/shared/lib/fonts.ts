@@ -57,5 +57,5 @@ export const syne = Syne({
     display: 'swap',
 });
 
-/** Combined className to inject all font CSS custom properties onto <html> or <body> */
-export const fontVariables = `${display.variable} ${body.variable} ${mono.variable} ${playfair.variable} ${lora.variable} ${plusJakarta.variable} ${syne.variable}`;
+/** Combined className to inject core font CSS custom properties onto <html> or <body> */
+export const fontVariables = `${display.variable} ${body.variable} ${mono.variable}`;
