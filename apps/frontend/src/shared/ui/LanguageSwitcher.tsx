@@ -121,7 +121,7 @@ export function LanguageSwitcher({
                         <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#6B6A65] dark:text-[#94938D]">
                             {t('selectLanguage')}
                         </div>
-                        <div className="space-y-0.5">
+                        <div className="space-y-0.5 max-h-[min(320px,calc(100dvh-120px))] overflow-y-auto">
                             {LOCALES_CONFIG.map((lang) => {
                                 const isSelected = lang.code === locale;
                                 return (

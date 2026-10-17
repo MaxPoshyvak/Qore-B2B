@@ -70,11 +70,15 @@ export function PublicNavbar({ theme, toggleTheme }: { theme: Theme; toggleTheme
         <AnimatePresence>
             {mobileOpen && (
                 <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
+                    initial={{ height: 0, opacity: 0, overflow: 'hidden' }}
+                    animate={{
+                        height: 'auto',
+                        opacity: 1,
+                        transitionEnd: { overflow: 'visible' },
+                    }}
+                    exit={{ height: 0, opacity: 0, overflow: 'hidden' }}
                     transition={{ duration: 0.28, ease: EASE }}
-                    className="overflow-hidden border-t border-[#E7E5E0]/70 dark:border-white/10">
+                    className="border-t border-[#E7E5E0]/70 dark:border-white/10">
                     <div className="flex flex-col gap-2.5 px-5 pb-5 pt-3">
                         {PUBLIC_NAV_LINKS.map((l, i) => (
                             <motion.div
@@ -97,7 +101,7 @@ export function PublicNavbar({ theme, toggleTheme }: { theme: Theme; toggleTheme
                             </span>
                             <div className="flex items-center gap-2">
                                 <ThemeToggle theme={theme} toggle={toggleTheme} />
-                                <LanguageSwitcher align="right" direction="down" />
+                                <LanguageSwitcher align="right" direction="up" />
                             </div>
                         </div>
                         {isAuthenticated ? (
