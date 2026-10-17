@@ -54,14 +54,16 @@ export async function apiClient<T>(
         endpoint.startsWith('/auth/forgot-password') ||
         endpoint.startsWith('/auth/reset-password');
 
-    const token = isPublicAuthEndpoint ? undefined : await getAuthToken();
+    const isPlatformAdminEndpoint = endpoint.startsWith('/platform-admin');
+
+    const token = (isPublicAuthEndpoint || isPlatformAdminEndpoint) ? undefined : await getAuthToken();
 
     const headers = new Headers({
         'Content-Type': 'application/json',
         ...options.headers,
     });
 
-    if (token) {
+    if (token && !headers.has('Authorization')) {
         headers.set('Authorization', `Bearer ${token}`);
     }
 

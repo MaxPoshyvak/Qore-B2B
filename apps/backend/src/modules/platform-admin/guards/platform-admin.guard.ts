@@ -24,20 +24,21 @@ export class PlatformAdminGuard implements CanActivate {
 
             (req as any).platformAdmin = payload;
             return true;
-        } catch {
+        } catch (err) {
+            console.error('PlatformAdminGuard verification failed:', err);
             throw new UnauthorizedException('Invalid or expired master session');
         }
     }
 
     private extractToken(req: Request): string | null {
-        const authHeader = req.headers.authorization;
-        if (authHeader && authHeader.startsWith('Bearer ')) {
-            return authHeader.substring(7).trim();
-        }
-
         const customHeader = req.headers['x-platform-admin-token'] as string | undefined;
         if (customHeader) {
             return customHeader.trim();
+        }
+
+        const authHeader = req.headers.authorization;
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            return authHeader.substring(7).trim();
         }
 
         const cookieHeader = req.headers.cookie;

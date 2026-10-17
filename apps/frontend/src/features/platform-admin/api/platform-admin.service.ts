@@ -12,13 +12,13 @@ export const PlatformAdminApi = {
     setToken(token: string) {
         if (typeof window === 'undefined') return;
         localStorage.setItem(PLATFORM_TOKEN_KEY, token);
-        document.cookie = `qore_owner_token=${encodeURIComponent(token)}; path=/; max-age=86400; SameSite=Strict; Secure`;
+        document.cookie = `qore_owner_token=${encodeURIComponent(token)}; path=/; max-age=86400; SameSite=Lax; Secure`;
     },
 
     clearToken() {
         if (typeof window === 'undefined') return;
         localStorage.removeItem(PLATFORM_TOKEN_KEY);
-        document.cookie = 'qore_owner_token=; path=/; max-age=0; SameSite=Strict; Secure';
+        document.cookie = 'qore_owner_token=; path=/; max-age=0; SameSite=Lax; Secure';
     },
 
     async login(password: string): Promise<{ token: string; expiresIn: number }> {
@@ -43,7 +43,10 @@ export const PlatformAdminApi = {
             await apiClient(
                 '/platform-admin/me',
                 {
-                    headers: { Authorization: `Bearer ${token}` },
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'x-platform-admin-token': token,
+                    },
                     allow401: true,
                 } as any,
                 false,
@@ -61,7 +64,10 @@ export const PlatformAdminApi = {
         return apiClient<PlatformStatsResponse>(
             '/platform-admin/stats',
             {
-                headers: { Authorization: `Bearer ${token}` },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'x-platform-admin-token': token,
+                },
                 allow401: true,
             } as any,
             false,
