@@ -74,6 +74,12 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 
     return (
         <html lang={locale} suppressHydrationWarning>
+            <head>
+                <link rel="preconnect" href="https://res.cloudinary.com" />
+                <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+                <link rel="preconnect" href="https://qore-backend-production-ee6c.up.railway.app" />
+                <link rel="dns-prefetch" href="https://qore-backend-production-ee6c.up.railway.app" />
+            </head>
             <body className={fontVariables}>
                 <NextIntlClientProvider locale={locale} messages={messages}>
                     <AuthProvider>

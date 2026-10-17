@@ -1,10 +1,9 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import Image from 'next/image';
 import type { PublicMenuVenueResponse, ThemeConfig } from '@my-app/types';
 import { DEFAULT_THEME_CONFIG } from '@my-app/types';
 
-import { EASE } from '@/shared/config/animations';
 import { LiveStatusBadge } from './LiveStatusBadge';
 
 type VenueHeaderProps = {
@@ -22,18 +21,20 @@ export function VenueHeader({ venue }: VenueHeaderProps) {
     const brandStamp = activeTheme.brandStamp;
 
     return (
-        <motion.header
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: EASE }}
-            className="mt-2.5 text-left sm:mt-6">
+        <header className="mt-2.5 text-left sm:mt-6">
             {/* Cinematic cover banner with compact modern aspect ratio */}
             <div
                 style={{ borderRadius: 'var(--theme-radius)' }}
                 className="relative h-28 overflow-hidden border border-black/5 shadow-xs dark:border-white/10 sm:h-44">
-                {hasCover ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={coverUrl} alt={`${venue.name} cover`} className="h-full w-full object-cover" />
+                {hasCover && coverUrl ? (
+                    <Image
+                        src={coverUrl}
+                        alt={`${venue.name} cover`}
+                        fill
+                        priority
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 1200px"
+                        className="object-cover"
+                    />
                 ) : (
                     <div
                         style={{
@@ -71,10 +72,15 @@ export function VenueHeader({ venue }: VenueHeaderProps) {
                                           ? '0 0 16px rgba(6, 182, 212, 0.45)'
                                           : undefined,
                             }}
-                            className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden border-2 shadow-lg backdrop-blur-xl sm:h-24 sm:w-24">
+                            className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden border-2 shadow-lg backdrop-blur-xl sm:h-24 sm:w-24">
                             {venue.logoUrl ? (
-                                // eslint-disable-next-line @next/next/no-img-element
-                                <img src={venue.logoUrl} alt={venue.name} className="h-full w-full object-cover" />
+                                <Image
+                                    src={venue.logoUrl}
+                                    alt={venue.name}
+                                    fill
+                                    sizes="(max-width: 640px) 64px, 96px"
+                                    className="object-cover"
+                                />
                             ) : (
                                 <span className="font-theme-heading text-2xl font-bold text-[var(--theme-text-primary)] drop-shadow-sm sm:text-4xl">
                                     {venue.name.trim().charAt(0).toUpperCase() || '?'}
@@ -113,6 +119,6 @@ export function VenueHeader({ venue }: VenueHeaderProps) {
                     </div>
                 </div>
             </div>
-        </motion.header>
+        </header>
     );
 }

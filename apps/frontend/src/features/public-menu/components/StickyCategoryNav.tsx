@@ -149,7 +149,7 @@ export function StickyCategoryNav({ categories }: StickyCategoryNavProps) {
                                           borderRadius: 'calc(var(--theme-radius) * 0.6)',
                                       }
                             }
-                            className={`font-theme-body relative shrink-0 px-3 py-1 text-xs font-semibold whitespace-nowrap transition-colors duration-150 ${
+                            className={`font-theme-body relative shrink-0 px-3 py-1 text-xs font-semibold whitespace-nowrap ${
                                 isActive
                                     ? 'shadow-xs'
                                     : 'text-[#6B6A65] hover:bg-black/5 hover:text-[#0A0A0C] dark:text-[#94938D] dark:hover:bg-white/5 dark:hover:text-[#F5F4F2]'

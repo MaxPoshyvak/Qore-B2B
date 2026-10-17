@@ -220,7 +220,7 @@ export function MenuItemForm({ open, tenantId, category, initialData, isPro, onC
                 ...values,
                 description: values.description?.trim() ? values.description : undefined,
                 // Порожнє поле зберігаємо як NULL, а не як "" — інакше в БД
-                // осідає невалідний URL, який потім ламає рендер <img />.
+                // осідає невалідний URL, який потім ламає рендер <Image />.
                 imageUrl: values.imageUrl?.trim() ? values.imageUrl : null,
             };
 

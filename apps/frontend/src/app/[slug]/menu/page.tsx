@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 
@@ -30,7 +31,11 @@ import { ReservationAlert } from '@/features/reservations/components/Reservation
 import { useSharedCart, useAddCartItem, useStartNewCartSession } from '@/features/public-menu/hooks/useSharedCart';
 import { useCartStore } from '@/features/public-menu/store/useCartStore';
 import { AiWaiterButton } from '@/features/public-menu/components/AiWaiterButton';
-import { AiWaiterModal } from '@/features/public-menu/components/AiWaiterModal';
+
+const AiWaiterModal = dynamic(
+    () => import('@/features/public-menu/components/AiWaiterModal').then((m) => m.AiWaiterModal),
+    { ssr: false },
+);
 
 // Відстеження перегляду публічного меню: гарантуємо рівно один виклик на slug
 // за сесію перегляду (захист від StrictMode-подвійного виклику та ре-рендерів).

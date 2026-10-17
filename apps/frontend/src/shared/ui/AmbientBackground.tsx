@@ -151,11 +151,11 @@ export function AmbientBackground({
                 <>
                     {/* Organic natural flowing light blobs (Sage & Warm Matcha) */}
                     <div
-                        className="absolute -top-20 -left-20 h-96 w-96 rounded-full blur-3xl opacity-40"
+                        className="absolute -top-20 -left-20 h-72 w-72 rounded-full blur-xl opacity-30 md:h-96 md:w-96 md:blur-3xl md:opacity-40"
                         style={{ backgroundColor: 'var(--theme-primary)' }}
                     />
                     <div
-                        className="absolute top-1/2 -right-20 h-96 w-96 rounded-full blur-3xl opacity-30"
+                        className="absolute top-1/2 -right-20 h-72 w-72 rounded-full blur-xl opacity-20 md:h-96 md:w-96 md:blur-3xl md:opacity-30"
                         style={{
                             backgroundColor:
                                 'color-mix(in srgb, var(--theme-primary) 60%, var(--theme-accent))',

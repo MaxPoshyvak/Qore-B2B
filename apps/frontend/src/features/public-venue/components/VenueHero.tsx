@@ -1,11 +1,10 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import type { PublicTenantResponse, ThemeConfig } from '@my-app/types';
 import { DEFAULT_THEME_CONFIG } from '@my-app/types';
 
-import { EASE } from '@/shared/config/animations';
 import { LiveStatusBadge } from './LiveStatusBadge';
 
 type VenueHeroProps = {
@@ -28,18 +27,20 @@ export function VenueHero({ venue }: VenueHeroProps) {
     const brandStamp = activeTheme.brandStamp;
 
     return (
-        <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: EASE }}
-            className="text-left">
+        <section className="text-left">
             {/* Cover banner */}
             <div
                 style={{ borderRadius: 'var(--theme-radius)' }}
                 className="relative h-36 overflow-hidden border border-black/5 shadow-md dark:border-white/10 sm:h-44">
-                {hasCover ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={coverUrl} alt={`${venue.name} cover`} className="h-full w-full object-cover" />
+                {hasCover && coverUrl ? (
+                    <Image
+                        src={coverUrl}
+                        alt={`${venue.name} cover`}
+                        fill
+                        priority
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 1200px"
+                        className="object-cover"
+                    />
                 ) : (
                     <div
                         style={{
@@ -75,10 +76,15 @@ export function VenueHero({ venue }: VenueHeroProps) {
                                   ? '0 0 22px rgba(6, 182, 212, 0.45)'
                                   : undefined,
                     }}
-                    className="flex h-20 w-20 items-center justify-center overflow-hidden border-2 shadow-xl backdrop-blur-xl sm:h-24 sm:w-24">
-                    {hasLogo ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={logoUrl} alt={venue.name} className="h-full w-full object-cover" />
+                    className="relative flex h-20 w-20 items-center justify-center overflow-hidden border-2 shadow-xl backdrop-blur-xl sm:h-24 sm:w-24">
+                    {hasLogo && logoUrl ? (
+                        <Image
+                            src={logoUrl}
+                            alt={venue.name}
+                            fill
+                            sizes="(max-width: 640px) 80px, 96px"
+                            className="object-cover"
+                        />
                     ) : (
                         <span className="font-theme-heading text-3xl font-bold text-[var(--theme-text-primary)] drop-shadow-sm sm:text-4xl">
                             {initial}
@@ -176,6 +182,6 @@ export function VenueHero({ venue }: VenueHeroProps) {
                     <LiveStatusBadge workingHours={venue.settings?.workingHours} />
                 </div>
             </div>
-        </motion.section>
+        </section>
     );
 }
