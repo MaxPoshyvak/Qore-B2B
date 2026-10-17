@@ -1,11 +1,12 @@
 'use client';
 
-import { Activity, LogOut, RefreshCw, Server } from 'lucide-react';
+import { Activity, LogOut, RefreshCw, Server, Zap } from 'lucide-react';
 import { Logo } from '@/shared/ui/Logo';
 
 interface PlatformHeaderProps {
     onLogout: () => void;
     onRefresh: () => void;
+    onOpenFastVenue: () => void;
     isFetching: boolean;
     serverTime?: string;
     uptimeSeconds?: number;
@@ -14,6 +15,7 @@ interface PlatformHeaderProps {
 export function PlatformHeader({
     onLogout,
     onRefresh,
+    onOpenFastVenue,
     isFetching,
     serverTime,
     uptimeSeconds,
@@ -60,6 +62,14 @@ export function PlatformHeader({
                             </div>
                         )}
                     </div>
+
+                    <button
+                        type="button"
+                        onClick={onOpenFastVenue}
+                        className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-3.5 py-1.5 text-xs font-bold text-black shadow-md transition-all hover:opacity-95">
+                        <Zap size={14} className="fill-black" />
+                        <span>Fast Venue AI</span>
+                    </button>
 
                     <button
                         type="button"

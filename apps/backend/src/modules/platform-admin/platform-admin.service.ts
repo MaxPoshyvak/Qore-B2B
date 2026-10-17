@@ -1,12 +1,31 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { randomBytes, randomInt } from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import {
     PlatformLoginDto,
     PlatformTrackHitDto,
+    FastVenueDto,
 } from './dto/platform-admin.dto';
-import type { PlatformStatsResponse } from '@my-app/types';
+import {
+    type PlatformStatsResponse,
+    type FastVenueResultDTO,
+    isReservedSlug,
+    THEME_PRESETS,
+    DEFAULT_THEME_CONFIG,
+} from '@my-app/types';
+import { Prisma } from '@my-app/database';
+
+function slugify(text: string): string {
+    return text
+        .toString()
+        .toLowerCase()
+        .trim()
+        .replace(/[\s\W-]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 40) || 'venue';
+}
 
 @Injectable()
 export class PlatformAdminService {
@@ -299,6 +318,147 @@ export class PlatformAdminService {
                 nodeVersion: process.version,
                 uptimeSeconds: Math.floor(process.uptime()),
                 serverTime: new Date().toISOString(),
+            },
+        };
+    }
+
+    async fastVenue(dto: FastVenueDto): Promise<FastVenueResultDTO> {
+        let baseSlug = slugify(dto.venue.slug || dto.venue.name);
+        if (isReservedSlug(baseSlug)) {
+            baseSlug = `${baseSlug}-${randomInt(100, 999)}`;
+        }
+
+        let uniqueSlug = baseSlug;
+        let attempt = 0;
+        while (attempt < 10) {
+            const existing = await this.prisma.tenant.findUnique({ where: { slug: uniqueSlug } });
+            if (!existing) break;
+            uniqueSlug = `${baseSlug}-${randomInt(100, 999)}`;
+            attempt++;
+        }
+
+        const userEmail = `${uniqueSlug}_${randomInt(100, 999)}@useqore.demo`;
+        const rawPassword = `Qore#${randomBytes(4).toString('hex')}!`;
+        const passwordHash = await bcrypt.hash(rawPassword, 10);
+
+        const presetKey = dto.venue.themePreset || 'modern-minimal';
+        const themeConfig = THEME_PRESETS[presetKey] || DEFAULT_THEME_CONFIG;
+
+        const tablesCount = dto.venue.tablesCount || 6;
+        let totalItems = 0;
+
+        const result = await this.prisma.$transaction(async (tx) => {
+            // 1. Create User
+            const user = await tx.user.create({
+                data: {
+                    email: userEmail,
+                    password: passwordHash,
+                    name: `${dto.venue.name} Admin`,
+                    isEmailVerified: true,
+                },
+            });
+
+            // 2. Create Tenant with Settings
+            const tenant = await tx.tenant.create({
+                data: {
+                    name: dto.venue.name,
+                    slug: uniqueSlug,
+                    ownerId: user.id,
+                    subscriptionPlan: 'pro',
+                    subscriptionStatus: 'active',
+                    settings: {
+                        create: {
+                            description: dto.venue.description || null,
+                            currency: dto.venue.currency || 'USD',
+                            phone: dto.venue.phone || null,
+                            address: dto.venue.address || null,
+                            instagramUrl: dto.venue.instagramUrl || null,
+                            wifiSsid: dto.venue.wifiSsid || null,
+                            wifiPassword: dto.venue.wifiPassword || null,
+                            workingHours: (dto.venue.workingHours || {}) as Prisma.InputJsonValue,
+                        },
+                    },
+                },
+            });
+
+            // 3. Create and assign Theme
+            const theme = await tx.tenantTheme.create({
+                data: {
+                    tenantId: tenant.id,
+                    themeConfig: themeConfig as unknown as Prisma.InputJsonValue,
+                    isAiGenerated: true,
+                },
+            });
+
+            await tx.tenant.update({
+                where: { id: tenant.id },
+                data: { activeThemeId: theme.id },
+            });
+
+            // 4. Create Tables
+            for (let i = 1; i <= tablesCount; i++) {
+                await tx.table.create({
+                    data: {
+                        tenantId: tenant.id,
+                        name: `Table ${i}`,
+                        capacity: i <= 2 ? 2 : i <= 4 ? 4 : 6,
+                        qrToken: `${uniqueSlug}-t${i}-${randomBytes(3).toString('hex')}`,
+                        isActive: true,
+                    },
+                });
+            }
+
+            // 5. Create Categories and Items
+            for (let cIdx = 0; cIdx < dto.categories.length; cIdx++) {
+                const catData = dto.categories[cIdx];
+                const category = await tx.menuCategory.create({
+                    data: {
+                        tenantId: tenant.id,
+                        name: catData.name,
+                        icon: catData.icon || 'Utensils',
+                        sortOrder: cIdx,
+                        isActive: true,
+                    },
+                });
+
+                for (let iIdx = 0; iIdx < catData.items.length; iIdx++) {
+                    const itemData = catData.items[iIdx];
+                    totalItems++;
+                    await tx.menuItem.create({
+                        data: {
+                            tenantId: tenant.id,
+                            categoryId: category.id,
+                            name: itemData.name,
+                            description: itemData.description || null,
+                            price: new Prisma.Decimal(itemData.price),
+                            imageUrl: itemData.imageUrl || null,
+                            tags: (itemData.tags || []) as Prisma.InputJsonValue,
+                            allergens: (itemData.allergens || []) as Prisma.InputJsonValue,
+                            sortOrder: iIdx,
+                            isActive: true,
+                        },
+                    });
+                }
+            }
+
+            return tenant;
+        });
+
+        const frontendUrl = process.env.FRONTEND_URL || 'https://useqore.app';
+
+        return {
+            tenantId: result.id,
+            venueName: result.name,
+            slug: uniqueSlug,
+            publicMenuUrl: `${frontendUrl}/${uniqueSlug}/menu`,
+            venueLandingUrl: `${frontendUrl}/${uniqueSlug}`,
+            dashboardUrl: `${frontendUrl}/dashboard/${uniqueSlug}/menu`,
+            categoriesCreated: dto.categories.length,
+            itemsCreated: totalItems,
+            tablesCreated: tablesCount,
+            credentials: {
+                email: userEmail,
+                password: rawPassword,
             },
         };
     }

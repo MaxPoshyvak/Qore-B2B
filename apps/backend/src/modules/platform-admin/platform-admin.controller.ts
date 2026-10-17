@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { PlatformAdminService } from './platform-admin.service';
-import { PlatformLoginDto, PlatformTrackHitDto } from './dto/platform-admin.dto';
+import { PlatformLoginDto, PlatformTrackHitDto, FastVenueDto } from './dto/platform-admin.dto';
 import { PlatformAdminGuard } from './guards/platform-admin.guard';
 
 @Controller('platform-admin')
@@ -30,5 +30,11 @@ export class PlatformAdminController {
     @UseGuards(PlatformAdminGuard)
     async getStats() {
         return this.platformAdminService.getStats();
+    }
+
+    @Post('fast-venue')
+    @UseGuards(PlatformAdminGuard)
+    async fastVenue(@Body() dto: FastVenueDto) {
+        return this.platformAdminService.fastVenue(dto);
     }
 }

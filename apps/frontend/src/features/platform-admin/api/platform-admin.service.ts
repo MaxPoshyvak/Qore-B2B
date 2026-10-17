@@ -73,4 +73,22 @@ export const PlatformAdminApi = {
             false,
         );
     },
+
+    async createFastVenue(data: any): Promise<any> {
+        const token = this.getToken();
+        if (!token) throw new Error('Not authenticated as platform owner');
+        return apiClient(
+            '/platform-admin/fast-venue',
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'x-platform-admin-token': token,
+                },
+                body: JSON.stringify(data),
+                allow401: true,
+            } as any,
+            false,
+        );
+    },
 };

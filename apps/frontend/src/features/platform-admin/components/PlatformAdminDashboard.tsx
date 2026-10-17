@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { usePlatformStats } from '../hooks/usePlatformAdmin';
 import { PlatformHeader } from './PlatformHeader';
 import { PlatformStatsCards } from './PlatformStatsCards';
@@ -8,6 +9,7 @@ import { PlatformRecentHits } from './PlatformRecentHits';
 import { PlatformLeaderboard } from './PlatformLeaderboard';
 import { PlatformSubscriptionsTable } from './PlatformSubscriptionsTable';
 import { PlatformUsersTable } from './PlatformUsersTable';
+import { FastVenueModal } from './FastVenueModal';
 import { Loader2 } from 'lucide-react';
 
 interface PlatformAdminDashboardProps {
@@ -15,6 +17,7 @@ interface PlatformAdminDashboardProps {
 }
 
 export function PlatformAdminDashboard({ onLogout }: PlatformAdminDashboardProps) {
+    const [isFastVenueOpen, setIsFastVenueOpen] = useState(false);
     const { data: stats, isLoading, isFetching, refetch, error } = usePlatformStats(true);
 
     if (isLoading) {
@@ -53,6 +56,7 @@ export function PlatformAdminDashboard({ onLogout }: PlatformAdminDashboardProps
             <PlatformHeader
                 onLogout={onLogout}
                 onRefresh={() => refetch()}
+                onOpenFastVenue={() => setIsFastVenueOpen(true)}
                 isFetching={isFetching}
                 serverTime={stats.system.serverTime}
                 uptimeSeconds={stats.system.uptimeSeconds}
@@ -81,6 +85,11 @@ export function PlatformAdminDashboard({ onLogout }: PlatformAdminDashboardProps
                     <PlatformUsersTable users={stats.users} />
                 </div>
             </main>
+
+            <FastVenueModal
+                isOpen={isFastVenueOpen}
+                onClose={() => setIsFastVenueOpen(false)}
+            />
         </div>
     );
 }

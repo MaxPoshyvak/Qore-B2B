@@ -52,3 +52,15 @@ export function usePlatformLogin() {
         },
     });
 }
+
+export function useCreateFastVenue() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (data: any) => PlatformAdminApi.createFastVenue(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['platform-stats'] });
+        },
+    });
+}
+
