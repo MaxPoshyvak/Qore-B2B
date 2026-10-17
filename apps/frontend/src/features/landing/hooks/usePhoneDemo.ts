@@ -1,36 +1,60 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
-export type MorphPhase = 'before' | 'cursor-move' | 'click' | 'wave' | 'after' | 'reset';
+export type DemoScene = 'waiter' | 'themes' | 'upsell' | 'reviews';
+
+export const DEMO_SCENES: DemoScene[] = ['waiter', 'themes', 'upsell', 'reviews'];
+
+export const SCENE_DURATION_MS = 8500;
+const TICK_INTERVAL_MS = 40;
 
 export function usePhoneDemo() {
-    const [phase, setPhase] = useState<MorphPhase>('before');
-    const [cycle, setCycle] = useState(0);
+    const [sceneIndex, setSceneIndex] = useState(0);
+    const [elapsedMs, setElapsedMs] = useState(0);
+    const [isPaused, setIsPaused] = useState(false);
+    const elapsedRef = useRef(0);
+
+    const activeScene = DEMO_SCENES[sceneIndex];
+
+    const setScene = useCallback((scene: DemoScene) => {
+        const idx = DEMO_SCENES.indexOf(scene);
+        if (idx !== -1) {
+            setSceneIndex(idx);
+            elapsedRef.current = 0;
+            setElapsedMs(0);
+        }
+    }, []);
 
     useEffect(() => {
-        const timers: ReturnType<typeof setTimeout>[] = [];
-        const reduced =
-            typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+        if (isPaused) return;
 
-        if (reduced) {
-            setPhase('after');
-            return;
-        }
+        const startTime = Date.now() - elapsedRef.current;
 
-        timers.push(setTimeout(() => setPhase('cursor-move'), 2000));
-        timers.push(setTimeout(() => setPhase('click'), 3200));
-        timers.push(setTimeout(() => setPhase('wave'), 3400));
-        timers.push(setTimeout(() => setPhase('after'), 3400));
-        timers.push(
-            setTimeout(() => {
-                setPhase('before');
-                setCycle((c) => c + 1);
-            }, 8500),
-        );
+        const interval = setInterval(() => {
+            const current = Date.now() - startTime;
+            if (current >= SCENE_DURATION_MS) {
+                elapsedRef.current = 0;
+                setElapsedMs(0);
+                setSceneIndex((prev) => (prev + 1) % DEMO_SCENES.length);
+            } else {
+                elapsedRef.current = current;
+                setElapsedMs(current);
+            }
+        }, TICK_INTERVAL_MS);
 
-        return () => timers.forEach(clearTimeout);
-    }, [cycle]);
+        return () => clearInterval(interval);
+    }, [isPaused, sceneIndex]);
 
-    return { phase, cycle };
+    const progress = Math.min(100, (elapsedMs / SCENE_DURATION_MS) * 100);
+
+    return {
+        activeScene,
+        sceneIndex,
+        elapsedMs,
+        progress,
+        isPaused,
+        setIsPaused,
+        setScene,
+    };
 }
