@@ -77,6 +77,9 @@ export function FastVenueModal({ isOpen, onClose }: FastVenueModalProps) {
                 cleaned = cleaned.replace(/^```\s*/, '').replace(/\s*```$/, '');
             }
 
+            // Strip accidental markdown link syntax inside JSON strings: "[url](url)" -> "url"
+            cleaned = cleaned.replace(/\[.*?\]\((https?:\/\/[^\s")]+)\)/g, '$1');
+
             const parsed = JSON.parse(cleaned);
             const validation = fastVenueInputSchema.safeParse(parsed);
 

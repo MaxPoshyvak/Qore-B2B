@@ -11,7 +11,7 @@ import type { MenuItemResponse, ModifierGroupResponse, ModifierOptionResponse } 
 import { EASE } from '@/shared/config/animations';
 import { body, display } from '@/shared/lib/fonts';
 import { toStringArray } from '@/shared/lib/menu-attributes';
-import { cn, formatPrice } from '@/shared/lib/utils';
+import { cn, formatPrice, sanitizeImageUrl } from '@/shared/lib/utils';
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop';
 import { useCartStore } from '../store/useCartStore';
 import { useTableSessionStore } from '@/shared/store/useTableSessionStore';
@@ -269,9 +269,9 @@ export function GuestItemModal({
                         className={`${body.className} relative flex max-h-[90vh] w-full flex-col overflow-hidden rounded-t-3xl border border-white/60 bg-white/80 shadow-2xl backdrop-blur-2xl sm:max-h-[85vh] sm:max-w-lg sm:rounded-3xl dark:border-white/10 dark:bg-[#121215]/90`}>
                         {/* 1. Герой: зафіксований, не скролиться */}
                         <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden bg-gradient-to-br from-[#3B82F6]/20 via-[#8B5CF6]/12 to-transparent">
-                            {item.imageUrl ? (
+                            {sanitizeImageUrl(item.imageUrl) ? (
                                 <Image
-                                    src={item.imageUrl}
+                                    src={sanitizeImageUrl(item.imageUrl)!}
                                     alt={item.name}
                                     fill
                                     sizes="(max-width: 640px) 100vw, 512px"

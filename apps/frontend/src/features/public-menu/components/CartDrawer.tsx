@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { Check, Loader2, Lock, Minus, Plus, Sparkles, Trash2, UtensilsCrossed, X } from 'lucide-react';
 
-import { formatPrice } from '@/shared/lib/utils';
+import { formatPrice, sanitizeImageUrl } from '@/shared/lib/utils';
 import { EASE } from '@/shared/config/animations';
 import { display, mono } from '@/shared/lib/fonts';
 import { useCartStore } from '../store/useCartStore';
@@ -287,10 +287,10 @@ export function CartDrawer({
                                                             key={item.id}
                                                             className="flex items-center gap-2.5 sm:gap-3 rounded-2xl border border-black/5 bg-white/60 p-2.5 sm:p-3 dark:border-white/10 dark:bg-white/[0.03]">
                                                             <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-[#3B82F6]/20 via-[#8B5CF6]/12 to-transparent">
-                                                                {item.menuItem?.imageUrl ? (
+                                                                {sanitizeImageUrl(item.menuItem?.imageUrl) ? (
                                                                     <Image
-                                                                        src={item.menuItem.imageUrl}
-                                                                        alt={item.menuItem.name}
+                                                                        src={sanitizeImageUrl(item.menuItem?.imageUrl)!}
+                                                                        alt={item.menuItem?.name ?? 'Dish'}
                                                                         fill
                                                                         sizes="56px"
                                                                         className="object-cover"

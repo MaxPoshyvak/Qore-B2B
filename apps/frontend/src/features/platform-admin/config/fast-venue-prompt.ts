@@ -54,7 +54,11 @@ Analyze all the provided images and extract complete venue details, cover photo,
    - Currency: 3-letter code: "USD", "EUR", "UAH" (for Ukraine), "CZK" (for Czechia), "PLN", "GBP".
    - Prices: strictly positive numbers (e.g. 140, 4.5, 85). Do NOT include currency symbols in numbers.
 
-6. 🚫 OUTPUT FORMAT:
+6. 🔗 RAW URL FORMAT (NEVER USE MARKDOWN LINKS):
+   - Every URL (coverUrl, imageUrl) MUST be a direct plain string: "https://images.unsplash.com/photo-..."
+   - NEVER format URLs as markdown links like [url](url) or [title](url).
+
+7. 🚫 OUTPUT FORMAT:
    - Output ONLY RAW JSON. Do NOT wrap in markdown code blocks (\`\`\`json). No intro, no commentary.
 
 ### JSON SCHEMA TO RETURN:

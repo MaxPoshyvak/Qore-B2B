@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import type { PublicMenuVenueResponse, ThemeConfig } from '@my-app/types';
 import { DEFAULT_THEME_CONFIG } from '@my-app/types';
+import { sanitizeImageUrl } from '@/shared/lib/utils';
 
 import { LiveStatusBadge } from './LiveStatusBadge';
 
@@ -12,7 +13,7 @@ type VenueHeaderProps = {
 
 export function VenueHeader({ venue }: VenueHeaderProps) {
     const workingHours = venue.workingHours;
-    const coverUrl = venue.coverUrl ?? undefined;
+    const coverUrl = sanitizeImageUrl(venue.coverUrl);
     const hasCover = Boolean(coverUrl);
 
     const activeTheme: ThemeConfig =

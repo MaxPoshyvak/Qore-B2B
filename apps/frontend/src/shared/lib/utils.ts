@@ -74,3 +74,43 @@ export function cyrillicToSlug(text: string): string {
             .replace(/^-+|-+$/g, '')
     );
 }
+
+/**
+ * Robustly cleans and sanitizes image URLs, safely extracting direct URLs from
+ * accidental markdown syntax (e.g. `[url](url)` or `[url]`), trimming whitespace,
+ * and ensuring validity before passing to Next.js `<Image />`.
+ */
+export function sanitizeImageUrl(rawUrl?: string | null): string | null {
+    if (!rawUrl || typeof rawUrl !== 'string') return null;
+    let url = rawUrl.trim();
+    if (!url) return null;
+
+    // 1. Detect markdown link syntax: [title](https://...) or [https://...](https://...)
+    const mdMatch = url.match(/\[.*?\]\((https?:\/\/[^\s)]+)\)/);
+    if (mdMatch) {
+        url = mdMatch[1];
+    }
+
+    // 2. Detect plain url inside brackets or parentheses: [https://...] or (https://...)
+    const bracketMatch =
+        url.match(/^\[(https?:\/\/[^\s\]]+)\]$/) || url.match(/^\((https?:\/\/[^\s)]+)\)$/);
+    if (bracketMatch) {
+        url = bracketMatch[1];
+    }
+
+    // 3. Strip any residual surrounding quotes, brackets, or backticks
+    url = url.replace(/^['"`\[\(]+|['"`\]\)]+$/g, '').trim();
+
+    // 4. Must start with http://, https://, or leading /
+    if (!url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('/')) {
+        return null;
+    }
+
+    // 5. Test if URL constructor succeeds without throwing
+    try {
+        new URL(url, 'http://localhost');
+        return url;
+    } catch {
+        return null;
+    }
+}

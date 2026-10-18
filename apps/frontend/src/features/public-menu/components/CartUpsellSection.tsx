@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Loader2, Plus, Sparkles, UtensilsCrossed } from 'lucide-react';
 import type { MenuItemResponse } from '@my-app/types';
 
-import { formatPrice } from '@/shared/lib/utils';
+import { formatPrice, sanitizeImageUrl } from '@/shared/lib/utils';
 import { useCartStore } from '../store/useCartStore';
 import { useTableSessionStore } from '@/shared/store/useTableSessionStore';
 import { useAddCartItem } from '../hooks/useSharedCart';
@@ -113,9 +113,9 @@ export function CartUpsellSection({
                             className="flex items-center gap-3 rounded-xl border border-violet-500/10 bg-white/70 p-2.5 transition-colors dark:border-white/5 dark:bg-white/[0.03]">
                             {/* Thumbnail */}
                             <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-gradient-to-br from-violet-500/20 to-fuchsia-500/10">
-                                {rec.item.imageUrl ? (
+                                {sanitizeImageUrl(rec.item.imageUrl) ? (
                                     <Image
-                                        src={rec.item.imageUrl}
+                                        src={sanitizeImageUrl(rec.item.imageUrl)!}
                                         alt={rec.item.name}
                                         fill
                                         sizes="48px"

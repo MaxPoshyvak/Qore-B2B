@@ -23,7 +23,7 @@ import type {
 } from '@my-app/types';
 
 import { body, display, mono } from '@/shared/lib/fonts';
-import { cn, formatPrice } from '@/shared/lib/utils';
+import { cn, formatPrice, sanitizeImageUrl } from '@/shared/lib/utils';
 import { EASE } from '@/shared/config/animations';
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop';
 import { useTableSessionStore } from '@/shared/store/useTableSessionStore';
@@ -371,9 +371,9 @@ export function AiWaiterModal({
                                                                             <div className="flex items-start gap-2.5 min-w-0">
                                                                                 {/* Dish thumbnail */}
                                                                                 <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-black/5 dark:bg-white/5">
-                                                                                    {menuItem.imageUrl ? (
+                                                                                    {sanitizeImageUrl(menuItem.imageUrl) ? (
                                                                                         <Image
-                                                                                            src={menuItem.imageUrl}
+                                                                                            src={sanitizeImageUrl(menuItem.imageUrl)!}
                                                                                             alt={menuItem.name}
                                                                                             fill
                                                                                             className="object-cover"

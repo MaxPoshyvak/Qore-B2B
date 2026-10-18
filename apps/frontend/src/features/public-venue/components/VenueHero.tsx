@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import type { PublicTenantResponse, ThemeConfig } from '@my-app/types';
 import { DEFAULT_THEME_CONFIG } from '@my-app/types';
+import { sanitizeImageUrl } from '@/shared/lib/utils';
 
 import { LiveStatusBadge } from './LiveStatusBadge';
 
@@ -15,8 +16,8 @@ export function VenueHero({ venue }: VenueHeroProps) {
     const t = useTranslations('venue');
     const initial = venue.name.trim().charAt(0).toUpperCase() || '?';
     const description = venue.settings?.description || t('welcomeTo', { name: venue.name });
-    const coverUrl = venue.settings?.coverUrl ?? undefined;
-    const logoUrl = venue.settings?.logoUrl ?? undefined;
+    const coverUrl = sanitizeImageUrl(venue.settings?.coverUrl);
+    const logoUrl = sanitizeImageUrl(venue.settings?.logoUrl);
     const hasLogo = Boolean(logoUrl);
     const hasCover = Boolean(coverUrl);
 

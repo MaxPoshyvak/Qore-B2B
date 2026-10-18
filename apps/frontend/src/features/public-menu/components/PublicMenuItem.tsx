@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import type { MenuItemResponse } from '@my-app/types';
 
-import { cn, formatPrice } from '@/shared/lib/utils';
+import { cn, formatPrice, sanitizeImageUrl } from '@/shared/lib/utils';
 import { display } from '@/shared/lib/fonts';
 import { toStringArray } from '@/shared/lib/menu-attributes';
 import { TiltCard } from '@/shared/ui/TiltCard';
@@ -67,9 +67,9 @@ export function PublicMenuItem({ item, onSelect, discountedPrice, discountBadge 
                     )}>
                     {/* Медіа 4:3 */}
                     <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden bg-gradient-to-br from-[#3B82F6]/20 via-[#8B5CF6]/12 to-transparent">
-                        {item.imageUrl ? (
+                        {sanitizeImageUrl(item.imageUrl) ? (
                             <Image
-                                src={item.imageUrl}
+                                src={sanitizeImageUrl(item.imageUrl)!}
                                 alt={item.name}
                                 fill
                                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

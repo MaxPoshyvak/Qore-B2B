@@ -27,6 +27,36 @@ function slugify(text: string): string {
         .slice(0, 40) || 'venue';
 }
 
+function sanitizeUrl(rawUrl?: string | null): string | null {
+    if (!rawUrl || typeof rawUrl !== 'string') return null;
+    let url = rawUrl.trim();
+    if (!url) return null;
+
+    const mdMatch = url.match(/\[.*?\]\((https?:\/\/[^\s)]+)\)/);
+    if (mdMatch) {
+        url = mdMatch[1];
+    }
+
+    const bracketMatch =
+        url.match(/^\[(https?:\/\/[^\s\]]+)\]$/) || url.match(/^\((https?:\/\/[^\s)]+)\)$/);
+    if (bracketMatch) {
+        url = bracketMatch[1];
+    }
+
+    url = url.replace(/^['"`\[\(]+|['"`\]\)]+$/g, '').trim();
+
+    if (!url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('/')) {
+        return null;
+    }
+
+    try {
+        new URL(url, 'http://localhost');
+        return url;
+    } catch {
+        return null;
+    }
+}
+
 @Injectable()
 export class PlatformAdminService {
     constructor(
@@ -369,7 +399,7 @@ export class PlatformAdminService {
                     settings: {
                         create: {
                             description: dto.venue.description || null,
-                            coverUrl: (dto.venue as any).coverUrl || (dto.venue as any).coverImage || null,
+                            coverUrl: sanitizeUrl((dto.venue as any).coverUrl || (dto.venue as any).coverImage),
                             currency: dto.venue.currency || 'USD',
                             phone: dto.venue.phone || null,
                             address: dto.venue.address || null,
@@ -432,7 +462,7 @@ export class PlatformAdminService {
                             name: itemData.name,
                             description: itemData.description || null,
                             price: new Prisma.Decimal(itemData.price),
-                            imageUrl: itemData.imageUrl || (itemData as any).image || null,
+                            imageUrl: sanitizeUrl(itemData.imageUrl || (itemData as any).image),
                             tags: (itemData.tags || []) as Prisma.InputJsonValue,
                             allergens: (itemData.allergens || []) as Prisma.InputJsonValue,
                             sortOrder: iIdx,
