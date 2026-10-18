@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Zap,
@@ -19,6 +19,8 @@ import {
     Utensils,
     QrCode,
     Send,
+    Pencil,
+    MessageCircle,
 } from 'lucide-react';
 import Link from 'next/link';
 import { FAST_VENUE_AI_PROMPT } from '../config/fast-venue-prompt';
@@ -30,6 +32,43 @@ interface FastVenueModalProps {
     onClose: () => void;
 }
 
+function getInstagramPitchPreview(parsedData: any): { pitch: string; slug: string; url: string } | null {
+    if (!parsedData || !parsedData.venue?.name) return null;
+
+    const computedSlug =
+        parsedData.venue.slug ||
+        parsedData.venue.name
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+
+    const targetUrl = `https://www.useqore.app/${computedSlug}/menu`;
+
+    const raw =
+        parsedData.pitchMessage ||
+        parsedData.outreachMessage ||
+        parsedData.venue?.pitchMessage ||
+        parsedData.venue?.outreachMessage;
+
+    let pitchText = '';
+    if (raw && typeof raw === 'string' && raw.trim().length > 0) {
+        pitchText = raw
+            .replace(/https?:\/\/[^\s\n]*useqore\.app\/\[?slug\]?\/menu/gi, targetUrl)
+            .replace(/https?:\/\/[^\s\n]*useqore\.app\/\{slug\}\/menu/gi, targetUrl)
+            .replace(/\[slug\]/gi, computedSlug)
+            .replace(/\{slug\}/gi, computedSlug);
+    } else {
+        pitchText = `Hey ${parsedData.venue.name} team! Love the vibe and dishes at your spot.\n\nNoticed that guests checking your menu on mobile usually have to tap through Instagram story highlights or zoom into PDF links to see what you offer.\n\nI put together a clean, lightning-fast digital menu prototype for ${parsedData.venue.name} using Qore:\n👉 ${targetUrl}\n\nLoads in 0.3s, has instant category filters, dish photos, and allergen tags.\n\nWould love to give you free full access for a month if you find it helpful for your guests—no strings attached!`;
+    }
+
+    return {
+        pitch: pitchText,
+        slug: computedSlug,
+        url: targetUrl,
+    };
+}
+
 export function FastVenueModal({ isOpen, onClose }: FastVenueModalProps) {
     const [jsonInput, setJsonInput] = useState('');
     const [copiedPrompt, setCopiedPrompt] = useState(false);
@@ -37,8 +76,16 @@ export function FastVenueModal({ isOpen, onClose }: FastVenueModalProps) {
     const [parseError, setParseError] = useState<string | null>(null);
     const [parsedData, setParsedData] = useState<any | null>(null);
     const [result, setResult] = useState<FastVenueResultDTO | null>(null);
+    const [editedPitch, setEditedPitch] = useState<string | null>(null);
+    const [isEditingPitch, setIsEditingPitch] = useState(false);
 
     const createMutation = useCreateFastVenue();
+
+    const pitchPreview = useMemo(() => {
+        return getInstagramPitchPreview(parsedData);
+    }, [parsedData]);
+
+    const activePitchText = editedPitch ?? pitchPreview?.pitch ?? '';
 
     const handleCopyPrompt = async () => {
         try {
@@ -63,6 +110,8 @@ export function FastVenueModal({ isOpen, onClose }: FastVenueModalProps) {
     const handleJsonChange = (val: string) => {
         setJsonInput(val);
         setParseError(null);
+        setEditedPitch(null);
+        setIsEditingPitch(false);
 
         if (!val.trim()) {
             setParsedData(null);
@@ -110,7 +159,11 @@ export function FastVenueModal({ isOpen, onClose }: FastVenueModalProps) {
     const handleDeploy = async () => {
         if (!parsedData) return;
         try {
-            const res = await createMutation.mutateAsync(parsedData);
+            const payload = {
+                ...parsedData,
+                ...(activePitchText ? { pitchMessage: activePitchText } : {}),
+            };
+            const res = await createMutation.mutateAsync(payload);
             setResult(res);
         } catch (err: any) {
             setParseError(err?.message || 'Failed to deploy venue.');
@@ -122,6 +175,8 @@ export function FastVenueModal({ isOpen, onClose }: FastVenueModalProps) {
         setParsedData(null);
         setParseError(null);
         setResult(null);
+        setEditedPitch(null);
+        setIsEditingPitch(false);
     };
 
     if (!isOpen) return null;
@@ -265,6 +320,94 @@ export function FastVenueModal({ isOpen, onClose }: FastVenueModalProps) {
                                                 Instagram Pitch: Ready
                                             </span>
                                         )}
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {/* Instant Instagram Direct Pitch Preview & 1-Click Copy */}
+                            {parsedData && !parseError && pitchPreview && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 6 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="mt-3.5 rounded-2xl border border-pink-500/30 bg-gradient-to-br from-pink-500/[0.08] via-purple-500/[0.04] to-black/40 p-4 sm:p-5 space-y-3.5 shadow-xl shadow-pink-950/20">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-white shadow-md shadow-pink-500/30">
+                                                <Send size={15} />
+                                            </div>
+                                            <div>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-xs font-bold uppercase tracking-wider text-white">
+                                                        Instagram Pitch Message
+                                                    </span>
+                                                    <span className="rounded-full bg-pink-500/20 border border-pink-500/30 px-2 py-0.5 text-[10px] font-bold text-pink-300">
+                                                        Ready to Send
+                                                    </span>
+                                                </div>
+                                                <p className="text-[11px] text-[#94938D]">
+                                                    Live menu target:{' '}
+                                                    <span className="font-mono text-pink-300 font-semibold">
+                                                        /{pitchPreview.slug}/menu
+                                                    </span>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-2 shrink-0">
+                                            <button
+                                                type="button"
+                                                onClick={() => setIsEditingPitch(!isEditingPitch)}
+                                                className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-[#94938D] hover:bg-white/10 hover:text-white transition-colors">
+                                                <Pencil size={12} />
+                                                <span>{isEditingPitch ? 'View Formatted' : 'Edit Text'}</span>
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => handleCopyText(activePitchText, 'prePitch')}
+                                                className={`flex items-center gap-1.5 rounded-xl px-4 py-1.5 text-xs font-bold transition-all shadow-md ${
+                                                    copiedField === 'prePitch'
+                                                        ? 'bg-emerald-500 text-black shadow-emerald-500/20'
+                                                        : 'bg-gradient-to-r from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-white hover:opacity-95 shadow-pink-500/25 active:scale-95'
+                                                }`}>
+                                                {copiedField === 'prePitch' ? (
+                                                    <>
+                                                        <Check size={14} className="text-black" />
+                                                        <span>Copied to Clipboard!</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Copy size={14} />
+                                                        <span>Copy Pitch (1-Click)</span>
+                                                    </>
+                                                )}
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Message Body */}
+                                    {isEditingPitch ? (
+                                        <textarea
+                                            value={activePitchText}
+                                            onChange={(e) => setEditedPitch(e.target.value)}
+                                            rows={8}
+                                            className="w-full rounded-xl border border-pink-500/30 bg-black/60 p-3.5 font-sans text-xs leading-relaxed text-white placeholder:text-[#6B6A65] focus:border-pink-500 focus:outline-hidden focus:ring-1 focus:ring-pink-500"
+                                            placeholder="Type custom pitch text..."
+                                        />
+                                    ) : (
+                                        <div className="rounded-xl border border-white/5 bg-black/60 p-4 font-sans text-xs leading-relaxed text-[#F5F4F2] whitespace-pre-wrap select-all selection:bg-pink-500/30">
+                                            {activePitchText}
+                                        </div>
+                                    )}
+
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[11px] text-[#94938D]">
+                                        <span className="flex items-center gap-1.5">
+                                            <span>✨</span>
+                                            <span>Click copy above, open Instagram DM to restaurant, and paste.</span>
+                                        </span>
+                                        <span className="text-pink-400 font-medium">
+                                            Tip: Attach a mobile screenshot of the menu for 3x replies
+                                        </span>
                                     </div>
                                 </motion.div>
                             )}
