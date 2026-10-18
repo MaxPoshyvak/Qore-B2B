@@ -153,6 +153,8 @@ export const fastVenueInputSchema = z.object({
             ])
             .optional()
             .default('modern-minimal'),
+        pitchMessage: z.string().optional().nullable(),
+        outreachMessage: z.string().optional().nullable(),
         workingHours: z
             .record(
                 z.string(),
@@ -166,6 +168,8 @@ export const fastVenueInputSchema = z.object({
             .default({}),
     }),
     categories: z.array(fastVenueCategorySchema).min(1, 'At least one menu category is required'),
+    pitchMessage: z.string().optional().nullable(),
+    outreachMessage: z.string().optional().nullable(),
 });
 
 export type FastVenueInput = z.infer<typeof fastVenueInputSchema>;
@@ -177,6 +181,7 @@ export interface FastVenueResultDTO {
     publicMenuUrl: string;
     venueLandingUrl: string;
     dashboardUrl: string;
+    pitchMessage?: string | null;
     categoriesCreated: number;
     itemsCreated: number;
     tablesCreated: number;

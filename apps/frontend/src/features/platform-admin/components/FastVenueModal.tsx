@@ -18,6 +18,7 @@ import {
     ArrowRight,
     Utensils,
     QrCode,
+    Send,
 } from 'lucide-react';
 import Link from 'next/link';
 import { FAST_VENUE_AI_PROMPT } from '../config/fast-venue-prompt';
@@ -259,6 +260,11 @@ export function FastVenueModal({ isOpen, onClose }: FastVenueModalProps) {
                                                 Cover Photo: Attached
                                             </span>
                                         )}
+                                        {(parsedData.pitchMessage || (parsedData.venue as any).pitchMessage) && (
+                                            <span className="rounded-lg bg-pink-500/20 px-2 py-0.5 border border-pink-500/30 text-pink-300">
+                                                Instagram Pitch: Ready
+                                            </span>
+                                        )}
                                     </div>
                                 </motion.div>
                             )}
@@ -357,6 +363,40 @@ export function FastVenueModal({ isOpen, onClose }: FastVenueModalProps) {
                                 </div>
                             </div>
                         </div>
+
+                        {/* Instagram Direct Pitch Message Card */}
+                        {result.pitchMessage && (
+                            <div className="rounded-2xl border border-pink-500/30 bg-gradient-to-br from-pink-500/[0.08] via-purple-500/[0.04] to-transparent p-5 space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs font-bold uppercase tracking-wider text-pink-400 flex items-center gap-1.5">
+                                        <Send size={13} className="text-pink-400" />
+                                        Instagram Direct Pitch Message
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleCopyText(result.pitchMessage!, 'pitch')}
+                                        className="flex items-center gap-1.5 rounded-xl bg-pink-500/20 px-3 py-1 text-xs font-semibold text-pink-300 hover:bg-pink-500/30 transition-colors">
+                                        {copiedField === 'pitch' ? (
+                                            <>
+                                                <Check size={13} className="text-emerald-400" />
+                                                <span className="text-emerald-400">Copied!</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Copy size={13} />
+                                                <span>Copy Pitch</span>
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                                <div className="rounded-xl border border-white/5 bg-black/50 p-4 font-sans text-xs leading-relaxed text-[#F5F4F2] whitespace-pre-wrap selection:bg-pink-500/30">
+                                    {result.pitchMessage}
+                                </div>
+                                <p className="text-[11px] text-[#94938D]">
+                                    1-Click copy and paste into Instagram Direct. Attach a mobile screenshot of their live menu for maximum response rate!
+                                </p>
+                            </div>
+                        )}
 
                         {/* Owner Credentials Card */}
                         <div className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] p-5 space-y-3.5">

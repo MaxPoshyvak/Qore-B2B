@@ -58,7 +58,17 @@ Analyze all the provided images and extract complete venue details, cover photo,
    - Every URL (coverUrl, imageUrl) MUST be a direct plain string: "https://images.unsplash.com/photo-..."
    - NEVER format URLs as markdown links like [url](url) or [title](url).
 
-7. 🚫 OUTPUT FORMAT:
+7. 💬 HIGHLY PERSONALIZED INSTAGRAM OUTREACH DM ("pitchMessage"):
+   - Generate a tailor-made, natural, friendly Instagram DM pitch in "pitchMessage" specifically written for this venue.
+   - 🛡️ ANTI-SPAM RULE: NEVER USE A FIXED TEMPLATE OR REPETITIVE PHRASING. Every single message MUST be uniquely written with different openings, varying sentence structures, dynamic lengths, and a natural human tone so Instagram spam filters are NEVER triggered.
+   - Essential elements to weave naturally into the message:
+     * A genuine, warm compliment about something specific (their interior vibe, signature dishes, specialty roastery beans, aesthetic, neighborhood, or street).
+     * The friction observed: guests on mobile having to pinch-to-zoom outdated Instagram stories/highlights, slow PDF menus, or asking for prices in DM.
+     * The solution: you built an instant interactive digital menu for them on Qore, linking directly to: https://www.useqore.app/{slug}/menu
+     * Key perks: lightning fast (loads in 0.3s), instant allergy/dietary filters, QR codes, looks like an Apple app.
+     * Soft, no-pressure call to action: offering 1 month of free access to test it out with their guests, completely free with no strings attached.
+
+8. 🚫 OUTPUT FORMAT:
    - Output ONLY RAW JSON. Do NOT wrap in markdown code blocks (\`\`\`json). No intro, no commentary.
 
 ### JSON SCHEMA TO RETURN:
@@ -101,5 +111,6 @@ Analyze all the provided images and extract complete venue details, cover photo,
         }
       ]
     }
-  ]
+  ],
+  "pitchMessage": "Hey [Name] team! Loved seeing your [specific detail]... I noticed mobile guests currently have to scroll through stories to view dishes, so I set up a lightning-fast interactive menu for you on Qore: https://www.useqore.app/{slug}/menu. Would love to gift you a free month to try it out if you find it helpful—no strings attached!"
 }`;

@@ -476,6 +476,20 @@ export class PlatformAdminService {
         });
 
         const frontendUrl = process.env.FRONTEND_URL || 'https://useqore.app';
+        let rawPitch =
+            dto.pitchMessage ||
+            dto.outreachMessage ||
+            (dto.venue as any)?.pitchMessage ||
+            (dto.venue as any)?.outreachMessage ||
+            null;
+
+        if (rawPitch) {
+            rawPitch = rawPitch.replace(
+                /https?:\/\/(?:www\.)?useqore\.app\/[^\s/]+\/menu/g,
+                `${frontendUrl}/${uniqueSlug}/menu`,
+            );
+            rawPitch = rawPitch.replace(/\[slug\]/g, uniqueSlug).replace(/\{slug\}/g, uniqueSlug);
+        }
 
         return {
             tenantId: result.id,
@@ -484,6 +498,7 @@ export class PlatformAdminService {
             publicMenuUrl: `${frontendUrl}/${uniqueSlug}/menu`,
             venueLandingUrl: `${frontendUrl}/${uniqueSlug}`,
             dashboardUrl: `${frontendUrl}/dashboard/${uniqueSlug}/menu`,
+            pitchMessage: rawPitch,
             categoriesCreated: dto.categories.length,
             itemsCreated: totalItems,
             tablesCreated: tablesCount,
