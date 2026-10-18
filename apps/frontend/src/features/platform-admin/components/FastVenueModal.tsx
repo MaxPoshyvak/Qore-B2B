@@ -243,7 +243,7 @@ export function FastVenueModal({ isOpen, onClose }: FastVenueModalProps) {
                                             Categories: {parsedData.categories.length}
                                         </span>
                                         <span className="rounded-lg bg-black/40 px-2 py-0.5 border border-white/5">
-                                            Items: {parsedData.categories.reduce((acc: number, c: any) => acc + c.items.length, 0)}
+                                            Items: {parsedData.categories.reduce((acc: number, c: any) => acc + c.items.length, 0)} ({parsedData.categories.reduce((acc: number, c: any) => acc + c.items.filter((i: any) => Boolean(i.imageUrl || i.image)).length, 0)} with photos)
                                         </span>
                                         <span className="rounded-lg bg-black/40 px-2 py-0.5 border border-white/5">
                                             Tables: {parsedData.venue.tablesCount || 6}
@@ -251,6 +251,11 @@ export function FastVenueModal({ isOpen, onClose }: FastVenueModalProps) {
                                         <span className="rounded-lg bg-black/40 px-2 py-0.5 border border-white/5 text-amber-300">
                                             Theme: {parsedData.venue.themePreset}
                                         </span>
+                                        {(parsedData.venue.coverUrl || (parsedData.venue as any).coverImage) && (
+                                            <span className="rounded-lg bg-emerald-500/20 px-2 py-0.5 border border-emerald-500/30 text-emerald-300">
+                                                Cover Photo: Attached
+                                            </span>
+                                        )}
                                     </div>
                                 </motion.div>
                             )}

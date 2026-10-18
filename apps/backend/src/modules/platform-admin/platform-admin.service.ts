@@ -369,6 +369,7 @@ export class PlatformAdminService {
                     settings: {
                         create: {
                             description: dto.venue.description || null,
+                            coverUrl: (dto.venue as any).coverUrl || (dto.venue as any).coverImage || null,
                             currency: dto.venue.currency || 'USD',
                             phone: dto.venue.phone || null,
                             address: dto.venue.address || null,
@@ -431,7 +432,7 @@ export class PlatformAdminService {
                             name: itemData.name,
                             description: itemData.description || null,
                             price: new Prisma.Decimal(itemData.price),
-                            imageUrl: itemData.imageUrl || null,
+                            imageUrl: itemData.imageUrl || (itemData as any).image || null,
                             tags: (itemData.tags || []) as Prisma.InputJsonValue,
                             allergens: (itemData.allergens || []) as Prisma.InputJsonValue,
                             sortOrder: iIdx,

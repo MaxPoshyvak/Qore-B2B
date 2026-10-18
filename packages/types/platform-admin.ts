@@ -118,6 +118,7 @@ export const fastVenueItemSchema = z.object({
     description: z.string().optional().nullable(),
     price: z.number().positive('Price must be greater than 0'),
     imageUrl: z.string().optional().nullable(),
+    image: z.string().optional().nullable(),
     tags: z.array(z.string()).optional().default([]),
     allergens: z.array(z.string()).optional().default([]),
 });
@@ -133,6 +134,8 @@ export const fastVenueInputSchema = z.object({
         name: z.string().min(1, 'Venue name is required'),
         slug: z.string().optional().nullable(),
         description: z.string().optional().nullable(),
+        coverUrl: z.string().optional().nullable(),
+        coverImage: z.string().optional().nullable(),
         currency: z.string().optional().default('USD'),
         phone: z.string().optional().nullable(),
         address: z.string().optional().nullable(),
